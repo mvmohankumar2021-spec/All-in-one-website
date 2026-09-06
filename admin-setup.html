@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#111827" />
+    <title>One-time Admin setup | SHAKALPA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="signup.css" />
+  </head>
+  <body class="signup-page">
+    <main class="signup-layout">
+      <section class="signup-intro">
+        <a class="brand" href="index.html"><span class="brand-mark">S</span>SHAKALPA</a>
+        <div>
+          <p class="eyebrow">ONE-TIME SECURE SETUP</p>
+          <h1>Set the standard <em>from day one.</em></h1>
+          <p>Create the first administrator account for your SHAKALPA workspace. This screen locks after setup succeeds.</p>
+        </div>
+        <div class="account-preview" aria-hidden="true"><div class="preview-top"><span class="preview-avatar">A</span><span><small>ADMIN WORKSPACE</small><strong>Full platform oversight</strong></span><i>•••</i></div><div class="preview-line"><span>Access</span><b class="lime-text">All workspaces</b></div><div class="preview-line"><span>Account type</span><b>Administrator</b></div><div class="preview-progress"><span></span></div></div>
+      </section>
+      <section class="signup-form-panel"><div class="signup-form-wrap">
+        <p class="eyebrow">ADMINISTRATION</p><h2>Create the first Admin</h2><p class="form-lede">Use the setup key configured on the server. This page works once only.</p>
+        <form id="adminSetupForm" novalidate>
+          <div class="name-grid"><label>First name<input id="firstName" type="text" autocomplete="given-name" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label><label>Last name<input id="lastName" type="text" autocomplete="family-name" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label></div>
+          <label>Contact number<input id="phone" type="tel" autocomplete="tel" inputmode="tel" required minlength="7" maxlength="20" pattern="[0-9+() -]{7,20}" /></label>
+          <label>Email address<input id="email" type="email" autocomplete="email" required maxlength="254" /></label>
+          <div class="name-grid"><label>Password<input id="password" type="password" autocomplete="new-password" required minlength="8" maxlength="128" /></label><label>Confirm password<input id="confirmPassword" type="password" autocomplete="new-password" required minlength="8" maxlength="128" /></label></div>
+          <label>Server setup key<input id="setupKey" type="password" autocomplete="off" required maxlength="128" /></label>
+          <p class="form-error" id="formError" role="alert" aria-live="polite"></p><button class="button button-lime full" type="submit">Create Admin account <span>→</span></button>
+        </form><p class="privacy-copy">Do not share this page or the setup key. After successful setup, the server blocks additional Admin creation here.</p>
+      </div></section>
+    </main><div class="toast" id="toast" role="status"></div><script src="admin-setup.js"></script>
+  </body>
+</html>

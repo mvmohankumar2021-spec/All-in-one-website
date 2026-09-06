@@ -1,0 +1,11 @@
+# Local application data and user uploads
+nexahub.db
+uploads/
+
+# Local environment and editor files
+.env
+.env.*
+.vscode/
+.idea/
+__pycache__/
+*.pyc

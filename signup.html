@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Create a SHAKALPA customer account." />
+    <meta name="theme-color" content="#111827" />
+    <title>Create your account | SHAKALPA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="signup.css" />
+  </head>
+  <body class="signup-page">
+    <main class="signup-layout">
+      <section class="signup-intro">
+        <a class="brand" href="index.html"><span class="brand-mark">S</span>SHAKALPA</a>
+        <div>
+          <p class="eyebrow">START YOUR JOURNEY</p>
+          <h1>Everything you need, <em>in one place.</em></h1>
+          <p>Create your customer account to shop, book services, and follow deliveries from one calm hub.</p>
+        </div>
+        <div class="account-preview" aria-hidden="true"><div class="preview-top"><span class="preview-avatar">A</span><span><small>YOUR SHAKALPA</small><strong>Good morning, Amara</strong></span><i>•••</i></div><div class="preview-line"><span>Upcoming booking</span><b>Sat, 11:00</b></div><div class="preview-line"><span>Order in transit</span><b class="lime-text">12 min away</b></div><div class="preview-progress"><span></span></div></div>
+        <div class="signup-benefits"><span>✓ Secure account access</span><span>✓ Booking & order history</span><span>✓ Delivery updates</span></div>
+      </section>
+      <section class="signup-form-panel">
+        <div class="signup-form-wrap">
+          <p class="eyebrow">CREATE ACCOUNT</p>
+          <h2>Welcome to SHAKALPA</h2>
+          <p class="form-lede">It only takes a minute to get started.</p>
+          <form id="signupForm" novalidate>
+            <label>Account type<select id="signupRole" name="role" required><option value="Customer">Customer</option><option value="Vendor">Vendor</option><option value="Agent">Agent</option></select></label>
+            <div class="name-grid">
+              <label>First name<input id="firstName" name="firstName" type="text" autocomplete="given-name" placeholder="Amara" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
+              <label>Last name<input id="lastName" name="lastName" type="text" autocomplete="family-name" placeholder="Cole" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
+            </div>
+            <label>Contact number<input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+1 555 000 0000" required minlength="7" maxlength="20" pattern="[0-9+() -]{7,20}" /></label>
+            <label>Email address<input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="amara@example.com" required maxlength="254" /></label>
+            <div class="name-grid">
+              <label>Password<input id="signupPassword" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" required minlength="8" maxlength="128" /></label>
+              <label>Confirm password<input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat password" required minlength="8" maxlength="128" /></label>
+            </div>
+            <p class="form-error" id="signupError" role="alert" aria-live="polite"></p>
+            <button class="button button-lime full" type="submit">Create secure account <span>→</span></button>
+          </form>
+          <div class="auth-divider"><span>OR</span></div>
+          <a class="google-login" id="googleSignup" href="/api/auth/google?role=Customer"><span class="google-mark">G</span> Continue with Google</a>
+          <p class="google-signup-note">Google can verify your sign-in identity. A contact number is still required to create your SHAKALPA account.</p>
+          <p class="privacy-copy">By creating an account, you agree to receive essential account messages. Your details are never stored in this browser.</p>
+          <p class="signin-copy">Already have an account? <a href="index.html">Sign in</a></p>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="signup.js"></script>
+  </body>
+</html>

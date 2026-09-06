@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SHAKALPA — Search. Find. Fulfil." />
+    <meta name="theme-color" content="#111827" />
+    <title>SHAKALPA | Search, Find, Fulfil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="announcement"><span>New:</span> One platform for products, appointments & teams <a href="#roles">Explore workspaces →</a></div>
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="SHAKALPA home"><span class="brand-mark">S</span>SHAKALPA</a>
+      <nav aria-label="Main navigation">
+        <a href="#shop">Shop</a><a href="#services">Services</a><a href="#roles">Workspaces</a><a href="#security">Security</a>
+      </nav>
+      <div class="header-actions"><button class="icon-button" id="cartButton" aria-label="View shopping cart">Bag <span id="cartCount">0</span></button><button class="button button-dark" id="signInButton">Sign in</button></div>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">SEARCH · FIND · FULFIL</p>
+          <h1>Every sale and service, <em>beautifully</em> in sync.</h1>
+          <p class="hero-text">A calm, capable place to sell products, accept bookings, process payments and keep every team moving together.</p>
+          <div class="hero-actions"><a class="button button-lime" href="#shop">Start shopping <span>→</span></a><a class="text-link" href="#services">Book a service <span>↗</span></a></div>
+          <div class="trust-row"><span>● PCI-ready payments</span><span>● Role-based access</span><span>● Live availability</span></div>
+        </div>
+        <div class="hero-art" aria-label="Commerce dashboard preview">
+          <div class="float-card card-order"><span class="card-icon">✓</span><div><small>ORDER CONFIRMED</small><strong>#NH-2048</strong></div></div>
+          <div class="dashboard-card">
+            <div class="dash-top"><div><p>Good morning, Amara</p><h3>Today at a glance</h3></div><span class="avatar">A</span></div>
+            <div class="chart"><div class="chart-label"><span>Sales this week</span><strong>$12,840 <b>+18%</b></strong></div><svg viewBox="0 0 330 105" role="img" aria-label="Positive sales trend"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#c8ef4d" stop-opacity=".5"/><stop offset="1" stop-color="#c8ef4d" stop-opacity="0"/></linearGradient></defs><path d="M0,92 C32,78 31,76 57,81 S91,56 114,64 S149,67 167,40 S203,48 222,25 S262,36 280,15 S311,20 330,3 V105 H0Z" fill="url(#fill)"/><path d="M0,92 C32,78 31,76 57,81 S91,56 114,64 S149,67 167,40 S203,48 222,25 S262,36 280,15 S311,20 330,3" fill="none" stroke="#c8ef4d" stroke-width="3"/></svg></div>
+            <div class="appointments"><div class="section-label"><span>UP NEXT</span><a href="#services">View calendar</a></div><div class="appointment"><span class="time">10:30</span><span class="appointment-dot"></span><div><strong>Design consultation</strong><small>with Maya R.</small></div><span class="more">•••</span></div><div class="appointment"><span class="time">14:00</span><span class="appointment-dot peach"></span><div><strong>Inventory review</strong><small>with Leo K.</small></div><span class="more">•••</span></div></div>
+          </div>
+          <div class="float-card card-payment"><span class="card-icon blue">↗</span><div><small>PAYMENT RECEIVED</small><strong>+$1,240.00</strong></div></div>
+        </div>
+      </section>
+
+      <section class="category-strip" aria-label="Platform features"><div><span class="category-icon">◈</span><strong>Curated products</strong><small>Shop with confidence</small></div><div><span class="category-icon">◷</span><strong>Easy booking</strong><small>Find time that fits</small></div><div><span class="category-icon">◌</span><strong>Smart payments</strong><small>Fast & protected</small></div><div><span class="category-icon">⌘</span><strong>One team hub</strong><small>Built for every role</small></div></section>
+
+      <section class="products section" id="shop"><div class="section-heading"><div><p class="eyebrow">DISCOVER THE SHOP</p><h2>Objects made for <em>everyday rituals.</em></h2></div><a class="text-link" href="#shop">See all products <span>→</span></a></div><div class="product-grid" id="productGrid"></div></section>
+
+      <section class="services section" id="services"><div class="service-intro"><p class="eyebrow">MAKE TIME FOR WHAT MATTERS</p><h2>Your next appointment,<br /><em>sorted in seconds.</em></h2><p>Browse trusted specialists, choose a time, and pay securely—without the back-and-forth.</p><a class="button button-dark" href="#booking">Find a service <span>→</span></a></div><div class="service-showcase"><div class="service-image"></div><div class="booking-card" id="booking"><p>BOOK A SESSION</p><h3>Brand strategy<br />intensive</h3><div class="provider"><span class="provider-avatar">M</span><span><strong>Maya Rios</strong><small>Creative consultant</small></span><span class="stars">★★★★★</span></div><div class="date-row"><button aria-label="Previous day">‹</button><span><small>FRI</small><strong>16</strong></span><span class="chosen"><small>SAT</small><strong>17</strong></span><span><small>SUN</small><strong>18</strong></span><button aria-label="Next day">›</button></div><div class="slot-grid"><button>9:30 AM</button><button class="selected">11:00 AM</button><button>2:00 PM</button><button>4:30 PM</button></div><button class="button button-lime book-now">Continue to payment <span>→</span></button></div></div></section>
+
+      <section class="roles section" id="roles"><div class="section-heading"><div><p class="eyebrow">ONE SYSTEM, CLEAR PERMISSIONS</p><h2>A workspace for <em>every person.</em></h2></div><p class="heading-copy">Each role sees exactly what they need—nothing they don’t.</p></div><div class="role-grid"><article class="role-card primary"><span class="role-badge">01</span><h3>Admin</h3><p>Oversee commerce, bookings, people and platform performance.</p><button class="role-login" data-role="Admin">Open admin workspace →</button></article><article class="role-card"><span class="role-badge">02</span><h3>Employee</h3><p>Manage schedules, assigned tasks and customer conversations.</p><button class="role-login" data-role="Employee">Employee sign in →</button></article><article class="role-card"><span class="role-badge">03</span><h3>Vendor</h3><p>List products, fulfill orders and grow your storefront.</p><button class="role-login" data-role="Vendor">Vendor portal →</button></article><article class="role-card"><span class="role-badge">04</span><h3>Agent</h3><p>Serve clients and track every booking from one calm queue.</p><button class="role-login" data-role="Agent">Agent console →</button></article><article class="role-card customer"><span class="role-badge">05</span><h3>Customer</h3><p>Order, book, save favourites and follow every update.</p><button class="role-login" data-role="Customer">Customer sign in →</button></article></div></section>
+
+      <section class="security section" id="security"><div><p class="eyebrow">BUILT WITH TRUST</p><h2>Security that stays <em>out of your way.</em></h2></div><div class="security-points"><div><span>01</span><p><strong>Role-based access</strong> Permissions are designed around real work, with least-privilege access.</p></div><div><span>02</span><p><strong>Payment tokenization</strong> Card data goes straight to your payment provider—never our servers.</p></div><div><span>03</span><p><strong>Protected sessions</strong> Secure sign-in patterns, validation and activity-aware controls.</p></div></div></section>
+      <section class="tracking section" id="tracking"><div class="tracking-map" aria-label="Order delivery tracking map"><div class="map-road road-one"></div><div class="map-road road-two"></div><div class="map-road road-three"></div><span class="map-label label-a">Greenwich</span><span class="map-label label-b">Riverside</span><span class="map-label label-c">Market St.</span><span class="map-pin shop-pin">●<i>Dispatch</i></span><span class="route"></span><button class="driver-pin" id="driverPin" aria-label="Show courier status">↗</button><span class="map-pin home-pin">⌂<i>Delivery</i></span><div class="map-control"><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomOut" aria-label="Zoom out">−</button></div></div><div class="tracking-copy"><p class="eyebrow">FOLLOW EVERY ORDER</p><h2>From our door<br />to <em>yours.</em></h2><p>Customers can see a privacy-conscious delivery progress view, while teams use precise logistics data only in their protected workspace.</p><div class="track-status"><div class="status-top"><span class="pulse"></span><span><small>ORDER #NH-2048</small><strong>On its way</strong></span><b>12 min</b></div><div class="progress"><span></span></div><div class="milestones"><span>Prepared</span><span>Dispatched</span><span>Delivered</span></div></div><button class="button button-dark" id="trackOrder">Track an order <span>→</span></button><p class="tracking-note">Location refreshes only during an active delivery.</p></div></section>
+      <section class="join-banner"><div><p class="eyebrow">SEARCH · FIND · FULFIL</p><h2>Shop less. <em>Live more.</em></h2><p>Make an account to keep your orders, appointments and delivery updates beautifully organized.</p></div><a class="button button-lime" href="signup.html">Create your account <span>→</span></a></section>
+    </main>
+    <footer><a class="brand" href="#home"><span class="brand-mark">S</span>SHAKALPA</a><p>Search · Find · Fulfil</p><span>© 2026 SHAKALPA</span></footer>
+
+    <dialog id="authModal"><button class="close-modal" aria-label="Close">×</button><p class="eyebrow">SECURE ACCESS</p><h2 id="modalTitle">Welcome back</h2><p class="modal-copy">Choose your workspace and sign in securely.</p><form id="loginForm" novalidate><label>Email<input type="email" id="email" autocomplete="email" placeholder="you@company.com" required maxlength="254" /></label><label>Password<input type="password" id="password" autocomplete="current-password" placeholder="Enter your password" required minlength="8" maxlength="128" /></label><p class="form-error" id="formError" role="alert"></p><button class="button button-dark full" type="submit">Sign in securely <span>→</span></button></form><p class="modal-note">Demo only. In production, use SSO/MFA and server-side sessions.</p></dialog>
+    <aside class="cart-panel" id="cartPanel" aria-label="Shopping cart"><div class="cart-header"><h2>Your bag</h2><button id="closeCart" aria-label="Close cart">×</button></div><div id="cartItems"><p class="empty-cart">Your bag is ready when you are.</p></div><div class="cart-footer"><div><span>Subtotal</span><strong id="cartTotal">$0.00</strong></div><button class="button button-lime full" id="checkoutButton">Secure checkout <span>→</span></button></div></aside><div class="overlay" id="overlay"></div>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
