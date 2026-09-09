@@ -443,6 +443,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.media_toggle_like()
         elif self.path == "/api/media/comment":
             self.media_add_comment()
+        elif self.path == "/api/media/messages":
+            self.media_send_message()
         elif self.path == "/api/media/follow":
             self.media_toggle_follow()
         elif self.path == "/api/media/save":
@@ -525,6 +527,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/media/posts":
             self.media_posts()
+            return
+        if parsed.path == "/api/media/messages":
+            self.media_messages(parsed)
             return
         if self.path == "/api/media/saved":
             self.media_saved_posts()
@@ -1657,6 +1662,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         db.execute("CREATE TABLE IF NOT EXISTS media_post_files (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, storage_name TEXT NOT NULL, media_type TEXT NOT NULL, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_likes (post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY(post_id, account_id), FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_comments (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
+        db.execute("CREATE TABLE IF NOT EXISTS media_direct_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, sender_id INTEGER NOT NULL, recipient_id INTEGER NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(sender_id) REFERENCES accounts(id) ON DELETE CASCADE, FOREIGN KEY(recipient_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_follows (follower_id INTEGER NOT NULL, following_id INTEGER NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY(follower_id, following_id), FOREIGN KEY(follower_id) REFERENCES accounts(id) ON DELETE CASCADE, FOREIGN KEY(following_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_saves (post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY(post_id, account_id), FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_save_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, account_id INTEGER NOT NULL, name TEXT NOT NULL COLLATE NOCASE, created_at INTEGER NOT NULL, UNIQUE(account_id, name), FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
@@ -1801,6 +1807,30 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         with connection() as db:
             self.ensure_media_tables(db); db.execute("INSERT INTO media_comments (post_id, account_id, body, created_at) VALUES (?, ?, ?, ?)", (post_id, actor["id"], body, int(time.time())))
         self.send_json({"message": "Comment added."}, HTTPStatus.CREATED)
+
+    def media_send_message(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.media_actor()
+        if not actor: return
+        data = self.read_json() or {}; post_id = data.get("postId"); body = str(data.get("body", "")).strip()
+        if not isinstance(post_id, int) or not 1 <= len(body) <= 1000: self.send_json({"error": "Write a private message of up to 1,000 characters."}, HTTPStatus.BAD_REQUEST); return
+        if self.media_content_block_reason(body): self.send_json({"error": "That message was blocked by the safety review."}, HTTPStatus.UNPROCESSABLE_ENTITY); return
+        with connection() as db:
+            self.ensure_media_tables(db); post = db.execute("SELECT account_id FROM media_posts WHERE id = ?", (post_id,)).fetchone()
+            if not post: self.send_json({"error": "That post could not be found."}, HTTPStatus.NOT_FOUND); return
+            recipient_id = data.get("recipientId") if post["account_id"] == actor["id"] else post["account_id"]
+            if not isinstance(recipient_id, int) or recipient_id == actor["id"]: self.send_json({"error": "Choose another conversation participant."}, HTTPStatus.BAD_REQUEST); return
+            db.execute("INSERT INTO media_direct_messages (post_id, sender_id, recipient_id, body, created_at) VALUES (?, ?, ?, ?, ?)", (post_id, actor["id"], recipient_id, body, int(time.time())))
+        self.send_json({"message": "Private message sent."}, HTTPStatus.CREATED)
+
+    def media_messages(self, parsed) -> None:
+        actor = self.media_actor()
+        if not actor: return
+        try: post_id = int(parse_qs(parsed.query).get("postId", [""])[0])
+        except ValueError: self.send_json({"error": "Choose a valid post."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            self.ensure_media_tables(db); rows = db.execute("SELECT m.id, m.sender_id, m.recipient_id, m.body, m.created_at, a.first_name, a.last_name FROM media_direct_messages m JOIN accounts a ON a.id = m.sender_id WHERE m.post_id = ? AND (m.sender_id = ? OR m.recipient_id = ?) ORDER BY m.created_at ASC, m.id ASC", (post_id, actor["id"], actor["id"])).fetchall()
+        self.send_json({"messages": [{"id": row["id"], "senderId": row["sender_id"], "recipientId": row["recipient_id"], "body": row["body"], "author": f"{row['first_name']} {row['last_name']}", "createdAt": row["created_at"]} for row in rows]})
 
     def media_toggle_save(self) -> None:
         if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
