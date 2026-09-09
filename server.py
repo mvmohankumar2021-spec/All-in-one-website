@@ -64,6 +64,31 @@ RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 STATIC_EXTENSIONS = {".html", ".css", ".js", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".ico"}
 NAME_PATTERN = re.compile(r"^[A-Za-zÀ-ÿ' -]{2,50}$")
 PHONE_PATTERN = re.compile(r"^[0-9+() -]{7,20}$")
+MEDIA_BLOCKED_TERMS = {
+    "Adult or sexual content": ("porn", "pornography", "nude", "nudity", "explicit sex", "sexual assault"),
+    "Violence or graphic harm": ("gore", "beheading", "murder video", "kill myself", "graphic violence", "torture"),
+}
+
+ROLE_ID_PREFIXES = {"Admin": "ADMN", "Employee": "EMPL", "Vendor": "VEND", "Agent": "AGNT", "Customer": "CUST"}
+
+
+def id_fragment(value: str) -> str:
+    """Return a stable four-character, uppercase fragment for human account IDs."""
+    letters = re.sub(r"[^A-Za-z0-9]", "", value).upper()
+    return (letters + "XXXX")[:4]
+
+
+def assign_account_code(db: sqlite3.Connection, account_id: int, role: str, first_name: str, created_at: int, vendor_id: int | None = None) -> str:
+    year = time.strftime("%Y", time.localtime(created_at))
+    serial = f"{account_id:05d}"
+    if vendor_id is not None:
+        vendor = db.execute("SELECT COALESCE(v.business_name, a.first_name) AS name FROM accounts a LEFT JOIN vendor_profiles v ON v.account_id = a.id WHERE a.id = ?", (vendor_id,)).fetchone()
+        vendor_name = vendor["name"] if vendor else "VEND"
+        code = f"{id_fragment(vendor_name)}-{id_fragment(first_name)}-{year}-{serial}"
+    else:
+        code = f"SHA-{ROLE_ID_PREFIXES.get(role, 'USER')}-{id_fragment(first_name)}-{year}-{serial}"
+    db.execute("UPDATE accounts SET account_code = ? WHERE id = ?", (code, account_id))
+    return code
 
 
 def connection() -> sqlite3.Connection:
@@ -218,6 +243,35 @@ def init_database() -> None:
                 FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE INDEX IF NOT EXISTS vendor_products_vendor_idx ON vendor_products(vendor_id, status, created_at DESC);
+            CREATE TABLE IF NOT EXISTS vendor_staff (
+                account_id INTEGER PRIMARY KEY,
+                vendor_id INTEGER NOT NULL,
+                can_add_products INTEGER NOT NULL DEFAULT 0,
+                can_edit_products INTEGER NOT NULL DEFAULT 0,
+                active INTEGER NOT NULL DEFAULT 1,
+                created_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS vendor_staff_vendor_idx ON vendor_staff(vendor_id, active, created_at DESC);
+            CREATE TABLE IF NOT EXISTS vendor_product_change_requests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                vendor_id INTEGER NOT NULL,
+                product_id INTEGER,
+                request_type TEXT NOT NULL CHECK(request_type IN ('Add', 'Edit')),
+                proposed_data TEXT NOT NULL,
+                requested_by INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'Pending',
+                reviewed_by INTEGER,
+                reviewed_at INTEGER,
+                review_note TEXT,
+                created_at INTEGER NOT NULL,
+                FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY(product_id) REFERENCES vendor_products(id) ON DELETE SET NULL,
+                FOREIGN KEY(requested_by) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY(reviewed_by) REFERENCES accounts(id) ON DELETE SET NULL
+            );
+            CREATE INDEX IF NOT EXISTS vendor_product_changes_vendor_idx ON vendor_product_change_requests(vendor_id, status, created_at DESC);
             CREATE TABLE IF NOT EXISTS product_media (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 product_id INTEGER NOT NULL,
@@ -246,6 +300,20 @@ def init_database() -> None:
         for column, definition in migrations.items():
             if column not in profile_columns:
                 db.execute(f"ALTER TABLE vendor_profiles ADD COLUMN {column} {definition}")
+        product_columns = {row["name"] for row in db.execute("PRAGMA table_info(vendor_products)")}
+        for column, definition in {"product_category": "TEXT NOT NULL DEFAULT ''", "product_type": "TEXT NOT NULL DEFAULT ''", "search_keywords": "TEXT NOT NULL DEFAULT ''", "product_specifications": "TEXT NOT NULL DEFAULT ''", "customer_actions": "TEXT NOT NULL DEFAULT '[\"Buy\"]'"}.items():
+            if column not in product_columns:
+                db.execute(f"ALTER TABLE vendor_products ADD COLUMN {column} {definition}")
+        account_columns = {row["name"] for row in db.execute("PRAGMA table_info(accounts)")}
+        if "account_code" not in account_columns:
+            db.execute("ALTER TABLE accounts ADD COLUMN account_code TEXT")
+        staff_columns = {row["name"] for row in db.execute("PRAGMA table_info(vendor_staff)")}
+        if "offboarded_at" not in staff_columns:
+            db.execute("ALTER TABLE vendor_staff ADD COLUMN offboarded_at INTEGER")
+        legacy_accounts = db.execute("SELECT id, first_name, role, created_at FROM accounts WHERE account_code IS NULL OR account_code = ''").fetchall()
+        for account in legacy_accounts:
+            staff = db.execute("SELECT vendor_id FROM vendor_staff WHERE account_id = ?", (account["id"],)).fetchone()
+            assign_account_code(db, account["id"], account["role"], account["first_name"], account["created_at"], staff["vendor_id"] if staff else None)
 
 
 def create_staff_account(role: str, first_name: str, last_name: str, phone: str, email: str) -> None:
@@ -264,10 +332,12 @@ def create_staff_account(role: str, first_name: str, last_name: str, phone: str,
         raise SystemExit(f"Account was not created: {error}")
     try:
         with connection() as db:
-            db.execute(
+            now = int(time.time())
+            cursor = db.execute(
                 "INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, int(time.time())),
+                (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, now),
             )
+            assign_account_code(db, cursor.lastrowid, role, account["first_name"], now)
     except sqlite3.IntegrityError:
         raise SystemExit("Account was not created: an account already exists for that email.")
     print(f"Created {role} account for {account['email']}.")
@@ -341,6 +411,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.request_vendor_documents()
         elif self.path == "/api/admin/payment-settings":
             self.admin_save_payment_settings()
+        elif self.path == "/api/admin/market-rates":
+            self.admin_save_market_rates()
         elif self.path == "/api/admin/vendor-login":
             self.admin_vendor_login()
         elif self.path == "/api/vendor/registration-payment/order":
@@ -355,16 +427,32 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.vendor_create_product()
         elif self.path == "/api/vendor/products/update":
             self.vendor_update_product()
+        elif self.path == "/api/vendor/staff":
+            self.vendor_create_staff()
+        elif self.path == "/api/vendor/staff/offboard":
+            self.vendor_offboard_staff()
+        elif self.path == "/api/vendor/product-change-requests/review":
+            self.vendor_review_product_change()
         elif self.path == "/api/media/posts":
             self.media_create_post()
         elif self.path == "/api/media/posts/delete":
             self.media_delete_post()
+        elif self.path == "/api/media/posts/update":
+            self.media_update_post()
         elif self.path == "/api/media/like":
             self.media_toggle_like()
         elif self.path == "/api/media/comment":
             self.media_add_comment()
         elif self.path == "/api/media/follow":
             self.media_toggle_follow()
+        elif self.path == "/api/media/save":
+            self.media_toggle_save()
+        elif self.path == "/api/media/report":
+            self.media_report_post()
+        elif self.path == "/api/media/save-tags":
+            self.media_create_save_tag()
+        elif self.path == "/api/media/saved/tags":
+            self.media_set_saved_post_tags()
         elif self.path == "/api/vendor/jobs":
             self.vendor_create_job()
         elif self.path == "/api/jobs/apply":
@@ -393,6 +481,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/admin/payment-settings":
             self.admin_payment_settings()
             return
+        if self.path == "/api/market-rates":
+            self.market_rates()
+            return
+        if self.path == "/api/admin/market-rates":
+            self.admin_market_rates()
+            return
         if self.path == "/api/admin/approved-vendors":
             self.admin_approved_vendors()
             return
@@ -414,6 +508,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/vendor/products":
             self.vendor_products()
             return
+        if self.path == "/api/vendor/staff":
+            self.vendor_staff()
+            return
+        if self.path == "/api/vendor/product-change-requests":
+            self.vendor_product_change_requests()
+            return
         if self.path == "/api/vendor/jobs":
             self.vendor_jobs()
             return
@@ -425,6 +525,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/media/posts":
             self.media_posts()
+            return
+        if self.path == "/api/media/saved":
+            self.media_saved_posts()
             return
         if self.path == "/api/vendor/media":
             self.vendor_media_posts()
@@ -552,7 +655,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         try:
             with connection() as db:
-                db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, int(time.time())))
+                now = int(time.time())
+                cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, now))
+                assign_account_code(db, cursor.lastrowid, role, account["first_name"], now)
         except sqlite3.IntegrityError:
             self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
             return
@@ -583,7 +688,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 if existing_admin:
                     self.send_json({"error": "An Admin account already exists. Use an authenticated admin workflow to create staff accounts."}, HTTPStatus.CONFLICT)
                     return
-                db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), "Admin", int(time.time())))
+                now = int(time.time())
+                cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), "Admin", now))
+                assign_account_code(db, cursor.lastrowid, "Admin", account["first_name"], now)
         except sqlite3.IntegrityError:
             self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
             return
@@ -645,7 +752,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not token:
             return None
         with connection() as db:
-            return db.execute("SELECT a.id, a.first_name, a.last_name, a.email, a.role FROM sessions s JOIN accounts a ON a.id = s.account_id WHERE s.token_hash = ? AND s.expires_at > ?", (hashlib.sha256(token.encode()).hexdigest(), int(time.time()))).fetchone()
+            account = db.execute("SELECT a.id, a.first_name, a.last_name, a.email, a.role FROM sessions s JOIN accounts a ON a.id = s.account_id WHERE s.token_hash = ? AND s.expires_at > ?", (hashlib.sha256(token.encode()).hexdigest(), int(time.time()))).fetchone()
+            if account and account["role"] == "Employee":
+                staff = db.execute("SELECT active FROM vendor_staff WHERE account_id = ?", (account["id"],)).fetchone()
+                if staff and not staff["active"]:
+                    return None
+            return account
 
     def require_admin(self) -> sqlite3.Row | None:
         account = self.current_account()
@@ -665,6 +777,10 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if account["role"] != "Employee":
             self.send_json({"error": "Employee access is required."}, HTTPStatus.FORBIDDEN)
             return None
+        with connection() as db:
+            if db.execute("SELECT 1 FROM vendor_staff WHERE account_id = ?", (account["id"],)).fetchone():
+                self.send_json({"error": "Vendor employees have access only to their Vendor workspace."}, HTTPStatus.FORBIDDEN)
+                return None
         return account
 
     def require_agent(self) -> sqlite3.Row | None:
@@ -687,6 +803,100 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return None
         return account
 
+    def vendor_staff(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            staff = db.execute("SELECT a.id, a.account_code, a.first_name, a.last_name, a.email, a.phone, s.can_add_products, s.can_edit_products, s.active, s.created_at, s.offboarded_at FROM vendor_staff s JOIN accounts a ON a.id = s.account_id WHERE s.vendor_id = ? ORDER BY s.active DESC, s.created_at DESC", (vendor["id"],)).fetchall()
+        self.send_json({"staff": [{"id": row["id"], "accountCode": row["account_code"], "firstName": row["first_name"], "lastName": row["last_name"], "email": row["email"], "phone": row["phone"], "canAddProducts": bool(row["can_add_products"]), "canEditProducts": bool(row["can_edit_products"]), "active": bool(row["active"]), "createdAt": row["created_at"], "offboardedAt": row["offboarded_at"]} for row in staff]})
+
+    def vendor_create_staff(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json()
+        if data is None:
+            self.send_json({"error": "Invalid employee request."}, HTTPStatus.BAD_REQUEST)
+            return
+        account, error = validate_signup(data)
+        if error:
+            self.send_json({"error": error}, HTTPStatus.BAD_REQUEST)
+            return
+        can_add = data.get("canAddProducts") is True
+        can_edit = data.get("canEditProducts") is True
+        if not can_add and not can_edit:
+            self.send_json({"error": "Choose Add products and/or Edit products permission."}, HTTPStatus.BAD_REQUEST)
+            return
+        now = int(time.time())
+        try:
+            with connection() as db:
+                cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, 'Employee', ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), now))
+                db.execute("INSERT INTO vendor_staff (account_id, vendor_id, can_add_products, can_edit_products, created_at) VALUES (?, ?, ?, ?, ?)", (cursor.lastrowid, vendor["id"], int(can_add), int(can_edit), now))
+                account_code = assign_account_code(db, cursor.lastrowid, "Employee", account["first_name"], now, vendor["id"])
+        except sqlite3.IntegrityError:
+            self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
+            return
+        self.send_json({"message": "Employee added. Their product work will wait for your approval before publishing.", "accountCode": account_code}, HTTPStatus.CREATED)
+
+    def vendor_offboard_staff(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        staff_id = data.get("staffId")
+        if not isinstance(staff_id, int):
+            self.send_json({"error": "Choose a valid employee."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            result = db.execute("UPDATE vendor_staff SET active = 0, offboarded_at = ? WHERE account_id = ? AND vendor_id = ? AND active = 1", (int(time.time()), staff_id, vendor["id"])).rowcount
+        if not result:
+            self.send_json({"error": "That employee is not active in your team."}, HTTPStatus.NOT_FOUND)
+            return
+        self.send_json({"message": "Employee offboarded. Their Vendor access has been removed."})
+
+    def vendor_product_change_requests(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            rows = db.execute("SELECT r.id, r.product_id, r.request_type, r.proposed_data, r.status, r.created_at, a.first_name, a.last_name, p.product_name FROM vendor_product_change_requests r JOIN accounts a ON a.id = r.requested_by LEFT JOIN vendor_products p ON p.id = r.product_id WHERE r.vendor_id = ? ORDER BY CASE r.status WHEN 'Pending' THEN 0 ELSE 1 END, r.created_at DESC", (vendor["id"],)).fetchall()
+        output = []
+        for row in rows:
+            try: proposed = json.loads(row["proposed_data"])
+            except (TypeError, ValueError): proposed = {}
+            output.append({"id": row["id"], "productId": row["product_id"], "requestType": row["request_type"], "status": row["status"], "createdAt": row["created_at"], "employeeName": f"{row['first_name']} {row['last_name']}", "productName": row["product_name"] or proposed.get("name", "New product"), "proposed": proposed})
+        self.send_json({"requests": output})
+
+    def vendor_review_product_change(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        request_id = data.get("requestId"); decision = data.get("decision")
+        if not isinstance(request_id, int) or decision not in {"Approved", "Rejected"}:
+            self.send_json({"error": "Choose a pending request and an approval decision."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            request = db.execute("SELECT id, product_id, request_type, proposed_data FROM vendor_product_change_requests WHERE id = ? AND vendor_id = ? AND status = 'Pending'", (request_id, vendor["id"])).fetchone()
+            if not request:
+                self.send_json({"error": "That approval request is no longer pending."}, HTTPStatus.NOT_FOUND)
+                return
+            if decision == "Approved" and request["request_type"] == "Edit" and request["product_id"]:
+                proposed = json.loads(request["proposed_data"])
+                db.execute("UPDATE vendor_products SET product_name = ?, product_description = ?, product_category = ?, product_type = ?, search_keywords = ?, product_specifications = ?, cost_paise = ?, tax_details = ?, available_quantity = ?, delivery_charges_paise = ?, self_delivery = ? WHERE id = ? AND vendor_id = ?", (proposed["name"], proposed["description"], proposed["category"], proposed["productType"], proposed.get("keywords", ""), proposed.get("specifications", ""), proposed["costPaise"], proposed.get("taxDetails") or None, proposed["availableQuantity"], proposed["deliveryChargesPaise"], int(proposed.get("selfDelivery") is True), request["product_id"], vendor["id"]))
+            db.execute("UPDATE vendor_product_change_requests SET status = ?, reviewed_by = ?, reviewed_at = ? WHERE id = ?", (decision, vendor["id"], int(time.time()), request_id))
+        self.send_json({"message": f"Product change {decision.lower()}."})
+
     def require_approver(self) -> sqlite3.Row | None:
         account = self.current_account()
         if not account:
@@ -701,8 +911,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not self.require_admin():
             return
         with connection() as db:
-            accounts = db.execute("SELECT id, first_name, last_name, phone, email, role, created_at FROM accounts ORDER BY created_at DESC, id DESC").fetchall()
-        self.send_json({"accounts": [{"id": row["id"], "firstName": row["first_name"], "lastName": row["last_name"], "phone": row["phone"], "email": row["email"], "role": row["role"], "createdAt": row["created_at"]} for row in accounts]})
+            accounts = db.execute("SELECT a.id, a.account_code, a.first_name, a.last_name, a.phone, a.email, a.role, a.created_at, s.account_id AS vendor_staff_id FROM accounts a LEFT JOIN vendor_staff s ON s.account_id = a.id ORDER BY a.created_at DESC, a.id DESC").fetchall()
+        self.send_json({"accounts": [{"id": row["id"], "accountCode": row["account_code"], "firstName": row["first_name"], "lastName": row["last_name"], "phone": row["phone"], "email": row["email"], "role": "Vendor employee" if row["vendor_staff_id"] else row["role"], "createdAt": row["created_at"]} for row in accounts]})
 
     def admin_approved_vendors(self) -> None:
         if not self.require_admin():
@@ -755,7 +965,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         try:
             with connection() as db:
-                db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, int(time.time())))
+                now = int(time.time())
+                cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, now))
+                assign_account_code(db, cursor.lastrowid, role, account["first_name"], now)
         except sqlite3.IntegrityError:
             self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
             return
@@ -789,7 +1001,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         try:
             with connection() as db:
-                db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, int(time.time())))
+                now = int(time.time())
+                cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, now))
+                assign_account_code(db, cursor.lastrowid, role, account["first_name"], now)
         except sqlite3.IntegrityError:
             self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
             return
@@ -819,7 +1033,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         try:
             with connection() as db:
-                db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), "Vendor", int(time.time())))
+                now = int(time.time())
+                cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), "Vendor", now))
+                assign_account_code(db, cursor.lastrowid, "Vendor", account["first_name"], now)
         except sqlite3.IntegrityError:
             self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
             return
@@ -1110,6 +1326,30 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES ('product_entry_fee_paise', ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (str(product_fee_paise), admin["id"], int(time.time())))
         self.send_json({"message": "Payment fees updated.", "vendorRegistrationFeePaise": fee_paise, "productEntryFeePaise": product_fee_paise, "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
 
+    def market_rates(self) -> None:
+        with connection() as db:
+            rows = db.execute("SELECT setting_key, setting_value, updated_at FROM payment_settings WHERE setting_key IN ('sensex_value', 'gold_22k_per_gram', 'gold_24k_per_gram', 'silver_per_gram')").fetchall()
+        values = {row["setting_key"]: row["setting_value"] for row in rows}
+        updated_at = max((row["updated_at"] for row in rows), default=None)
+        self.send_json({"sensex": values.get("sensex_value", ""), "gold22k": values.get("gold_22k_per_gram", ""), "gold24k": values.get("gold_24k_per_gram", ""), "silver": values.get("silver_per_gram", ""), "updatedAt": updated_at})
+
+    def admin_market_rates(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        admin = self.require_admin()
+        if not admin: return
+        data = self.read_json() or {}
+        fields = {"sensex": "sensex_value", "gold22k": "gold_22k_per_gram", "gold24k": "gold_24k_per_gram", "silver": "silver_per_gram"}
+        values: dict[str, float] = {}
+        for source, key in fields.items():
+            value = data.get(source)
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0 <= value <= 10_000_000:
+                self.send_json({"error": "Enter valid non-negative market values."}, HTTPStatus.BAD_REQUEST); return
+            values[key] = float(value)
+        now = int(time.time())
+        with connection() as db:
+            for key, value in values.items(): db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (key, str(value), admin["id"], now))
+        self.send_json({"message": "Market rates updated.", "updatedAt": now})
+
     def vendor_payment_components(self, vendor_id: int) -> tuple[int, int, list[int], bool]:
         registration_fee = self.registration_fee_paise()
         product_fee = self.product_entry_fee_paise()
@@ -1270,11 +1510,11 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not vendor:
             return
         with connection() as db:
-            products = db.execute("SELECT id, product_name, product_description, cost_paise, tax_details, available_quantity, delivery_charges_paise, self_delivery, status, created_at FROM vendor_products WHERE vendor_id = ? ORDER BY created_at DESC", (vendor["id"],)).fetchall()
+            products = db.execute("SELECT id, product_name, product_description, product_category, product_type, search_keywords, product_specifications, customer_actions, cost_paise, tax_details, available_quantity, delivery_charges_paise, self_delivery, status, created_at FROM vendor_products WHERE vendor_id = ? ORDER BY created_at DESC", (vendor["id"],)).fetchall()
             media = self.product_media_rows(db, [row["id"] for row in products])
         fee = self.product_entry_fee_paise()
         awaiting = sum(row["status"] == "Awaiting payment" for row in products)
-        self.send_json({"products": [{"id": row["id"], "name": row["product_name"], "description": row["product_description"], "costPaise": row["cost_paise"], "taxDetails": row["tax_details"], "availableQuantity": row["available_quantity"], "deliveryChargesPaise": row["delivery_charges_paise"], "selfDelivery": bool(row["self_delivery"]), "status": row["status"], "media": media.get(row["id"], [])} for row in products], "productEntryFeePaise": fee, "totalPayablePaise": awaiting * fee, "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
+        self.send_json({"products": [{"id": row["id"], "name": row["product_name"], "description": row["product_description"], "category": row["product_category"], "productType": row["product_type"], "keywords": row["search_keywords"], "specifications": row["product_specifications"], "customerActions": json.loads(row["customer_actions"]), "costPaise": row["cost_paise"], "taxDetails": row["tax_details"], "availableQuantity": row["available_quantity"], "deliveryChargesPaise": row["delivery_charges_paise"], "selfDelivery": bool(row["self_delivery"]), "status": row["status"], "media": media.get(row["id"], [])} for row in products], "productEntryFeePaise": fee, "totalPayablePaise": awaiting * fee, "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
 
     def save_product_media(self, product_id: int, raw_media: object) -> str | None:
         if not isinstance(raw_media, list) or not 1 <= len(raw_media) <= 5:
@@ -1323,15 +1563,19 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if data is None:
             self.send_json({"error": "Invalid product request."}, HTTPStatus.BAD_REQUEST)
             return
-        name = str(data.get("name", "")).strip(); description = str(data.get("description", "")).strip(); tax = str(data.get("taxDetails", "")).strip()
+        name = str(data.get("name", "")).strip(); description = str(data.get("description", "")).strip(); tax = str(data.get("taxDetails", "")).strip(); category = str(data.get("category", "")).strip(); product_type = str(data.get("productType", "")).strip(); keywords = str(data.get("keywords", "")).strip(); specifications = str(data.get("specifications", "")).strip()
         cost = data.get("costPaise"); quantity = data.get("availableQuantity"); delivery = data.get("deliveryChargesPaise")
-        if not 2 <= len(name) <= 140 or not 10 <= len(description) <= 5000 or len(tax) > 500 or not isinstance(cost, int) or not isinstance(quantity, int) or not isinstance(delivery, int) or not 0 <= cost <= 100_000_000 or not 0 <= delivery <= 100_000_000 or not 0 <= quantity <= 1_000_000:
+        actions = data.get("customerActions", ["Buy"])
+        if not isinstance(actions, list) or not actions or any(action not in {"Buy", "Book", "Call", "Callback"} for action in actions):
+            self.send_json({"error": "Choose at least one valid customer action."}, HTTPStatus.BAD_REQUEST)
+            return
+        if not 2 <= len(name) <= 140 or not 2 <= len(category) <= 80 or not 2 <= len(product_type) <= 80 or len(keywords) > 400 or len(specifications) > 2000 or not 10 <= len(description) <= 5000 or len(tax) > 500 or not isinstance(cost, int) or not isinstance(quantity, int) or not isinstance(delivery, int) or not 0 <= cost <= 100_000_000 or not 0 <= delivery <= 100_000_000 or not 0 <= quantity <= 1_000_000:
             self.send_json({"error": "Complete valid product details, pricing, and quantity."}, HTTPStatus.BAD_REQUEST)
             return
         status = "Published" if self.product_entry_fee_paise() == 0 else "Awaiting payment"
         now = int(time.time())
         with connection() as db:
-            product = db.execute("INSERT INTO vendor_products (vendor_id, product_name, product_description, cost_paise, tax_details, available_quantity, delivery_charges_paise, self_delivery, status, created_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (vendor["id"], name, description, cost, tax or None, quantity, delivery, int(data.get("selfDelivery") is True), status, now, now if status == "Published" else None))
+            product = db.execute("INSERT INTO vendor_products (vendor_id, product_name, product_description, product_category, product_type, search_keywords, product_specifications, customer_actions, cost_paise, tax_details, available_quantity, delivery_charges_paise, self_delivery, status, created_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (vendor["id"], name, description, category, product_type, keywords, specifications, json.dumps(sorted(set(actions))), cost, tax or None, quantity, delivery, int(data.get("selfDelivery") is True), status, now, now if status == "Published" else None))
             product_id = product.lastrowid
         media_error = self.save_product_media(product_id, data.get("media"))
         if media_error:
@@ -1352,9 +1596,13 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if data is None or not isinstance(data.get("productId"), int):
             self.send_json({"error": "Choose a valid product to edit."}, HTTPStatus.BAD_REQUEST)
             return
-        name = str(data.get("name", "")).strip(); description = str(data.get("description", "")).strip(); tax = str(data.get("taxDetails", "")).strip()
+        name = str(data.get("name", "")).strip(); description = str(data.get("description", "")).strip(); tax = str(data.get("taxDetails", "")).strip(); category = str(data.get("category", "")).strip(); product_type = str(data.get("productType", "")).strip(); keywords = str(data.get("keywords", "")).strip(); specifications = str(data.get("specifications", "")).strip()
         cost = data.get("costPaise"); quantity = data.get("availableQuantity"); delivery = data.get("deliveryChargesPaise")
-        if not 2 <= len(name) <= 140 or not 10 <= len(description) <= 5000 or len(tax) > 500 or not isinstance(cost, int) or not isinstance(quantity, int) or not isinstance(delivery, int) or not 0 <= cost <= 100_000_000 or not 0 <= delivery <= 100_000_000 or not 0 <= quantity <= 1_000_000:
+        actions = data.get("customerActions", ["Buy"])
+        if not isinstance(actions, list) or not actions or any(action not in {"Buy", "Book", "Call", "Callback"} for action in actions):
+            self.send_json({"error": "Choose at least one valid customer action."}, HTTPStatus.BAD_REQUEST)
+            return
+        if not 2 <= len(name) <= 140 or not 2 <= len(category) <= 80 or not 2 <= len(product_type) <= 80 or len(keywords) > 400 or len(specifications) > 2000 or not 10 <= len(description) <= 5000 or len(tax) > 500 or not isinstance(cost, int) or not isinstance(quantity, int) or not isinstance(delivery, int) or not 0 <= cost <= 100_000_000 or not 0 <= delivery <= 100_000_000 or not 0 <= quantity <= 1_000_000:
             self.send_json({"error": "Complete valid product details, pricing, and quantity."}, HTTPStatus.BAD_REQUEST)
             return
         with connection() as db:
@@ -1362,7 +1610,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             if not product:
                 self.send_json({"error": "Product was not found."}, HTTPStatus.NOT_FOUND)
                 return
-            db.execute("UPDATE vendor_products SET product_name = ?, product_description = ?, cost_paise = ?, tax_details = ?, available_quantity = ?, delivery_charges_paise = ?, self_delivery = ? WHERE id = ? AND vendor_id = ?", (name, description, cost, tax or None, quantity, delivery, int(data.get("selfDelivery") is True), data["productId"], vendor["id"]))
+            db.execute("UPDATE vendor_products SET product_name = ?, product_description = ?, product_category = ?, product_type = ?, search_keywords = ?, product_specifications = ?, customer_actions = ?, cost_paise = ?, tax_details = ?, available_quantity = ?, delivery_charges_paise = ?, self_delivery = ? WHERE id = ? AND vendor_id = ?", (name, description, category, product_type, keywords, specifications, json.dumps(sorted(set(actions))), cost, tax or None, quantity, delivery, int(data.get("selfDelivery") is True), data["productId"], vendor["id"]))
         if data.get("media"):
             media_error = self.save_product_media(data["productId"], data["media"])
             if media_error:
@@ -1404,10 +1652,23 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
 
     def ensure_media_tables(self, db: sqlite3.Connection) -> None:
         db.execute("CREATE TABLE IF NOT EXISTS media_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, account_id INTEGER NOT NULL, caption TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
+        if "aspect_ratio" not in {column["name"] for column in db.execute("PRAGMA table_info(media_posts)").fetchall()}:
+            db.execute("ALTER TABLE media_posts ADD COLUMN aspect_ratio TEXT NOT NULL DEFAULT '16:9'")
         db.execute("CREATE TABLE IF NOT EXISTS media_post_files (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, storage_name TEXT NOT NULL, media_type TEXT NOT NULL, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_likes (post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY(post_id, account_id), FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_comments (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_follows (follower_id INTEGER NOT NULL, following_id INTEGER NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY(follower_id, following_id), FOREIGN KEY(follower_id) REFERENCES accounts(id) ON DELETE CASCADE, FOREIGN KEY(following_id) REFERENCES accounts(id) ON DELETE CASCADE)")
+        db.execute("CREATE TABLE IF NOT EXISTS media_saves (post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY(post_id, account_id), FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
+        db.execute("CREATE TABLE IF NOT EXISTS media_save_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, account_id INTEGER NOT NULL, name TEXT NOT NULL COLLATE NOCASE, created_at INTEGER NOT NULL, UNIQUE(account_id, name), FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
+        db.execute("CREATE TABLE IF NOT EXISTS media_save_tag_posts (tag_id INTEGER NOT NULL, post_id INTEGER NOT NULL, PRIMARY KEY(tag_id, post_id), FOREIGN KEY(tag_id) REFERENCES media_save_tags(id) ON DELETE CASCADE, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE)")
+        db.execute("CREATE TABLE IF NOT EXISTS media_reports (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, reporter_id INTEGER NOT NULL, reason TEXT NOT NULL, details TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, UNIQUE(post_id, reporter_id), FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(reporter_id) REFERENCES accounts(id) ON DELETE CASCADE)")
+
+    def media_content_block_reason(self, text: str) -> str | None:
+        normalized = re.sub(r"\s+", " ", text.casefold())
+        for reason, terms in MEDIA_BLOCKED_TERMS.items():
+            if any(re.search(rf"(?<!\w){re.escape(term)}(?!\w)", normalized) for term in terms):
+                return reason
+        return None
 
     def media_actor(self) -> sqlite3.Row | None:
         account = self.current_account()
@@ -1441,7 +1702,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             if account_id is not None:
                 query += " WHERE p.account_id = ?"
                 parameters = (account_id,)
-            posts = db.execute(query + " ORDER BY p.created_at DESC, p.id DESC LIMIT 100", parameters).fetchall()
+            posts = db.execute(query.replace("p.created_at,", "p.created_at, p.aspect_ratio,") + " ORDER BY p.created_at DESC, p.id DESC LIMIT 100", parameters).fetchall()
             follower_count = db.execute("SELECT COUNT(*) AS count FROM media_follows WHERE following_id = ?", (account_id,)).fetchone()["count"] if account_id is not None else None
             output = []
             for post in posts:
@@ -1449,8 +1710,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 comments = db.execute("SELECT c.id, c.body, c.created_at, a.first_name, a.last_name FROM media_comments c JOIN accounts a ON a.id = c.account_id WHERE c.post_id = ? ORDER BY c.created_at ASC, c.id ASC LIMIT 20", (post["id"],)).fetchall()
                 likes = db.execute("SELECT COUNT(*) AS count FROM media_likes WHERE post_id = ?", (post["id"],)).fetchone()["count"]
                 liked = bool(viewer and db.execute("SELECT 1 FROM media_likes WHERE post_id = ? AND account_id = ?", (post["id"], viewer["id"])).fetchone())
+                saved = bool(viewer and db.execute("SELECT 1 FROM media_saves WHERE post_id = ? AND account_id = ?", (post["id"], viewer["id"])).fetchone())
                 following = bool(viewer and viewer["id"] != post["account_id"] and db.execute("SELECT 1 FROM media_follows WHERE follower_id = ? AND following_id = ?", (viewer["id"], post["account_id"])).fetchone())
-                output.append({"id": post["id"], "accountId": post["account_id"], "author": f"{post['first_name']} {post['last_name']}".strip(), "role": post["role"], "caption": post["caption"], "createdAt": post["created_at"], "media": [{"url": f"/uploads/{file['storage_name']}", "type": file["media_type"]} for file in files], "likes": likes, "liked": liked, "following": following, "comments": [{"id": item["id"], "author": f"{item['first_name']} {item['last_name']}".strip(), "body": item["body"]} for item in comments]})
+                output.append({"id": post["id"], "accountId": post["account_id"], "author": f"{post['first_name']} {post['last_name']}".strip(), "role": post["role"], "caption": post["caption"], "aspectRatio": post["aspect_ratio"], "createdAt": post["created_at"], "media": [{"url": f"/uploads/{file['storage_name']}", "type": file["media_type"]} for file in files], "likes": likes, "liked": liked, "saved": saved, "following": following, "comments": [{"id": item["id"], "author": f"{item['first_name']} {item['last_name']}".strip(), "body": item["body"]} for item in comments]})
         self.send_json({"posts": output, "followerCount": follower_count, "viewer": {"id": viewer["id"], "firstName": viewer["first_name"], "lastName": viewer["last_name"], "role": viewer["role"]} if viewer else None})
 
     def vendor_media_posts(self) -> None:
@@ -1466,15 +1728,36 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
         actor = self.media_actor()
         if not actor: return
-        data = self.read_json() or {}; caption = str(data.get("caption", "")).strip()
+        data = self.read_json() or {}; caption = str(data.get("caption", "")).strip(); aspect_ratio = str(data.get("aspectRatio", "16:9"))
         if len(caption) > 2000: self.send_json({"error": "Caption must be at most 2,000 characters."}, HTTPStatus.BAD_REQUEST); return
+        blocked_reason = self.media_content_block_reason(caption)
+        if blocked_reason: self.send_json({"error": f"This post was blocked by the safety review: {blocked_reason}."}, HTTPStatus.UNPROCESSABLE_ENTITY); return
+        if aspect_ratio not in {"16:9", "9:16"}: self.send_json({"error": "Choose either 16:9 or 9:16."}, HTTPStatus.BAD_REQUEST); return
         with connection() as db:
-            self.ensure_media_tables(db); post_id = db.execute("INSERT INTO media_posts (account_id, caption, created_at) VALUES (?, ?, ?)", (actor["id"], caption, int(time.time()))).lastrowid
+            self.ensure_media_tables(db); post_id = db.execute("INSERT INTO media_posts (account_id, caption, aspect_ratio, created_at) VALUES (?, ?, ?, ?)", (actor["id"], caption, aspect_ratio, int(time.time()))).lastrowid
         error = self.save_media_files(post_id, data.get("media"))
         if error:
             with connection() as db: db.execute("DELETE FROM media_posts WHERE id = ?", (post_id,))
             self.send_json({"error": error}, HTTPStatus.BAD_REQUEST); return
         self.send_json({"message": "Your post is live.", "postId": post_id}, HTTPStatus.CREATED)
+
+    def media_update_post(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.media_actor()
+        if not actor: return
+        data = self.read_json() or {}; post_id = data.get("postId"); caption = str(data.get("caption", "")).strip(); aspect_ratio = str(data.get("aspectRatio", "16:9"))
+        if not isinstance(post_id, int) or len(caption) > 2000 or aspect_ratio not in {"16:9", "9:16"}:
+            self.send_json({"error": "Use a valid caption and either 16:9 or 9:16."}, HTTPStatus.BAD_REQUEST)
+            return
+        blocked_reason = self.media_content_block_reason(caption)
+        if blocked_reason: self.send_json({"error": f"This post was blocked by the safety review: {blocked_reason}."}, HTTPStatus.UNPROCESSABLE_ENTITY); return
+        with connection() as db:
+            self.ensure_media_tables(db)
+            updated = db.execute("UPDATE media_posts SET caption = ?, aspect_ratio = ? WHERE id = ? AND account_id = ?", (caption, aspect_ratio, post_id, actor["id"])).rowcount
+        if not updated:
+            self.send_json({"error": "That post could not be found."}, HTTPStatus.NOT_FOUND)
+            return
+        self.send_json({"message": "Post updated."})
 
     def media_delete_post(self) -> None:
         if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
@@ -1514,9 +1797,84 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not actor: return
         data = self.read_json() or {}; post_id = data.get("postId"); body = str(data.get("body", "")).strip()
         if not isinstance(post_id, int) or not 1 <= len(body) <= 1000: self.send_json({"error": "Write a comment of up to 1,000 characters."}, HTTPStatus.BAD_REQUEST); return
+        if self.media_content_block_reason(body): self.send_json({"error": "That comment was blocked by the safety review."}, HTTPStatus.UNPROCESSABLE_ENTITY); return
         with connection() as db:
             self.ensure_media_tables(db); db.execute("INSERT INTO media_comments (post_id, account_id, body, created_at) VALUES (?, ?, ?, ?)", (post_id, actor["id"], body, int(time.time())))
         self.send_json({"message": "Comment added."}, HTTPStatus.CREATED)
+
+    def media_toggle_save(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.media_actor()
+        if not actor: return
+        data = self.read_json() or {}; post_id = data.get("postId")
+        if not isinstance(post_id, int): self.send_json({"error": "Choose a valid post."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            self.ensure_media_tables(db)
+            if not db.execute("SELECT 1 FROM media_posts WHERE id = ?", (post_id,)).fetchone(): self.send_json({"error": "That post could not be found."}, HTTPStatus.NOT_FOUND); return
+            existing = db.execute("SELECT 1 FROM media_saves WHERE post_id = ? AND account_id = ?", (post_id, actor["id"])).fetchone()
+            if existing: db.execute("DELETE FROM media_saves WHERE post_id = ? AND account_id = ?", (post_id, actor["id"])); saved = False
+            else: db.execute("INSERT INTO media_saves (post_id, account_id, created_at) VALUES (?, ?, ?)", (post_id, actor["id"], int(time.time()))); saved = True
+        self.send_json({"saved": saved})
+
+    def media_saved_posts(self) -> None:
+        actor = self.current_account()
+        if not actor or actor["role"] != "Customer":
+            self.send_json({"error": "Sign in as a Customer to view saved posts."}, HTTPStatus.FORBIDDEN)
+            return
+        with connection() as db:
+            self.ensure_media_tables(db)
+            tags = db.execute("SELECT id, name FROM media_save_tags WHERE account_id = ? ORDER BY name COLLATE NOCASE", (actor["id"],)).fetchall()
+            posts = db.execute("SELECT p.id, p.caption, p.aspect_ratio, p.created_at, a.first_name, a.last_name, a.role FROM media_saves s JOIN media_posts p ON p.id = s.post_id JOIN accounts a ON a.id = p.account_id WHERE s.account_id = ? ORDER BY s.created_at DESC", (actor["id"],)).fetchall()
+            output = []
+            for post in posts:
+                files = db.execute("SELECT storage_name, media_type FROM media_post_files WHERE post_id = ? ORDER BY id", (post["id"],)).fetchall()
+                post_tags = db.execute("SELECT t.id, t.name FROM media_save_tag_posts st JOIN media_save_tags t ON t.id = st.tag_id WHERE st.post_id = ? AND t.account_id = ? ORDER BY t.name COLLATE NOCASE", (post["id"], actor["id"])).fetchall()
+                output.append({"id": post["id"], "caption": post["caption"], "author": f"{post['first_name']} {post['last_name']}".strip(), "role": post["role"], "aspectRatio": post["aspect_ratio"], "media": [{"url": f"/uploads/{item['storage_name']}", "type": item["media_type"]} for item in files], "tagIds": [item["id"] for item in post_tags], "tags": [{"id": item["id"], "name": item["name"]} for item in post_tags]})
+        self.send_json({"tags": [{"id": tag["id"], "name": tag["name"]} for tag in tags], "posts": output})
+
+    def media_create_save_tag(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.current_account()
+        if not actor or actor["role"] != "Customer": self.send_json({"error": "Only Customers can create saved-post tags."}, HTTPStatus.FORBIDDEN); return
+        name = str((self.read_json() or {}).get("name", "")).strip()
+        if not 2 <= len(name) <= 40: self.send_json({"error": "A tag name must be 2–40 characters."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            self.ensure_media_tables(db)
+            try:
+                tag_id = db.execute("INSERT INTO media_save_tags (account_id, name, created_at) VALUES (?, ?, ?)", (actor["id"], name, int(time.time()))).lastrowid
+            except sqlite3.IntegrityError:
+                self.send_json({"error": "You already have a tag with that name."}, HTTPStatus.CONFLICT); return
+        self.send_json({"id": tag_id, "name": name}, HTTPStatus.CREATED)
+
+    def media_set_saved_post_tags(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.current_account()
+        if not actor or actor["role"] != "Customer": self.send_json({"error": "Only Customers can organise saved posts."}, HTTPStatus.FORBIDDEN); return
+        data = self.read_json() or {}; post_id = data.get("postId"); tag_ids = data.get("tagIds", [])
+        if not isinstance(post_id, int) or not isinstance(tag_ids, list) or any(not isinstance(item, int) for item in tag_ids): self.send_json({"error": "Choose a valid saved post and tags."}, HTTPStatus.BAD_REQUEST); return
+        tag_ids = list(dict.fromkeys(tag_ids))
+        with connection() as db:
+            self.ensure_media_tables(db)
+            if not db.execute("SELECT 1 FROM media_saves WHERE post_id = ? AND account_id = ?", (post_id, actor["id"])).fetchone(): self.send_json({"error": "Save this post before organising it."}, HTTPStatus.NOT_FOUND); return
+            owned = {row["id"] for row in db.execute("SELECT id FROM media_save_tags WHERE account_id = ?", (actor["id"],)).fetchall()}
+            if not set(tag_ids).issubset(owned): self.send_json({"error": "You can use only your own tags."}, HTTPStatus.FORBIDDEN); return
+            db.execute("DELETE FROM media_save_tag_posts WHERE post_id = ? AND tag_id IN (SELECT id FROM media_save_tags WHERE account_id = ?)", (post_id, actor["id"]))
+            db.executemany("INSERT INTO media_save_tag_posts (tag_id, post_id) VALUES (?, ?)", [(tag_id, post_id) for tag_id in tag_ids])
+        self.send_json({"message": "Tags updated."})
+
+    def media_report_post(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.media_actor()
+        if not actor: return
+        data = self.read_json() or {}; post_id = data.get("postId"); reason = str(data.get("reason", "")).strip(); details = str(data.get("details", "")).strip()
+        allowed_reasons = {"Adult or sexual content", "Violence or graphic harm", "Harassment or hate", "Spam or scam", "Other"}
+        if not isinstance(post_id, int) or reason not in allowed_reasons or len(details) > 500:
+            self.send_json({"error": "Choose a report reason and keep any note under 500 characters."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            self.ensure_media_tables(db)
+            if not db.execute("SELECT 1 FROM media_posts WHERE id = ?", (post_id,)).fetchone(): self.send_json({"error": "That post could not be found."}, HTTPStatus.NOT_FOUND); return
+            db.execute("INSERT INTO media_reports (post_id, reporter_id, reason, details, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(post_id, reporter_id) DO UPDATE SET reason = excluded.reason, details = excluded.details, created_at = excluded.created_at", (post_id, actor["id"], reason, details, int(time.time())))
+        self.send_json({"message": "Thanks. Your report has been submitted for review."}, HTTPStatus.CREATED)
 
     def media_toggle_follow(self) -> None:
         if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
@@ -1600,9 +1958,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
 
     def public_products(self) -> None:
         with connection() as db:
-            products = db.execute("SELECT p.id, p.product_name, p.product_description, p.cost_paise, p.tax_details, p.available_quantity, p.delivery_charges_paise, p.self_delivery, a.first_name, a.last_name FROM vendor_products p JOIN accounts a ON a.id = p.vendor_id WHERE p.status = 'Published' AND p.available_quantity > 0 ORDER BY p.published_at DESC").fetchall()
+            products = db.execute("SELECT p.id, p.product_name, p.product_description, p.product_category, p.product_type, p.search_keywords, p.product_specifications, p.customer_actions, p.cost_paise, p.tax_details, p.available_quantity, p.delivery_charges_paise, p.self_delivery, a.first_name, a.last_name, a.phone FROM vendor_products p JOIN accounts a ON a.id = p.vendor_id WHERE p.status = 'Published' AND p.available_quantity > 0 ORDER BY p.published_at DESC").fetchall()
             media = self.product_media_rows(db, [row["id"] for row in products])
-        self.send_json({"products": [{"id": row["id"], "name": row["product_name"], "description": row["product_description"], "costPaise": row["cost_paise"], "taxDetails": row["tax_details"], "availableQuantity": row["available_quantity"], "deliveryChargesPaise": row["delivery_charges_paise"], "selfDelivery": bool(row["self_delivery"]), "vendorName": f"{row['first_name']} {row['last_name']}", "media": media.get(row["id"], [])} for row in products]})
+        self.send_json({"products": [{"id": row["id"], "name": row["product_name"], "description": row["product_description"], "category": row["product_category"], "productType": row["product_type"], "keywords": row["search_keywords"], "specifications": row["product_specifications"], "customerActions": json.loads(row["customer_actions"]), "costPaise": row["cost_paise"], "taxDetails": row["tax_details"], "availableQuantity": row["available_quantity"], "deliveryChargesPaise": row["delivery_charges_paise"], "selfDelivery": bool(row["self_delivery"]), "vendorName": f"{row['first_name']} {row['last_name']}", "vendorPhone": row["phone"], "media": media.get(row["id"], [])} for row in products]})
 
     def save_vendor_image(self, raw_image: object) -> tuple[str | None, str | None]:
         if raw_image in (None, ""):
