@@ -1,0 +1,61 @@
+const passwordControlStyle = document.createElement('style');
+passwordControlStyle.textContent = '.password-control-label .password-field-wrap{position:relative;display:block;flex:0 0 100%;width:100%}.password-control-label .password-field-wrap>input[type="password"],.password-control-label .password-field-wrap>input[type="text"]{display:block;width:100%;padding-right:72px!important}.password-control-label .password-field-wrap .password-toggle,.password-control-label .password-field-wrap .password-help{top:50%;bottom:auto;transform:translateY(-50%)}.password-control-label .password-field-wrap .password-toggle{right:8px}.password-control-label .password-field-wrap .password-help{right:39px}.password-control-label .password-field-wrap .password-rules{top:calc(100% + 7px);right:0}';
+window.addEventListener('load', () => document.head.append(passwordControlStyle), { once: true });
+
+document.querySelectorAll('input[type="password"]').forEach((input) => {
+  input.placeholder = '';
+  input.closest('label')?.classList.add('password-control-label');
+  const fieldWrap = document.createElement('div');
+  fieldWrap.className = 'password-field-wrap';
+  fieldWrap.style.setProperty('display', 'grid', 'important');
+  fieldWrap.style.setProperty('grid-template-columns', '1fr 29px 29px', 'important');
+  fieldWrap.style.setProperty('align-items', 'center', 'important');
+  input.before(fieldWrap);
+  fieldWrap.append(input);
+  input.style.setProperty('grid-column', '1 / -1', 'important');
+  input.style.setProperty('grid-row', '1', 'important');
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'password-toggle';
+  toggle.textContent = '◉';
+  toggle.setAttribute('aria-label', 'Show password');
+  toggle.title = 'Show password';
+  toggle.style.setProperty('top', '9px', 'important');
+  toggle.style.setProperty('bottom', 'auto', 'important');
+  toggle.style.setProperty('transform', 'none', 'important');
+  toggle.style.setProperty('position', 'static', 'important');
+  toggle.style.setProperty('grid-column', '3', 'important');
+  toggle.style.setProperty('grid-row', '1', 'important');
+  toggle.style.setProperty('margin', '0', 'important');
+  toggle.style.setProperty('align-self', 'center', 'important');
+  toggle.addEventListener('click', () => {
+    const visible = input.type === 'text';
+    input.type = visible ? 'password' : 'text';
+    toggle.textContent = visible ? '◉' : '◉̸';
+    toggle.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');
+    toggle.title = visible ? 'Show password' : 'Hide password';
+  });
+  fieldWrap.append(toggle);
+  if (input.autocomplete === 'new-password') {
+    const help = document.createElement('button');
+    const rules = document.createElement('span');
+    help.type = 'button'; help.className = 'password-help'; help.textContent = 'ⓘ'; help.setAttribute('aria-label', 'Password rules'); help.setAttribute('aria-expanded', 'false'); help.title = 'Password rules';
+    help.style.setProperty('top', '9px', 'important');
+    help.style.setProperty('bottom', 'auto', 'important');
+    help.style.setProperty('transform', 'none', 'important');
+    help.style.setProperty('position', 'static', 'important');
+    help.style.setProperty('grid-column', '2', 'important');
+    help.style.setProperty('grid-row', '1', 'important');
+    help.style.setProperty('margin', '0', 'important');
+    help.style.setProperty('align-self', 'center', 'important');
+    rules.className = 'password-rules'; rules.hidden = true; rules.textContent = '12+ characters, uppercase, lowercase, number, and special character.';
+    help.addEventListener('click', () => { rules.hidden = !rules.hidden; help.setAttribute('aria-expanded', String(!rules.hidden)); });
+    fieldWrap.after(help, rules);
+    help.style.setProperty('position', 'absolute', 'important');
+    help.style.setProperty('right', '0', 'important');
+    help.style.setProperty('top', 'auto', 'important');
+    help.style.setProperty('bottom', '10px', 'important');
+    help.style.setProperty('grid-column', 'auto', 'important');
+    help.style.setProperty('grid-row', 'auto', 'important');
+  }
+});

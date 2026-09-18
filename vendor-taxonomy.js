@@ -1,0 +1,35 @@
+(() => {
+  const form = document.querySelector('#vendorProfileForm');
+  const typeMode = document.querySelector('#typeMode');
+  const categoryLabel = document.querySelector('#categoryLabel');
+  if (!form || !typeMode || !categoryLabel) return;
+  typeMode.closest('label').hidden = true;
+  categoryLabel.hidden = true;
+  const legacyCategory = document.querySelector('#categorySelect');
+  typeMode.value = 'business'; typeMode.dispatchEvent(new Event('change'));
+  legacyCategory.value = 'Food & Beverage'; legacyCategory.dispatchEvent(new Event('change'));
+  typeMode.value = 'service'; typeMode.dispatchEvent(new Event('change'));
+  legacyCategory.value = 'Consulting'; legacyCategory.dispatchEvent(new Event('change'));
+  const fields = document.createElement('section');
+  fields.className = 'vendor-taxonomy-fields';
+  fields.innerHTML = '<label>Main category <span class="required-marker" aria-hidden="true">*</span><select id="vendorMainCategory" required><option value="">Select main category</option></select></label><label>Subcategory <span class="required-marker" aria-hidden="true">*</span><select id="vendorSubcategories" multiple required disabled></select><small>Select one or more subcategories.</small></label><label>Service / Product <span class="required-marker" aria-hidden="true">*</span><select id="vendorServicesProducts" multiple required disabled></select><small>Select one or more services or products.</small></label>';
+  categoryLabel.after(fields);
+  const style = document.createElement('style');
+  style.textContent = '.vendor-taxonomy-fields{display:grid;gap:14px}.vendor-taxonomy-fields small{font-size:10px;color:var(--muted);font-weight:500}.taxonomy-multi{position:relative;display:block;flex:0 0 100%;width:100%;margin-top:3px}.taxonomy-multi select{display:none}.taxonomy-multi-trigger{width:100%;min-height:44px;border:1px solid var(--line);background:#fff;padding:11px 40px 11px 12px;color:var(--ink);font:600 14px "DM Sans",sans-serif;text-align:left;position:relative;cursor:pointer}.taxonomy-multi-trigger::after{content:"⌄";position:absolute;right:13px;top:9px;font-size:19px;color:var(--ink)}.taxonomy-multi-menu{position:absolute;z-index:45;left:0;right:0;top:calc(100% + 4px);max-height:230px;overflow:auto;padding:7px;background:#fff;border:1px solid var(--line);box-shadow:0 10px 24px #18201e2b}.taxonomy-multi-menu[hidden]{display:none}.taxonomy-multi-menu label{display:flex!important;align-items:center;gap:8px;padding:8px 7px;font-size:12px!important;font-weight:600}.taxonomy-multi-menu input{width:auto;padding:0}.taxonomy-multi-empty{padding:8px;color:var(--muted);font-size:12px}'; document.head.append(style);
+  const main = fields.querySelector('#vendorMainCategory'); const subs = fields.querySelector('#vendorSubcategories'); const items = fields.querySelector('#vendorServicesProducts');
+  let categories = []; let services = [];
+  const escape = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[char]);
+  const selected = (element) => [...element.selectedOptions].map((option) => option.value);
+  const makeMultiDropdown = (select, placeholder) => { const host = document.createElement('div'); host.className = 'taxonomy-multi'; select.before(host); host.append(select); const trigger = document.createElement('button'); trigger.type = 'button'; trigger.className = 'taxonomy-multi-trigger'; const menu = document.createElement('div'); menu.className = 'taxonomy-multi-menu'; menu.hidden = true; host.append(trigger, menu); trigger.addEventListener('click', () => { if (!select.disabled) menu.hidden = !menu.hidden; }); document.addEventListener('click', (event) => { if (!host.contains(event.target)) menu.hidden = true; }); const refresh = () => { const chosen = [...select.selectedOptions].map((option) => option.textContent); trigger.textContent = chosen.length ? chosen.join(', ') : placeholder; trigger.title = chosen.join(', '); trigger.disabled = select.disabled; menu.innerHTML = select.options.length ? [...select.options].map((option) => `<label><input type="checkbox" value="${escape(option.value)}" ${option.selected ? 'checked' : ''}> ${escape(option.textContent)}</label>`).join('') : '<div class="taxonomy-multi-empty">Choose the previous field first.</div>'; menu.querySelectorAll('input').forEach((checkbox) => checkbox.addEventListener('change', () => { const option = [...select.options].find((item) => item.value === checkbox.value); if (option) option.selected = checkbox.checked; select.dispatchEvent(new Event('change')); refresh(); })); }; return { refresh, close: () => { menu.hidden = true; } }; };
+  const subDropdown = makeMultiDropdown(subs, 'Select subcategories'); const itemDropdown = makeMultiDropdown(items, 'Select services or products');
+  const renderItems = () => { const chosen = new Set(selected(subs)); const taxIds = categories.filter((entry) => entry.mainCategory === main.value && chosen.has(entry.subcategory)).map((entry) => entry.id); const options = services.filter((entry) => taxIds.includes(entry.taxonomyId)); items.disabled = !options.length; items.innerHTML = options.map((entry) => `<option value="${escape(entry.name)}">${escape(entry.name)}</option>`).join(''); itemDropdown.refresh(); };
+  main.addEventListener('change', () => { const options = categories.filter((entry) => entry.mainCategory === main.value); subs.disabled = !options.length; subs.innerHTML = options.map((entry) => `<option value="${escape(entry.subcategory)}">${escape(entry.subcategory)}</option>`).join(''); items.disabled = true; items.innerHTML = ''; subDropdown.refresh(); itemDropdown.refresh(); });
+  subs.addEventListener('change', renderItems);
+  subDropdown.refresh(); itemDropdown.refresh();
+  fetch('/api/taxonomy', { credentials: 'same-origin' }).then((response) => response.json()).then((data) => { categories = data.categories || []; services = data.services || []; const mains = [...new Set(categories.map((entry) => entry.mainCategory))]; main.innerHTML = `<option value="">Select main category</option>${mains.map((entry) => `<option value="${escape(entry)}">${escape(entry)}</option>`).join('')}`; main.dispatchEvent(new Event('change')); }).catch(() => { main.innerHTML = '<option value="">Taxonomy is unavailable</option>'; });
+  const previousFetch = window.fetch.bind(window);
+  window.fetch = async (resource, options = {}) => {
+    if (typeof resource === 'string' && resource.endsWith('/api/vendor/profile') && options.method === 'POST' && typeof options.body === 'string') { const payload = JSON.parse(options.body); const chosenItems = selected(items); payload.businessType = main.value; payload.serviceType = chosenItems[0] || ''; payload.taxonomySelection = { mainCategory: main.value, subcategories: selected(subs), servicesProducts: chosenItems }; options = { ...options, body: JSON.stringify(payload) }; }
+    return previousFetch(resource, options);
+  };
+})();

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShaBox — curated stories, shows and short films by SHAKALPA.">
+  <title>ShaBox | SHAKALPA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="shabox.css">
+  <script src="shabox.js" defer></script>
+</head>
+<body class="shabox-page">
+  <header class="shabox-header">
+    <a class="shabox-brand" href="index.html" aria-label="SHAKALPA home"><span>S</span>SHAKALPA <b>ShaBox</b></a>
+    <nav aria-label="ShaBox navigation"><a class="active" href="shabox.html">Home</a><a href="#movies">Movies</a><a href="#series">Series</a><a href="#shorts">Shorts</a></nav>
+    <label class="shabox-search"><span>⌕</span><input id="shaboxSearch" type="search" placeholder="Search ShaBox" aria-label="Search ShaBox"></label>
+  </header>
+
+  <main>
+    <section class="shabox-hero" aria-labelledby="featureTitle">
+      <div class="shabox-hero-copy"><p class="shabox-kicker">SHABox ORIGINAL · 2026</p><h1 id="featureTitle">The <em>unseen</em> side of the city.</h1><div class="shabox-meta"><span>U/A 13+</span><span>1h 48m</span><span>Drama · Mystery</span></div><p>When a quiet neighbourhood begins to change, three friends uncover a story that has been waiting beneath the surface.</p><div class="shabox-hero-actions"><button type="button" class="shabox-play" data-title="The Unseen Side" data-kind="Featured film">▶ Play now</button><button type="button" class="shabox-info" data-title="The Unseen Side" data-kind="Featured film">ⓘ Details</button></div></div>
+    </section>
+
+    <section class="shabox-content" aria-label="ShaBox catalogue">
+      <div class="shabox-toolbar"><div class="shabox-filters" aria-label="Browse by genre"><button class="selected" data-filter="all">For you</button><button data-filter="drama">Drama</button><button data-filter="comedy">Comedy</button><button data-filter="documentary">Documentary</button><button data-filter="family">Family</button></div><p id="shaboxCount" aria-live="polite"></p></div>
+
+      <section class="shabox-row" id="movies"><div class="shabox-row-heading"><h2>Made for tonight</h2><a href="#movies">View all</a></div><div class="shabox-grid">
+        <article class="shabox-card" data-genre="drama" data-title="A Place to Begin"><img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=700&q=80" alt="Mountain landscape at night"><button data-title="A Place to Begin" data-kind="Film">▶</button><div><span>FILM · 1h 32m</span><h3>A Place to Begin</h3></div></article>
+        <article class="shabox-card" data-genre="comedy" data-title="Second Coffee"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=700&q=80" alt="Coffee being prepared"><button data-title="Second Coffee" data-kind="Film">▶</button><div><span>FILM · 1h 19m</span><h3>Second Coffee</h3></div></article>
+        <article class="shabox-card" data-genre="documentary" data-title="Lines of Work"><img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=700&q=80" alt="Modern studio workspace"><button data-title="Lines of Work" data-kind="Documentary">▶</button><div><span>DOCUMENTARY · 54m</span><h3>Lines of Work</h3></div></article>
+        <article class="shabox-card" data-genre="family" data-title="The Little Orchard"><img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=700&q=80" alt="Green field at sunrise"><button data-title="The Little Orchard" data-kind="Family film">▶</button><div><span>FILM · 1h 12m</span><h3>The Little Orchard</h3></div></article>
+      </div></section>
+
+      <section class="shabox-row" id="series"><div class="shabox-row-heading"><h2>Series to stay with</h2><a href="#series">View all</a></div><div class="shabox-grid">
+        <article class="shabox-card" data-genre="drama" data-title="The Last Train Home"><img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=700&q=80" alt="Train on a forest track"><button data-title="The Last Train Home" data-kind="Series">▶</button><div><span>SERIES · 8 EPISODES</span><h3>The Last Train Home</h3></div></article>
+        <article class="shabox-card" data-genre="comedy" data-title="Roommates"><img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=700&q=80" alt="People working together"><button data-title="Roommates" data-kind="Series">▶</button><div><span>SERIES · 6 EPISODES</span><h3>Roommates</h3></div></article>
+        <article class="shabox-card" data-genre="documentary" data-title="Makers of Tomorrow"><img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=700&q=80" alt="Creative studio interior"><button data-title="Makers of Tomorrow" data-kind="Docu-series">▶</button><div><span>DOCU-SERIES · 5 EPISODES</span><h3>Makers of Tomorrow</h3></div></article>
+        <article class="shabox-card" data-genre="family" data-title="Our Sunday Table"><img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=700&q=80" alt="Colourful vegetables on a table"><button data-title="Our Sunday Table" data-kind="Series">▶</button><div><span>SERIES · 10 EPISODES</span><h3>Our Sunday Table</h3></div></article>
+      </div></section>
+
+      <section class="shabox-row" id="shorts"><div class="shabox-row-heading"><h2>Short stories, big feeling</h2><a href="#shorts">View all</a></div><div class="shabox-grid">
+        <article class="shabox-card" data-genre="drama" data-title="Blue Hour"><img src="https://images.unsplash.com/photo-1519608487953-e999c86e7454?auto=format&fit=crop&w=700&q=80" alt="Night sky over mountains"><button data-title="Blue Hour" data-kind="Short film">▶</button><div><span>SHORT · 18m</span><h3>Blue Hour</h3></div></article>
+        <article class="shabox-card" data-genre="comedy" data-title="Almost Ready"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80" alt="Laptop and workspace"><button data-title="Almost Ready" data-kind="Short film">▶</button><div><span>SHORT · 14m</span><h3>Almost Ready</h3></div></article>
+        <article class="shabox-card" data-genre="documentary" data-title="Five Minutes of Rain"><img src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=700&q=80" alt="Rain falling on foliage"><button data-title="Five Minutes of Rain" data-kind="Short documentary">▶</button><div><span>SHORT · 11m</span><h3>Five Minutes of Rain</h3></div></article>
+        <article class="shabox-card" data-genre="family" data-title="Paper Boats"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=700&q=80" alt="Child walking in a field"><button data-title="Paper Boats" data-kind="Short film">▶</button><div><span>SHORT · 16m</span><h3>Paper Boats</h3></div></article>
+      </div></section>
+    </section>
+  </main>
+
+  <dialog class="shabox-preview" id="shaboxPreview"><button type="button" class="shabox-preview-close" aria-label="Close preview">×</button><div class="shabox-preview-art"><span>▶</span></div><p id="previewKind"></p><h2 id="previewTitle"></h2><p>This preview area is ready for your licensed trailer or video player integration.</p><button type="button" class="shabox-play" id="previewPlay">▶ Start preview</button></dialog>
+</body>
+</html>

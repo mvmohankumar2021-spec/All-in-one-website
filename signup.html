@@ -30,16 +30,30 @@
           <h2>Welcome to SHAKALPA</h2>
           <p class="form-lede">It only takes a minute to get started.</p>
           <form id="signupForm" novalidate>
-            <label>Account type<select id="signupRole" name="role" required><option value="Customer">Customer</option><option value="Vendor">Vendor</option><option value="Agent">Agent</option></select></label>
+            <p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
+            <label>Account type <span class="required-marker" aria-hidden="true">*</span><select id="signupRole" name="role" required><option value="Customer">Customer</option><option value="Vendor">Vendor</option><option value="Agent">Agent</option></select></label>
             <div class="name-grid">
-              <label>First name<input id="firstName" name="firstName" type="text" autocomplete="given-name" placeholder="Amara" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
-              <label>Last name<input id="lastName" name="lastName" type="text" autocomplete="family-name" placeholder="Cole" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
+              <label>First name <span class="required-marker" aria-hidden="true">*</span><input id="firstName" name="firstName" type="text" autocomplete="given-name" placeholder="Amara" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
+              <label>Last name <span class="required-marker" aria-hidden="true">*</span><input id="lastName" name="lastName" type="text" autocomplete="family-name" placeholder="Cole" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
             </div>
-            <label>Contact number<input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+1 555 000 0000" required minlength="7" maxlength="20" pattern="[0-9+() -]{7,20}" /></label>
-            <label>Email address<input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="amara@example.com" required maxlength="254" /></label>
+            <label>Contact number <span class="required-marker" aria-hidden="true">*</span><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+1 555 000 0000" required minlength="7" maxlength="20" pattern="[0-9+() -]{7,20}" /></label>
+            <label>Email address <span class="required-marker" aria-hidden="true">*</span><input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="amara@example.com" required maxlength="254" /></label>
+            <fieldset class="donor-preference"><legend>Are you a blood donor? <span class="required-marker" aria-hidden="true">*</span></legend><label><input type="radio" name="donorStatus" value="Yes" required /> Yes</label><label><input type="radio" name="donorStatus" value="No" /> No</label><label><input type="radio" name="donorStatus" value="Decide later" /> Decide later</label></fieldset>
+            <fieldset class="identity-documents" id="identityDocuments" hidden>
+              <legend>Identity verification</legend>
+              <p>Required for Agent registration. Files are submitted securely and are not shown publicly.</p>
+              <label>Aadhaar document <span class="required-marker" aria-hidden="true">*</span><input id="aadhaarDocument" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" /></label>
+              <label>PAN card document <span class="required-marker" aria-hidden="true">*</span><input id="panCardDocument" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" /></label>
+              <label>Live photo <span class="required-marker" aria-hidden="true">*</span><input id="livePhoto" type="file" accept="image/jpeg,image/png,image/webp" capture="user" /></label>
+              <div class="vendor-only-documents" id="vendorOnlyDocuments" hidden>
+                <label>TAN details <span class="optional-marker">Optional</span><input id="tanDetails" type="text" inputmode="text" autocomplete="off" placeholder="ABCD12345E" maxlength="10" /></label>
+                <label>MSME certificate <span class="optional-marker">Optional</span><input id="msmeCertificate" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" /></label>
+              </div>
+              <small>PDF, JPEG, PNG, or WebP; up to 1.5 MB each. A live photo must be an image.</small>
+            </fieldset>
             <div class="name-grid">
-              <label>Password<input id="signupPassword" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" required minlength="8" maxlength="128" /></label>
-              <label>Confirm password<input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat password" required minlength="8" maxlength="128" /></label>
+              <label>Password <span class="required-marker" aria-hidden="true">*</span><input id="signupPassword" name="password" type="password" autocomplete="new-password" placeholder="12+ characters with upper, lower, number and symbol" required minlength="12" maxlength="128" /></label>
+              <label>Confirm password <span class="required-marker" aria-hidden="true">*</span><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat password" required minlength="12" maxlength="128" /></label>
             </div>
             <p class="form-error" id="signupError" role="alert" aria-live="polite"></p>
             <button class="button button-lime full" type="submit">Create secure account <span>→</span></button>
@@ -53,6 +67,6 @@
       </section>
     </main>
     <div class="toast" id="toast" role="status"></div>
-    <script src="signup.js"></script>
+    <script src="password-controls.js"></script><script src="signup.js"></script>
   </body>
 </html>

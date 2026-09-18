@@ -18,6 +18,7 @@ import re
 import secrets
 import smtplib
 import sqlite3
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -31,11 +32,14 @@ from urllib.parse import parse_qs, urlencode, urlparse
 ROOT = Path(__file__).resolve().parent
 DATABASE = ROOT / "nexahub.db"
 UPLOADS = ROOT / "uploads"
-HOST, PORT = "127.0.0.1", 8080
+# Bind to the LAN so devices on the same private Wi-Fi can use the local preview.
+# Firewall access is restricted to the Private profile by the launch instructions.
+HOST, PORT = "0.0.0.0", 8080
 MAX_BODY_BYTES = 56_000_000
 MAX_IMAGE_BYTES = 2 * 1024 * 1024
 MAX_CERTIFICATE_BYTES = 1_500_000
 MAX_CERTIFICATE_DOCUMENTS = 4
+MAX_IDENTITY_DOCUMENT_BYTES = 1_500_000
 SESSION_AGE_SECONDS = 60 * 60 * 8
 PBKDF2_ITERATIONS = 310_000
 ROLES = {"Admin", "Employee", "Vendor", "Agent", "Customer"}
@@ -43,6 +47,12 @@ GOOGLE_SIGNIN_ROLES = {"Agent", "Vendor", "Customer"}
 PUBLIC_SIGNUP_ROLES = {"Agent", "Vendor", "Customer"}
 BUSINESS_TYPES = {"Retail", "Food & Beverage", "Beauty & Wellness", "Professional Services", "Home Services", "Health & Fitness", "Education & Training", "Events", "Hospitality & Travel", "Automotive", "Technology", "Manufacturing", "Other"}
 SERVICE_TYPES = {"Consulting", "Repair & Maintenance", "Delivery & Logistics", "Design & Creative", "Marketing", "Cleaning", "Installation", "Beauty & Personal Care", "Catering", "Tutoring", "Event Services", "Fitness & Wellness", "IT & Technical Support", "Other"}
+VENDOR_OPERATING_MODELS = {
+    "listing": "Listing only",
+    "leads": "Listing and lead generation",
+    "bookings": "Booking marketplace",
+    "marketplace": "Full marketplace with payments",
+}
 ADMIN_SETUP_KEY = os.getenv("NEXAHUB_SETUP_KEY", "")
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
@@ -62,6 +72,16 @@ TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER", "")
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 STATIC_EXTENSIONS = {".html", ".css", ".js", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".ico"}
+CURRENCY_CODES = {"INR", "USD", "EUR", "GBP", "AED", "SGD", "JPY"}
+FX_RATE_CACHE: tuple[float, dict] | None = None
+FX_RATE_CACHE_LOCK = threading.Lock()
+METAL_RATE_CACHE: tuple[float, dict] | None = None
+INDEX_RATE_CACHE: tuple[float, dict] | None = None
+LEGAL_DOCUMENTS = {
+    "/legal/privacy-policy": Path.home() / "Downloads" / "SHAKALPA_Privacy_Policy_India_Draft.docx",
+    "/legal/terms-and-conditions": Path.home() / "Downloads" / "SHAKALPA_Terms_and_Conditions_India_Draft.docx",
+    "/legal/vendor-agreement": Path.home() / "Downloads" / "SHAKALPA_Vendor_Agreement_India_Draft.docx",
+}
 NAME_PATTERN = re.compile(r"^[A-Za-zÀ-ÿ' -]{2,50}$")
 PHONE_PATTERN = re.compile(r"^[0-9+() -]{7,20}$")
 MEDIA_BLOCKED_TERMS = {
@@ -70,6 +90,16 @@ MEDIA_BLOCKED_TERMS = {
 }
 
 ROLE_ID_PREFIXES = {"Admin": "ADMN", "Employee": "EMPL", "Vendor": "VEND", "Agent": "AGNT", "Customer": "CUST"}
+
+
+def distance_km(latitude_a: float, longitude_a: float, latitude_b: float, longitude_b: float) -> float:
+    """Great-circle distance without retaining any more location precision than needed."""
+    import math
+    radius = 6371.0
+    lat_delta = math.radians(latitude_b - latitude_a)
+    lon_delta = math.radians(longitude_b - longitude_a)
+    a = math.sin(lat_delta / 2) ** 2 + math.cos(math.radians(latitude_a)) * math.cos(math.radians(latitude_b)) * math.sin(lon_delta / 2) ** 2
+    return radius * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
 def id_fragment(value: str) -> str:
@@ -145,6 +175,52 @@ def init_database() -> None:
                 FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE INDEX IF NOT EXISTS vendor_certificates_account_idx ON vendor_certificates(account_id, uploaded_at DESC);
+            CREATE TABLE IF NOT EXISTS account_identity_documents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                document_type TEXT NOT NULL CHECK(document_type IN ('aadhaar', 'pan_card', 'live_photo', 'msme_certificate')),
+                original_name TEXT NOT NULL,
+                storage_name TEXT NOT NULL UNIQUE,
+                media_type TEXT NOT NULL,
+                uploaded_at INTEGER NOT NULL,
+                UNIQUE(account_id, document_type),
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS account_identity_documents_account_idx ON account_identity_documents(account_id, uploaded_at DESC);
+            CREATE TABLE IF NOT EXISTS vendor_compliance_details (
+                account_id INTEGER PRIMARY KEY,
+                tan_details TEXT,
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS vendor_operating_models (
+                account_id INTEGER PRIMARY KEY,
+                operating_model TEXT NOT NULL CHECK(operating_model IN ('listing', 'leads', 'bookings', 'marketplace')),
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS vendor_marketplace_setups (
+                account_id INTEGER PRIMARY KEY,
+                bank_account_holder TEXT NOT NULL,
+                bank_account_last4 TEXT NOT NULL,
+                ifsc_code TEXT NOT NULL,
+                tax_registration TEXT,
+                fulfilment_method TEXT NOT NULL,
+                cancellation_policy TEXT NOT NULL,
+                refund_policy TEXT NOT NULL,
+                agreement_accepted_at INTEGER NOT NULL,
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS vendor_operating_setups (
+                account_id INTEGER NOT NULL,
+                operating_model TEXT NOT NULL CHECK(operating_model IN ('listing', 'leads', 'bookings')),
+                setup_json TEXT NOT NULL,
+                completed_at INTEGER NOT NULL,
+                updated_at INTEGER NOT NULL,
+                PRIMARY KEY(account_id, operating_model),
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
             CREATE TABLE IF NOT EXISTS vendor_profile_changes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_id INTEGER NOT NULL,
@@ -243,6 +319,61 @@ def init_database() -> None:
                 FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE INDEX IF NOT EXISTS vendor_products_vendor_idx ON vendor_products(vendor_id, status, created_at DESC);
+            CREATE TABLE IF NOT EXISTS product_reviews (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                product_id INTEGER NOT NULL,
+                customer_id INTEGER NOT NULL,
+                rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),
+                review_text TEXT NOT NULL,
+                created_at INTEGER NOT NULL,
+                updated_at INTEGER NOT NULL,
+                UNIQUE(product_id, customer_id),
+                FOREIGN KEY(product_id) REFERENCES vendor_products(id) ON DELETE CASCADE,
+                FOREIGN KEY(customer_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS product_reviews_product_idx ON product_reviews(product_id, created_at DESC);
+            CREATE TABLE IF NOT EXISTS product_review_replies (
+                review_id INTEGER PRIMARY KEY,
+                vendor_id INTEGER NOT NULL,
+                reply_text TEXT NOT NULL,
+                created_at INTEGER NOT NULL,
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(review_id) REFERENCES product_reviews(id) ON DELETE CASCADE,
+                FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS product_review_reactions (
+                review_id INTEGER NOT NULL,
+                customer_id INTEGER NOT NULL,
+                reaction TEXT NOT NULL,
+                created_at INTEGER NOT NULL,
+                PRIMARY KEY(review_id, customer_id),
+                FOREIGN KEY(review_id) REFERENCES product_reviews(id) ON DELETE CASCADE,
+                FOREIGN KEY(customer_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS product_review_reactions_review_idx ON product_review_reactions(review_id);
+            CREATE TABLE IF NOT EXISTS customer_review_eligibility (
+                product_id INTEGER NOT NULL,
+                customer_id INTEGER NOT NULL,
+                source_type TEXT NOT NULL CHECK(source_type IN ('Purchase', 'Service completed')),
+                verified_at INTEGER NOT NULL,
+                PRIMARY KEY(product_id, customer_id),
+                FOREIGN KEY(product_id) REFERENCES vendor_products(id) ON DELETE CASCADE,
+                FOREIGN KEY(customer_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS customer_review_eligibility_customer_idx ON customer_review_eligibility(customer_id, product_id);
+            CREATE TABLE IF NOT EXISTS contact_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                full_name TEXT NOT NULL,
+                contact_number TEXT NOT NULL,
+                email TEXT NOT NULL,
+                enquiry_for TEXT NOT NULL,
+                email_sent INTEGER NOT NULL DEFAULT 0,
+                created_at INTEGER NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS contact_messages_created_idx ON contact_messages(created_at DESC);
+            CREATE TABLE IF NOT EXISTS support_tickets (id INTEGER PRIMARY KEY AUTOINCREMENT, requester_name TEXT NOT NULL, requester_email TEXT NOT NULL, requester_phone TEXT NOT NULL, support_type TEXT NOT NULL, support_for TEXT NOT NULL, vendor_id INTEGER, requester_token_hash TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE SET NULL);
+            CREATE TABLE IF NOT EXISTS support_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, ticket_id INTEGER NOT NULL, sender_name TEXT NOT NULL, sender_role TEXT NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE);
+            CREATE INDEX IF NOT EXISTS support_messages_ticket_idx ON support_messages(ticket_id, created_at);
             CREATE TABLE IF NOT EXISTS vendor_staff (
                 account_id INTEGER PRIMARY KEY,
                 vendor_id INTEGER NOT NULL,
@@ -254,6 +385,47 @@ def init_database() -> None:
                 FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE INDEX IF NOT EXISTS vendor_staff_vendor_idx ON vendor_staff(vendor_id, active, created_at DESC);
+            CREATE TABLE IF NOT EXISTS blood_requests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                requester_id INTEGER NOT NULL,
+                blood_group TEXT NOT NULL,
+                units INTEGER NOT NULL,
+                hospital_details TEXT NOT NULL,
+                reason TEXT NOT NULL,
+                contact_details TEXT NOT NULL,
+                latitude REAL NOT NULL,
+                longitude REAL NOT NULL,
+                status TEXT NOT NULL DEFAULT 'Open',
+                created_at INTEGER NOT NULL,
+                FOREIGN KEY(requester_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS blood_request_interests (
+                request_id INTEGER NOT NULL,
+                donor_id INTEGER NOT NULL,
+                interested INTEGER NOT NULL,
+                created_at INTEGER NOT NULL,
+                PRIMARY KEY(request_id, donor_id),
+                FOREIGN KEY(request_id) REFERENCES blood_requests(id) ON DELETE CASCADE,
+                FOREIGN KEY(donor_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS product_taxonomy (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                main_category TEXT NOT NULL COLLATE NOCASE,
+                subcategory TEXT NOT NULL COLLATE NOCASE,
+                active INTEGER NOT NULL DEFAULT 1,
+                created_at INTEGER NOT NULL,
+                UNIQUE(main_category, subcategory)
+            );
+            CREATE TABLE IF NOT EXISTS product_taxonomy_services (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                taxonomy_id INTEGER NOT NULL,
+                service_name TEXT NOT NULL COLLATE NOCASE,
+                service_kind TEXT NOT NULL,
+                search_keywords TEXT NOT NULL DEFAULT '',
+                active INTEGER NOT NULL DEFAULT 1,
+                UNIQUE(taxonomy_id, service_name),
+                FOREIGN KEY(taxonomy_id) REFERENCES product_taxonomy(id) ON DELETE CASCADE
+            );
             CREATE TABLE IF NOT EXISTS vendor_product_change_requests (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 vendor_id INTEGER NOT NULL,
@@ -307,6 +479,15 @@ def init_database() -> None:
         account_columns = {row["name"] for row in db.execute("PRAGMA table_info(accounts)")}
         if "account_code" not in account_columns:
             db.execute("ALTER TABLE accounts ADD COLUMN account_code TEXT")
+        if "blood_donor_status" not in account_columns:
+            db.execute("ALTER TABLE accounts ADD COLUMN blood_donor_status TEXT NOT NULL DEFAULT 'Decide later'")
+        if "blood_latitude" not in account_columns:
+            db.execute("ALTER TABLE accounts ADD COLUMN blood_latitude REAL")
+        if "blood_longitude" not in account_columns:
+            db.execute("ALTER TABLE accounts ADD COLUMN blood_longitude REAL")
+        service_columns = {row["name"] for row in db.execute("PRAGMA table_info(product_taxonomy_services)")}
+        if "search_keywords" not in service_columns:
+            db.execute("ALTER TABLE product_taxonomy_services ADD COLUMN search_keywords TEXT NOT NULL DEFAULT ''")
         staff_columns = {row["name"] for row in db.execute("PRAGMA table_info(vendor_staff)")}
         if "offboarded_at" not in staff_columns:
             db.execute("ALTER TABLE vendor_staff ADD COLUMN offboarded_at INTEGER")
@@ -374,8 +555,10 @@ def validate_signup(data: dict) -> tuple[dict | None, str | None]:
         return None, "Enter a valid contact number."
     if len(email) > 254 or not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
         return None, "Enter a valid email address."
-    if not 8 <= len(password) <= 128:
-        return None, "Password must contain 8 to 128 characters."
+    if not 12 <= len(password) <= 128:
+        return None, "Password must contain 12 to 128 characters."
+    if not (re.search(r"[a-z]", password) and re.search(r"[A-Z]", password) and re.search(r"\d", password) and re.search(r"[^A-Za-z0-9]", password)):
+        return None, "Password needs uppercase, lowercase, number, and special character."
     if not hmac.compare_digest(password, confirmation):
         return None, "Passwords do not match."
     return {"first_name": first_name, "last_name": last_name, "phone": phone, "email": email, "password": password}, None
@@ -397,6 +580,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.signin()
         elif self.path == "/api/signout":
             self.signout()
+        elif self.path == "/api/contact":
+            self.contact_submit()
+        elif self.path == "/api/support":
+            self.support_submit()
+        elif self.path == "/api/support/messages":
+            self.support_send_message()
         elif self.path == "/api/admin/accounts":
             self.admin_create_account()
         elif self.path == "/api/employee/accounts":
@@ -405,6 +594,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.agent_create_vendor()
         elif self.path == "/api/vendor/profile":
             self.vendor_save_profile()
+        elif self.path == "/api/vendor/operating-model":
+            self.vendor_save_operating_model()
+        elif self.path == "/api/vendor/marketplace-setup":
+            self.vendor_save_marketplace_setup()
+        elif self.path == "/api/vendor/operating-setup":
+            self.vendor_save_operating_setup()
         elif self.path == "/api/reviews/vendor-approve":
             self.approve_vendor_profile()
         elif self.path == "/api/reviews/request-documents":
@@ -453,12 +648,28 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.media_report_post()
         elif self.path == "/api/media/save-tags":
             self.media_create_save_tag()
+        elif self.path == "/api/product-reviews":
+            self.create_product_review()
+        elif self.path == "/api/product-reviews/reply":
+            self.reply_to_product_review()
+        elif self.path == "/api/product-reviews/reaction":
+            self.react_to_product_review()
         elif self.path == "/api/media/saved/tags":
             self.media_set_saved_post_tags()
         elif self.path == "/api/vendor/jobs":
             self.vendor_create_job()
         elif self.path == "/api/jobs/apply":
             self.job_apply()
+        elif self.path == "/api/blood/requests":
+            self.blood_create_request()
+        elif self.path == "/api/blood/preference":
+            self.blood_update_preference()
+        elif self.path == "/api/blood/location":
+            self.blood_update_location()
+        elif self.path == "/api/blood/interest":
+            self.blood_respond_interest()
+        elif self.path == "/api/admin/taxonomy":
+            self.admin_save_taxonomy()
         elif self.path == "/api/vendor/product-payment/order":
             self.vendor_create_product_order()
         elif self.path == "/api/vendor/product-payment/verify":
@@ -474,8 +685,17 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/auth/google/callback":
             self.google_auth_callback(parsed)
             return
+        if parsed.path in LEGAL_DOCUMENTS:
+            self.legal_document(parsed.path)
+            return
         if self.path == "/api/session":
             self.session_status()
+            return
+        if self.path == "/api/support/vendors":
+            self.support_vendors()
+            return
+        if parsed.path == "/api/support/messages":
+            self.support_messages(parsed)
             return
         if self.path == "/api/admin/accounts":
             self.admin_list_accounts()
@@ -485,6 +705,15 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/market-rates":
             self.market_rates()
+            return
+        if parsed.path == "/api/currency-rate":
+            self.currency_rate(parsed)
+            return
+        if self.path == "/api/metal-rates":
+            self.metal_rates()
+            return
+        if self.path == "/api/index-rates":
+            self.index_rates()
             return
         if self.path == "/api/admin/market-rates":
             self.admin_market_rates()
@@ -500,6 +729,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/vendor/profile":
             self.vendor_profile()
+            return
+        if self.path == "/api/vendor/marketplace-setup":
+            self.vendor_marketplace_setup()
+            return
+        if self.path == "/api/vendor/operating-setup":
+            self.vendor_operating_setup()
             return
         if self.path == "/api/vendor/registration-payment":
             self.vendor_registration_payment()
@@ -524,6 +759,18 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/products":
             self.public_products()
+            return
+        if parsed.path == "/api/product-reviews":
+            self.product_reviews(parsed)
+            return
+        if self.path == "/api/blood/notifications":
+            self.blood_notifications()
+            return
+        if self.path == "/api/taxonomy":
+            self.product_taxonomy()
+            return
+        if self.path == "/api/admin/taxonomy":
+            self.admin_taxonomy()
             return
         if self.path == "/api/media/posts":
             self.media_posts()
@@ -565,7 +812,24 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
         self.send_header("X-Frame-Options", "DENY")
         self.end_headers()
-        self.wfile.write(candidate.read_bytes())
+        body = candidate.read_bytes()
+        if candidate.suffix.lower() == ".html":
+            body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="field-help.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script></body>')
+        self.wfile.write(body)
+
+    def legal_document(self, path: str) -> None:
+        document = LEGAL_DOCUMENTS[path]
+        if not document.is_file():
+            self.send_json({"error": "The requested legal document is unavailable."}, HTTPStatus.NOT_FOUND)
+            return
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        self.send_header("Content-Disposition", f'attachment; filename="{document.name}"')
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.end_headers()
+        self.wfile.write(document.read_bytes())
 
     def google_auth_start(self, parsed) -> None:
         query = parse_qs(parsed.query)
@@ -638,6 +902,74 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         except (UnicodeDecodeError, json.JSONDecodeError):
             return None
 
+    def identity_documents_from_signup(self, data: dict, role: str) -> tuple[list[dict], str | None, str | None]:
+        """Validate private verification documents before an account is created."""
+        if role not in {"Vendor", "Agent"}:
+            return [], None, None
+        raw_documents = data.get("identityDocuments")
+        if not isinstance(raw_documents, dict):
+            return [], None, "Upload your Aadhaar document, PAN card, and live photo."
+        required = {
+            "aadhaar": ("aadhaar", "Aadhaar document", {"application/pdf", "image/jpeg", "image/png", "image/webp"}),
+            "panCard": ("pan_card", "PAN card", {"application/pdf", "image/jpeg", "image/png", "image/webp"}),
+            "livePhoto": ("live_photo", "live photo", {"image/jpeg", "image/png", "image/webp"}),
+        }
+        optional = {"msmeCertificate": ("msme_certificate", "MSME certificate", {"application/pdf", "image/jpeg", "image/png", "image/webp"})}
+        allowed_types = {
+            "application/pdf": (b"%PDF-", ".pdf"),
+            "image/jpeg": (b"\xff\xd8\xff", ".jpg"),
+            "image/png": (b"\x89PNG\r\n\x1a\n", ".png"),
+            "image/webp": (b"RIFF", ".webp"),
+        }
+        documents: list[dict] = []
+        selected = dict(required)
+        if role == "Vendor" and raw_documents.get("msmeCertificate") not in (None, ""):
+            selected.update(optional)
+        for source_key, (document_type, label, permitted_types) in selected.items():
+            raw_document = raw_documents.get(source_key)
+            if not isinstance(raw_document, dict):
+                return [], None, f"Upload a valid {label}."
+            original_name = Path(str(raw_document.get("name", ""))).name.strip()
+            raw_content = raw_document.get("content")
+            if not original_name or len(original_name) > 120 or not isinstance(raw_content, str):
+                return [], None, f"{label} needs a valid file name."
+            try:
+                header, encoded = raw_content.split(",", 1)
+                mime = header.removeprefix("data:").removesuffix(";base64")
+                document_bytes = base64.b64decode(encoded, validate=True)
+            except (ValueError, binascii.Error):
+                return [], None, f"{label} could not be read."
+            if not header.endswith(";base64") or mime not in permitted_types or not document_bytes or len(document_bytes) > MAX_IDENTITY_DOCUMENT_BYTES:
+                return [], None, f"{label} must be a permitted file smaller than 1.5 MB."
+            signature, _ = allowed_types[mime]
+            if not document_bytes.startswith(signature) or (mime == "image/webp" and document_bytes[8:12] != b"WEBP"):
+                return [], None, f"{label} file content does not match its type."
+            documents.append({"documentType": document_type, "originalName": original_name, "mediaType": mime, "bytes": document_bytes})
+        tan_details = str(data.get("tanDetails", "")).strip().upper() if role == "Vendor" else ""
+        if tan_details and not re.fullmatch(r"[A-Z]{4}[0-9]{5}[A-Z]", tan_details):
+            return [], None, "Enter a valid 10-character TAN or leave it blank."
+        return documents, tan_details or None, None
+
+    def save_identity_documents(self, db: sqlite3.Connection, account_id: int, documents: list[dict], tan_details: str | None) -> None:
+        """Store verification files with non-public names; no raw ID number is collected."""
+        written: list[Path] = []
+        try:
+            now = int(time.time())
+            rows = []
+            for document in documents:
+                storage_name = f"identity-{secrets.token_hex(20)}.private"
+                path = UPLOADS / storage_name
+                path.write_bytes(document["bytes"])
+                written.append(path)
+                rows.append((account_id, document["documentType"], document["originalName"], storage_name, document["mediaType"], now))
+            db.executemany("INSERT INTO account_identity_documents (account_id, document_type, original_name, storage_name, media_type, uploaded_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(account_id, document_type) DO UPDATE SET original_name = excluded.original_name, storage_name = excluded.storage_name, media_type = excluded.media_type, uploaded_at = excluded.uploaded_at", rows)
+            if tan_details is not None:
+                db.execute("INSERT INTO vendor_compliance_details (account_id, tan_details, updated_at) VALUES (?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET tan_details = excluded.tan_details, updated_at = excluded.updated_at", (account_id, tan_details, now))
+        except Exception:
+            for path in written:
+                path.unlink(missing_ok=True)
+            raise
+
     def origin_is_valid(self) -> bool:
         origin = self.headers.get("Origin")
         return not origin or origin == f"http://{self.headers.get('Host')}"
@@ -658,10 +990,20 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if role not in PUBLIC_SIGNUP_ROLES:
             self.send_json({"error": "Choose Customer, Vendor, or Agent for signup."}, HTTPStatus.BAD_REQUEST)
             return
+        identity_documents, tan_details, identity_error = ([], None, None)
+        if role == "Agent":
+            identity_documents, tan_details, identity_error = self.identity_documents_from_signup(data, role)
+            if identity_error:
+                self.send_json({"error": identity_error}, HTTPStatus.BAD_REQUEST)
+                return
         try:
             with connection() as db:
                 now = int(time.time())
                 cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), role, now))
+                self.save_identity_documents(db, cursor.lastrowid, identity_documents, tan_details)
+                donor_status = str(data.get("donorStatus", "Decide later")).strip()
+                if donor_status not in {"Yes", "No", "Decide later"}: donor_status = "Decide later"
+                db.execute("UPDATE accounts SET blood_donor_status = ? WHERE id = ?", (donor_status, cursor.lastrowid))
                 assign_account_code(db, cursor.lastrowid, role, account["first_name"], now)
         except sqlite3.IntegrityError:
             self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
@@ -741,6 +1083,373 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             with connection() as db:
                 db.execute("DELETE FROM sessions WHERE token_hash = ?", (hashlib.sha256(token.encode()).hexdigest(),))
         self.send_json({"message": "Signed out."}, clear_cookie=True)
+
+    def contact_submit(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        data = self.read_json()
+        if data is None:
+            self.send_json({"error": "Invalid contact request."}, HTTPStatus.BAD_REQUEST)
+            return
+        full_name = str(data.get("name", "")).strip()
+        contact_number = str(data.get("contactNumber", "")).strip()
+        email_address = str(data.get("email", "")).strip().lower()
+        enquiry_for = str(data.get("contactFor", "")).strip()
+        if not re.fullmatch(r"[A-Za-zÀ-ÿ' -]{2,100}", full_name) or not PHONE_PATTERN.fullmatch(contact_number) or len(email_address) > 254 or not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email_address) or not 2 <= len(enquiry_for) <= 250:
+            self.send_json({"error": "Enter a valid name, contact number, email address, and enquiry."}, HTTPStatus.BAD_REQUEST)
+            return
+        now = int(time.time())
+        email_sent = False
+        if SMTP_HOST and SMTP_FROM:
+            try:
+                message = EmailMessage()
+                message["Subject"] = "New SHAKALPA contact enquiry"
+                message["From"] = SMTP_FROM
+                message["To"] = "contact@shakalpa.com"
+                message["Reply-To"] = email_address
+                message.set_content(f"New contact enquiry received through SHAKALPA.\n\nName: {full_name}\nContact number: {contact_number}\nEmail: {email_address}\nContact us for: {enquiry_for}\n")
+                with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
+                    if os.getenv("SMTP_USE_TLS", "1") != "0":
+                        smtp.starttls()
+                    if SMTP_USER:
+                        smtp.login(SMTP_USER, SMTP_PASSWORD)
+                    smtp.send_message(message)
+                email_sent = True
+            except (OSError, smtplib.SMTPException):
+                email_sent = False
+        with connection() as db:
+            db.execute("INSERT INTO contact_messages (full_name, contact_number, email, enquiry_for, email_sent, created_at) VALUES (?, ?, ?, ?, ?, ?)", (full_name, contact_number, email_address, enquiry_for, int(email_sent), now))
+        self.send_json({"message": "Thanks. Your contact request has been sent." if email_sent else "Thanks. Your contact request has been received.", "emailSent": email_sent}, HTTPStatus.CREATED)
+
+    def support_vendors(self) -> None:
+        with connection() as db:
+            rows = db.execute("SELECT a.id, COALESCE(v.business_name, a.first_name || ' ' || a.last_name) AS name FROM accounts a LEFT JOIN vendor_profiles v ON v.account_id = a.id WHERE a.role = 'Vendor' AND (v.approval_status = 'Approved' OR v.account_id IS NULL) ORDER BY name COLLATE NOCASE").fetchall()
+        self.send_json({"vendors": [{"id": row["id"], "name": row["name"]} for row in rows]})
+
+    def support_submit(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error":"Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        data = self.read_json() or {}; name = str(data.get("name", "")).strip(); phone = str(data.get("contactNumber", "")).strip(); email_address = str(data.get("email", "")).strip().lower(); support_type = str(data.get("supportType", "")).strip(); support_for = str(data.get("supportFor", "")).strip(); vendor_id = data.get("vendorId")
+        if not re.fullmatch(r"[A-Za-zÀ-ÿ' -]{2,100}", name) or not PHONE_PATTERN.fullmatch(phone) or not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email_address) or len(email_address) > 254 or support_type not in {"General", "Technical", "Account", "Payment", "Specific vendor"} or not 2 <= len(support_for) <= 2000 or (vendor_id is not None and not isinstance(vendor_id, int)) or (support_type == "Specific vendor" and not isinstance(vendor_id, int)): self.send_json({"error":"Complete all support request details."}, HTTPStatus.BAD_REQUEST); return
+        token = secrets.token_urlsafe(32); now = int(time.time())
+        with connection() as db:
+            vendor = db.execute("SELECT email FROM accounts WHERE id = ? AND role = 'Vendor'", (vendor_id,)).fetchone() if vendor_id else None
+            if vendor_id and not vendor: self.send_json({"error":"Choose a valid Vendor."}, HTTPStatus.BAD_REQUEST); return
+            ticket_id = db.execute("INSERT INTO support_tickets (requester_name, requester_email, requester_phone, support_type, support_for, vendor_id, requester_token_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (name, email_address, phone, support_type, support_for, vendor_id, hashlib.sha256(token.encode()).hexdigest(), now)).lastrowid
+            db.execute("INSERT INTO support_messages (ticket_id, sender_name, sender_role, body, created_at) VALUES (?, ?, 'Requester', ?, ?)", (ticket_id, name, support_for, now))
+        recipients = ["support@shakalpa.com"] + ([vendor["email"]] if vendor else [])
+        if SMTP_HOST and SMTP_FROM:
+            try:
+                message = EmailMessage(); message["Subject"] = f"SHAKALPA support ticket #{ticket_id}"; message["From"] = SMTP_FROM; message["To"] = ", ".join(recipients); message["Reply-To"] = email_address; message.set_content(f"Support ticket #{ticket_id}\n\n{name}\n{phone}\n{email_address}\nType: {support_type}\n\n{support_for}")
+                with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
+                    if os.getenv("SMTP_USE_TLS", "1") != "0": smtp.starttls()
+                    if SMTP_USER: smtp.login(SMTP_USER, SMTP_PASSWORD)
+                    smtp.send_message(message)
+            except (OSError, smtplib.SMTPException): pass
+        self.send_json({"message":"Support ticket created. You can continue in the private chat below.", "ticketId":ticket_id, "chatToken":token}, HTTPStatus.CREATED)
+
+    def support_messages(self, parsed) -> None:
+        query = parse_qs(parsed.query); ticket_id = query.get("ticketId", [""])[0]; token = query.get("token", [""])[0]
+        try: ticket_id = int(ticket_id)
+        except ValueError: self.send_json({"error":"Choose a valid support ticket."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            ticket = db.execute("SELECT * FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone()
+            allowed = bool(ticket and token and hmac.compare_digest(ticket["requester_token_hash"], hashlib.sha256(token.encode()).hexdigest()))
+            actor = self.current_account()
+            if actor and actor["role"] in {"Admin", "Employee"}: allowed = True
+            if actor and actor["role"] == "Vendor" and ticket and ticket["vendor_id"] == actor["id"]: allowed = True
+            if not allowed: self.send_json({"error":"This support chat is unavailable."}, HTTPStatus.FORBIDDEN); return
+            rows = db.execute("SELECT sender_name, sender_role, body, created_at FROM support_messages WHERE ticket_id = ? ORDER BY created_at, id", (ticket_id,)).fetchall()
+        self.send_json({"messages":[dict(row) for row in rows]})
+
+    def support_send_message(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error":"Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        data = self.read_json() or {}; ticket_id = data.get("ticketId"); token = str(data.get("token", "")); body = str(data.get("body", "")).strip()
+        if not isinstance(ticket_id, int) or not 1 <= len(body) <= 2000: self.send_json({"error":"Write a message of up to 2,000 characters."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            ticket = db.execute("SELECT * FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone(); actor = self.current_account(); sender_name = ticket["requester_name"] if ticket else ""; sender_role = "Requester"; allowed = bool(ticket and token and hmac.compare_digest(ticket["requester_token_hash"], hashlib.sha256(token.encode()).hexdigest()))
+            if actor and actor["role"] in {"Admin", "Employee"}: allowed=True; sender_name=f"{actor['first_name']} {actor['last_name']}"; sender_role=actor["role"]
+            if actor and actor["role"] == "Vendor" and ticket and ticket["vendor_id"] == actor["id"]: allowed=True; sender_name=f"{actor['first_name']} {actor['last_name']}"; sender_role="Vendor"
+            if not allowed: self.send_json({"error":"This support chat is unavailable."}, HTTPStatus.FORBIDDEN); return
+            db.execute("INSERT INTO support_messages (ticket_id, sender_name, sender_role, body, created_at) VALUES (?, ?, ?, ?, ?)", (ticket_id, sender_name, sender_role, body, int(time.time())))
+        self.send_json({"message":"Message sent."}, HTTPStatus.CREATED)
+
+    def blood_actor(self) -> sqlite3.Row | None:
+        account = self.current_account()
+        if not account:
+            self.send_json({"error": "Sign in is required to use Blood Requests."}, HTTPStatus.UNAUTHORIZED)
+            return None
+        return account
+
+    def blood_update_preference(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.blood_actor()
+        if not actor: return
+        status = str((self.read_json() or {}).get("donorStatus", "")).strip()
+        if status not in {"Yes", "No", "Decide later"}: self.send_json({"error": "Choose Yes, No, or Decide later."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db: db.execute("UPDATE accounts SET blood_donor_status = ? WHERE id = ?", (status, actor["id"]))
+        self.send_json({"message": "Blood donor preference saved."})
+
+    def blood_update_location(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.blood_actor()
+        if not actor: return
+        data = self.read_json() or {}
+        try: latitude, longitude = float(data.get("latitude")), float(data.get("longitude"))
+        except (TypeError, ValueError): self.send_json({"error": "Use a valid current location."}, HTTPStatus.BAD_REQUEST); return
+        if not -90 <= latitude <= 90 or not -180 <= longitude <= 180: self.send_json({"error": "Use a valid current location."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db: db.execute("UPDATE accounts SET blood_latitude = ?, blood_longitude = ? WHERE id = ?", (latitude, longitude, actor["id"]))
+        self.send_json({"message": "Location updated for nearby Blood Requests."})
+
+    def blood_create_request(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.blood_actor()
+        if not actor: return
+        data = self.read_json() or {}
+        group = str(data.get("bloodGroup", "")).strip().upper(); hospital = str(data.get("hospitalDetails", "")).strip(); reason = str(data.get("reason", "")).strip(); contact = str(data.get("contactDetails", "")).strip()
+        try: units, latitude, longitude = int(data.get("units")), float(data.get("latitude")), float(data.get("longitude"))
+        except (TypeError, ValueError): self.send_json({"error": "Provide valid units and current location."}, HTTPStatus.BAD_REQUEST); return
+        if group not in {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"} or not 1 <= units <= 20 or not 3 <= len(hospital) <= 500 or not 3 <= len(reason) <= 500 or not 7 <= len(contact) <= 200 or not -90 <= latitude <= 90 or not -180 <= longitude <= 180:
+            self.send_json({"error": "Complete the blood group, units, hospital, reason, contact, and location."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            request_id = db.execute("INSERT INTO blood_requests (requester_id, blood_group, units, hospital_details, reason, contact_details, latitude, longitude, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (actor["id"], group, units, hospital, reason, contact, latitude, longitude, int(time.time()))).lastrowid
+            donors = db.execute("SELECT id, blood_latitude, blood_longitude FROM accounts WHERE id != ? AND blood_donor_status = 'Yes' AND blood_latitude IS NOT NULL AND blood_longitude IS NOT NULL", (actor["id"],)).fetchall()
+            notified = sum(distance_km(latitude, longitude, donor["blood_latitude"], donor["blood_longitude"]) <= 5 for donor in donors)
+        self.send_json({"message": "Blood Request raised. Nearby donors have been notified.", "requestId": request_id, "notified": notified}, HTTPStatus.CREATED)
+
+    def blood_notifications(self) -> None:
+        actor = self.blood_actor()
+        if not actor: return
+        with connection() as db:
+            profile = db.execute("SELECT blood_donor_status, blood_latitude, blood_longitude FROM accounts WHERE id = ?", (actor["id"],)).fetchone()
+            if not profile or profile["blood_donor_status"] != "Yes" or profile["blood_latitude"] is None or profile["blood_longitude"] is None: self.send_json({"requests": [], "eligible": False}); return
+            rows = db.execute("SELECT r.id, r.blood_group, r.units, r.reason, r.latitude, r.longitude, r.created_at, i.interested, EXISTS(SELECT 1 FROM blood_request_interests confirmed WHERE confirmed.request_id = r.id AND confirmed.interested = 1) AS has_interested FROM blood_requests r LEFT JOIN blood_request_interests i ON i.request_id = r.id AND i.donor_id = ? WHERE r.status = 'Open' AND r.requester_id != ? ORDER BY r.created_at DESC LIMIT 100", (actor["id"], actor["id"])).fetchall()
+        now = int(time.time()); requests = []
+        for row in rows:
+            radius = 10 if now - row["created_at"] >= 3600 and not row["has_interested"] else 5
+            if distance_km(profile["blood_latitude"], profile["blood_longitude"], row["latitude"], row["longitude"]) <= radius:
+                requests.append({"id": row["id"], "bloodGroup": row["blood_group"], "units": row["units"], "reason": row["reason"], "interested": None if row["interested"] is None else bool(row["interested"]), "radiusKm": radius, "escalated": radius == 10})
+        self.send_json({"requests": requests, "eligible": True})
+
+    def blood_respond_interest(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.blood_actor()
+        if not actor: return
+        data = self.read_json() or {}; request_id = data.get("requestId"); interested = data.get("interested")
+        if not isinstance(request_id, int) or not isinstance(interested, bool): self.send_json({"error": "Choose a valid request response."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            profile = db.execute("SELECT blood_donor_status, blood_latitude, blood_longitude FROM accounts WHERE id = ?", (actor["id"],)).fetchone(); request = db.execute("SELECT id, requester_id, blood_group, units, hospital_details, reason, contact_details, latitude, longitude, created_at FROM blood_requests WHERE id = ? AND status = 'Open'", (request_id,)).fetchone(); has_interested = bool(request and db.execute("SELECT 1 FROM blood_request_interests WHERE request_id = ? AND interested = 1", (request_id,)).fetchone())
+            radius = 10 if request and int(time.time()) - request["created_at"] >= 3600 and not has_interested else 5
+            if not profile or profile["blood_donor_status"] != "Yes" or profile["blood_latitude"] is None or not request or request["requester_id"] == actor["id"] or distance_km(profile["blood_latitude"], profile["blood_longitude"], request["latitude"], request["longitude"]) > radius: self.send_json({"error": "This request is not available to you."}, HTTPStatus.FORBIDDEN); return
+            db.execute("INSERT INTO blood_request_interests (request_id, donor_id, interested, created_at) VALUES (?, ?, ?, ?) ON CONFLICT(request_id, donor_id) DO UPDATE SET interested = excluded.interested, created_at = excluded.created_at", (request_id, actor["id"], int(interested), int(time.time())))
+        response = {"message": "Response recorded."}
+        if interested: response["details"] = {"bloodGroup": request["blood_group"], "units": request["units"], "hospitalDetails": request["hospital_details"], "reason": request["reason"], "contactDetails": request["contact_details"]}
+        self.send_json(response)
+
+    def product_taxonomy(self) -> None:
+        with connection() as db:
+            rows = db.execute("SELECT id, main_category, subcategory FROM product_taxonomy WHERE active = 1 ORDER BY main_category COLLATE NOCASE, subcategory COLLATE NOCASE").fetchall()
+            services = db.execute("SELECT s.taxonomy_id, s.service_name, s.service_kind, s.search_keywords FROM product_taxonomy_services s JOIN product_taxonomy t ON t.id = s.taxonomy_id WHERE s.active = 1 AND t.active = 1 ORDER BY s.service_name COLLATE NOCASE").fetchall()
+        self.send_json({"categories": [{"id": row["id"], "mainCategory": row["main_category"], "subcategory": row["subcategory"]} for row in rows], "services": [{"taxonomyId": row["taxonomy_id"], "name": row["service_name"], "kind": row["service_kind"], "keywords": row["search_keywords"]} for row in services]})
+
+    def admin_taxonomy(self) -> None:
+        if not self.require_admin(): return
+        with connection() as db:
+            rows = db.execute("SELECT id, main_category, subcategory, active FROM product_taxonomy WHERE active = 1 ORDER BY main_category COLLATE NOCASE, subcategory COLLATE NOCASE").fetchall()
+        self.send_json({"categories": [{"id": row["id"], "mainCategory": row["main_category"], "subcategory": row["subcategory"], "active": bool(row["active"])} for row in rows]})
+
+    def admin_save_taxonomy(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        if not self.require_admin(): return
+        data = self.read_json() or {}; action = str(data.get("action", "")).strip(); category_id = data.get("id")
+        main = str(data.get("mainCategory", "")).strip(); subcategory = str(data.get("subcategory", "")).strip()
+        if action not in {"add", "edit", "remove"}: self.send_json({"error": "Choose a taxonomy action."}, HTTPStatus.BAD_REQUEST); return
+        if action != "remove" and (not 2 <= len(main) <= 100 or not 2 <= len(subcategory) <= 100): self.send_json({"error": "Enter a main category and subcategory."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            if action == "add": db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", (main, subcategory, int(time.time())))
+            elif action == "edit" and isinstance(category_id, int): db.execute("UPDATE product_taxonomy SET main_category = ?, subcategory = ? WHERE id = ?", (main, subcategory, category_id))
+            elif action == "remove" and isinstance(category_id, int): db.execute("UPDATE product_taxonomy SET active = 0 WHERE id = ?", (category_id,))
+            else: self.send_json({"error": "Choose a valid category."}, HTTPStatus.BAD_REQUEST); return
+        self.send_json({"message": "Taxonomy updated."})
+
+    def currency_rate(self, parsed) -> None:
+        query = parse_qs(parsed.query, keep_blank_values=True)
+        base_values, quote_values = query.get("from", []), query.get("to", [])
+        if len(base_values) != 1 or len(quote_values) != 1:
+            self.send_json({"error": "Choose one source and one target currency."}, HTTPStatus.BAD_REQUEST)
+            return
+        base, quote = base_values[0].upper(), quote_values[0].upper()
+        if base not in CURRENCY_CODES or quote not in CURRENCY_CODES:
+            self.send_json({"error": "Choose a supported currency."}, HTTPStatus.BAD_REQUEST)
+            return
+        if base == quote:
+            self.send_json({"base": base, "quote": quote, "rate": 1, "date": time.strftime("%Y-%m-%d", time.gmtime()), "source": "identity"})
+            return
+        global FX_RATE_CACHE
+        now = time.time()
+        with FX_RATE_CACHE_LOCK:
+            cached = FX_RATE_CACHE
+        if cached and cached[0] > now:
+            rates_data = cached[1]
+        else:
+            rates_data = None
+        if rates_data:
+            rates = rates_data["rates"]
+            if not isinstance(rates.get(base), (int, float)) or not isinstance(rates.get(quote), (int, float)):
+                self.send_json({"error": "Live exchange rates are temporarily unavailable. Please try again."}, HTTPStatus.BAD_GATEWAY)
+                return
+            payload = {"base": base, "quote": quote, "rate": rates[quote] / rates[base], "date": rates_data["date"], "source": "ExchangeRate-API"}
+            self.send_json(payload)
+            return
+        try:
+            request = urllib.request.Request(
+                "https://open.er-api.com/v6/latest/USD",
+                headers={"Accept": "application/json", "User-Agent": "SHAKALPA-local-preview/1.0"},
+            )
+            with urllib.request.urlopen(request, timeout=6) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            rates = data.get("rates")
+            rate_date = str(data.get("time_last_update_utc", ""))
+            if data.get("result") != "success" or not isinstance(rates, dict) or not all(isinstance(rates.get(code), (int, float)) and 0 < rates[code] < 1_000_000_000 for code in CURRENCY_CODES):
+                raise ValueError("Invalid rate response")
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ValueError, TypeError, json.JSONDecodeError):
+            self.send_json({"error": "Live exchange rates are temporarily unavailable. Please try again."}, HTTPStatus.BAD_GATEWAY)
+            return
+        rates_data = {"rates": rates, "date": rate_date}
+        with FX_RATE_CACHE_LOCK:
+            FX_RATE_CACHE = (now + 300, rates_data)
+        payload = {"base": base, "quote": quote, "rate": rates[quote] / rates[base], "date": rate_date, "source": "ExchangeRate-API"}
+        self.send_json(payload)
+
+    def metal_rates(self) -> None:
+        global METAL_RATE_CACHE
+        now = time.time()
+        with FX_RATE_CACHE_LOCK:
+            cached = METAL_RATE_CACHE
+        if cached and cached[0] > now:
+            self.send_json(cached[1])
+            return
+        try:
+            headers = {"Accept": "application/json", "User-Agent": "SHAKALPA-local-preview/1.0"}
+            with urllib.request.urlopen(urllib.request.Request("https://snapdata.dev/api/v1/gold/in/latest.json", headers=headers), timeout=6) as response:
+                gold_data = json.loads(response.read().decode("utf-8"))
+            with urllib.request.urlopen(urllib.request.Request("https://snapdata.dev/api/v1/silver/in/latest.json", headers=headers), timeout=6) as response:
+                silver_data = json.loads(response.read().decode("utf-8"))
+            gold_values = {str(item.get("instrument")): item.get("value") for item in gold_data.get("observations", [])}
+            silver_values = {str(item.get("instrument")): item.get("value") for item in silver_data.get("observations", [])}
+            gold22k, gold24k, silver_per_kg = gold_values.get("XAU.22K"), gold_values.get("XAU.24K"), silver_values.get("XAG")
+            if not all(isinstance(value, (int, float)) and 0 < value < 10_000_000 for value in (gold22k, gold24k, silver_per_kg)):
+                raise ValueError("Invalid metal price response")
+            payload = {
+                "gold22k": gold22k,
+                "gold24k": gold24k,
+                "silver": silver_per_kg / 1000,
+                "currency": gold_data.get("unit", {}).get("currency", "INR"),
+                "unit": "gram",
+                "updatedAt": str(gold_data.get("generated_at", "")),
+                "status": gold_data.get("observations", [{}])[0].get("status", ""),
+                "source": "IBJA via Snapdata",
+            }
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ValueError, TypeError, json.JSONDecodeError):
+            self.send_json({"error": "Live gold and silver rates are temporarily unavailable. Please try again."}, HTTPStatus.BAD_GATEWAY)
+            return
+        with FX_RATE_CACHE_LOCK:
+            METAL_RATE_CACHE = (now + 900, payload)
+        self.send_json(payload)
+
+    def index_rates(self) -> None:
+        """Return headline NSE and BSE levels with their daily market trend.
+
+        The upstream publishes only the two public headline levels we show, so no
+        constituent or historical exchange data is collected or redistributed.
+        """
+        global INDEX_RATE_CACHE
+        now = time.time()
+        with FX_RATE_CACHE_LOCK:
+            cached = INDEX_RATE_CACHE
+        if cached and cached[0] > now:
+            self.send_json(cached[1])
+            return
+        try:
+            request = urllib.request.Request(
+                "https://snapdata.dev/api/v1/equity-indices/in/latest.json",
+                headers={"Accept": "application/json", "User-Agent": "SHAKALPA-local-preview/1.0"},
+            )
+            with urllib.request.urlopen(request, timeout=6) as response:
+                index_data = json.loads(response.read().decode("utf-8"))
+            observations = {str(item.get("instrument_id")): item for item in index_data.get("observations", [])}
+
+            def index_payload(instrument_id: str, exchange: str, label: str) -> dict | None:
+                observation = observations.get(instrument_id, {})
+                value = observation.get("value")
+                change_pct = observation.get("change_pct")
+                previous_close = observation.get("prev_close")
+                if not isinstance(value, (int, float)) or not 0 < value < 10_000_000:
+                    return None
+                if not isinstance(change_pct, (int, float)):
+                    change_pct = 0
+                change = value - previous_close if isinstance(previous_close, (int, float)) else None
+                return {
+                    "label": label,
+                    "exchange": exchange,
+                    "value": value,
+                    "change": change,
+                    "changePercent": change_pct,
+                    "trend": "up" if change_pct > 0 else "down" if change_pct < 0 else "flat",
+                    "status": str(observation.get("status", "")),
+                }
+
+            sensex = index_payload("SENSEX.INR.IDX", "BSE", "SENSEX")
+            nifty50 = index_payload("NIFTY50.INR.IDX", "NSE", "NIFTY 50")
+            fallback_sources: list[str] = []
+
+            def public_index_fallback(symbol: str, exchange: str, label: str) -> dict:
+                """Use a fixed public quote only when the primary lacks a value or trend."""
+                fallback_request = urllib.request.Request(
+                    f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d",
+                    headers={"Accept": "application/json", "User-Agent": "SHAKALPA-local-preview/1.0"},
+                )
+                with urllib.request.urlopen(fallback_request, timeout=6) as response:
+                    fallback_data = json.loads(response.read().decode("utf-8"))
+                meta = fallback_data.get("chart", {}).get("result", [{}])[0].get("meta", {})
+                value = meta.get("regularMarketPrice")
+                change_pct = meta.get("regularMarketChangePercent")
+                previous_close = meta.get("chartPreviousClose")
+                if not isinstance(value, (int, float)) or not 0 < value < 10_000_000:
+                    raise ValueError("Invalid Sensex fallback response")
+                if not isinstance(change_pct, (int, float)):
+                    change_pct = ((value - previous_close) / previous_close * 100) if isinstance(previous_close, (int, float)) and previous_close else 0
+                return {
+                    "label": label, "exchange": exchange, "value": value,
+                    "change": value - previous_close if isinstance(previous_close, (int, float)) else None,
+                    "changePercent": change_pct,
+                    "trend": "up" if change_pct > 0 else "down" if change_pct < 0 else "flat",
+                    "status": "reference",
+                }
+
+            # The primary feed can be temporarily missing, or publish a level
+            # before its previous close. In either case, complete the visible
+            # up/down trend from a fixed no-key public quote endpoint.
+            if sensex is None or sensex["change"] is None:
+                sensex = public_index_fallback("%5EBSESN", "BSE", "SENSEX")
+                fallback_sources.append("BSE Sensex reference via Yahoo Finance")
+            if nifty50 is None or nifty50["change"] is None:
+                nifty50 = public_index_fallback("%5ENSEI", "NSE", "NIFTY 50")
+                fallback_sources.append("NSE Nifty 50 reference via Yahoo Finance")
+            if sensex is None and nifty50 is None:
+                raise ValueError("No market index values available")
+            payload = {
+                "sensex": sensex,
+                "nifty50": nifty50,
+                "updatedAt": str(index_data.get("generated_at", "")),
+                "source": "NSE and BSE via Snapdata" if not fallback_sources else f"NSE and BSE via Snapdata; {'; '.join(fallback_sources)}",
+            }
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ValueError, TypeError, json.JSONDecodeError):
+            self.send_json({"error": "Live NSE and BSE rates are temporarily unavailable. Please try again."}, HTTPStatus.BAD_GATEWAY)
+            return
+        with FX_RATE_CACHE_LOCK:
+            INDEX_RATE_CACHE = (now + 300, payload)
+        self.send_json(payload)
 
     def session_status(self) -> None:
         account = self.current_account()
@@ -1051,14 +1760,14 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not vendor:
             return
         with connection() as db:
-            profile = db.execute("SELECT business_name, business_type, service_type, other_type, owner_image_path, address_line1, address_line2, city, state, postal_code, country, gst_number, fssai_certificate, vehicle_registration, insurance_details, other_certificates, approval_status, updated_at FROM vendor_profiles WHERE account_id = ?", (vendor["id"],)).fetchone()
-            pending_profile = db.execute("SELECT business_name, business_type, service_type, other_type, owner_image_path, address_line1, address_line2, city, state, postal_code, country, gst_number, fssai_certificate, vehicle_registration, insurance_details, other_certificates, approval_status, updated_at FROM vendor_profile_changes WHERE account_id = ? AND approval_status != 'Approved' ORDER BY updated_at DESC, id DESC LIMIT 1", (vendor["id"],)).fetchone()
+            profile = db.execute("SELECT p.business_name, p.business_type, p.service_type, p.other_type, p.owner_image_path, p.address_line1, p.address_line2, p.city, p.state, p.postal_code, p.country, p.gst_number, p.fssai_certificate, p.vehicle_registration, p.insurance_details, p.other_certificates, p.approval_status, p.updated_at, m.operating_model FROM vendor_profiles p LEFT JOIN vendor_operating_models m ON m.account_id = p.account_id WHERE p.account_id = ?", (vendor["id"],)).fetchone()
+            pending_profile = db.execute("SELECT c.business_name, c.business_type, c.service_type, c.other_type, c.owner_image_path, c.address_line1, c.address_line2, c.city, c.state, c.postal_code, c.country, c.gst_number, c.fssai_certificate, c.vehicle_registration, c.insurance_details, c.other_certificates, c.approval_status, c.updated_at, m.operating_model FROM vendor_profile_changes c LEFT JOIN vendor_operating_models m ON m.account_id = c.account_id WHERE c.account_id = ? AND c.approval_status != 'Approved' ORDER BY c.updated_at DESC, c.id DESC LIMIT 1", (vendor["id"],)).fetchone()
             certificates = db.execute("SELECT id, original_name, uploaded_at FROM vendor_certificates WHERE account_id = ? ORDER BY uploaded_at DESC, id DESC", (vendor["id"],)).fetchall()
             document_requests = db.execute("SELECT id, message, requested_at FROM vendor_document_requests WHERE account_id = ? AND status = 'Open' ORDER BY requested_at DESC", (vendor["id"],)).fetchall()
         def response_profile(row: sqlite3.Row | None) -> dict | None:
             if not row:
                 return None
-            return {"businessName": row["business_name"], "businessType": row["business_type"], "serviceType": row["service_type"], "otherType": row["other_type"], "ownerImagePath": row["owner_image_path"], "addressLine1": row["address_line1"], "addressLine2": row["address_line2"], "city": row["city"], "state": row["state"], "postalCode": row["postal_code"], "country": row["country"], "gstNumber": row["gst_number"], "fssaiCertificate": row["fssai_certificate"], "vehicleRegistration": row["vehicle_registration"], "insuranceDetails": row["insurance_details"], "otherCertificates": row["other_certificates"], "approvalStatus": row["approval_status"], "updatedAt": row["updated_at"]}
+            return {"businessName": row["business_name"], "businessType": row["business_type"], "serviceType": row["service_type"], "otherType": row["other_type"], "operatingModel": row["operating_model"], "ownerImagePath": row["owner_image_path"], "addressLine1": row["address_line1"], "addressLine2": row["address_line2"], "city": row["city"], "state": row["state"], "postalCode": row["postal_code"], "country": row["country"], "gstNumber": row["gst_number"], "fssaiCertificate": row["fssai_certificate"], "vehicleRegistration": row["vehicle_registration"], "insuranceDetails": row["insurance_details"], "otherCertificates": row["other_certificates"], "approvalStatus": row["approval_status"], "updatedAt": row["updated_at"]}
         self.send_json({"profile": response_profile(profile), "pendingProfile": response_profile(pending_profile), "certificates": [{"id": row["id"], "name": row["original_name"], "uploadedAt": row["uploaded_at"]} for row in certificates], "documentRequests": [{"id": row["id"], "message": row["message"], "requestedAt": row["requested_at"]} for row in document_requests]})
 
     def vendor_maps_config(self) -> None:
@@ -1080,12 +1789,20 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         business_name = str(data.get("businessName", "")).strip()
         business_type = str(data.get("businessType", "")).strip()
         service_type = str(data.get("serviceType", "")).strip()
+        operating_model = str(data.get("operatingModel", "")).strip()
+        if not operating_model:
+            with connection() as db:
+                saved_model = db.execute("SELECT operating_model FROM vendor_operating_models WHERE account_id = ?", (vendor["id"],)).fetchone()
+            operating_model = saved_model["operating_model"] if saved_model else ""
         other_type = str(data.get("otherType", "")).strip()
         if not 2 <= len(business_name) <= 120:
             self.send_json({"error": "Enter a business name between 2 and 120 characters."}, HTTPStatus.BAD_REQUEST)
             return
-        if business_type not in BUSINESS_TYPES or service_type not in SERVICE_TYPES:
-            self.send_json({"error": "Choose a valid business type and service type."}, HTTPStatus.BAD_REQUEST)
+        if not 2 <= len(business_type) <= 120 or not 2 <= len(service_type) <= 120:
+            self.send_json({"error": "Choose a main category and at least one service or product."}, HTTPStatus.BAD_REQUEST)
+            return
+        if operating_model not in VENDOR_OPERATING_MODELS:
+            self.send_json({"error": "Choose how you want to use SHAKALPA before saving your profile."}, HTTPStatus.BAD_REQUEST)
             return
         if (business_type == "Other" or service_type == "Other") and not 2 <= len(other_type) <= 5000:
             self.send_json({"error": "Describe your business or service in 2 to 5,000 characters."}, HTTPStatus.BAD_REQUEST)
@@ -1121,9 +1838,25 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             if not registration_paid:
                 self.send_json({"error": "Pay the Vendor registration fee before submitting for approval."}, HTTPStatus.PAYMENT_REQUIRED)
                 return
+        if submit_for_approval and operating_model == "marketplace":
+            with connection() as db:
+                marketplace_setup = db.execute("SELECT 1 FROM vendor_marketplace_setups WHERE account_id = ?", (vendor["id"],)).fetchone()
+            if not marketplace_setup:
+                self.send_json({"error": "Complete Marketplace setup, including payout, policies, and Vendor Agreement confirmation, before submitting for approval."}, HTTPStatus.BAD_REQUEST)
+                return
+        if submit_for_approval and operating_model in {"listing", "leads", "bookings"}:
+            with connection() as db:
+                operating_setup = db.execute("SELECT 1 FROM vendor_operating_setups WHERE account_id = ? AND operating_model = ?", (vendor["id"], operating_model)).fetchone()
+            if not operating_setup:
+                self.send_json({"error": f"Complete the {VENDOR_OPERATING_MODELS[operating_model]} setup before submitting for approval."}, HTTPStatus.BAD_REQUEST)
+                return
         certificate_documents, certificate_error = self.save_vendor_certificates(vendor["id"], data.get("certificateDocuments"))
         if certificate_error:
             self.send_json({"error": certificate_error}, HTTPStatus.BAD_REQUEST)
+            return
+        identity_documents, tan_details, identity_error = self.identity_documents_from_signup(data, "Vendor")
+        if identity_error:
+            self.send_json({"error": identity_error}, HTTPStatus.BAD_REQUEST)
             return
         with connection() as db:
             stored_certificate_count = db.execute("SELECT COUNT(*) AS count FROM vendor_certificates WHERE account_id = ?", (vendor["id"],)).fetchone()["count"]
@@ -1136,6 +1869,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             change_status = "Submitted" if submit_for_approval else "Draft"
             now = int(time.time())
             with connection() as db:
+                self.save_identity_documents(db, vendor["id"], identity_documents, tan_details)
+                db.execute("INSERT INTO vendor_operating_models (account_id, operating_model, updated_at) VALUES (?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET operating_model = excluded.operating_model, updated_at = excluded.updated_at", (vendor["id"], operating_model, now))
                 pending_change = db.execute("SELECT id FROM vendor_profile_changes WHERE account_id = ? AND approval_status != 'Approved' ORDER BY updated_at DESC, id DESC LIMIT 1", (vendor["id"],)).fetchone()
                 values = (business_name, business_type, service_type, other_type or None, image_path or active_profile["owner_image_path"], address_line1, address_line2 or None, city, state, postal_code, country, gst_number or None, fssai_certificate or None, vehicle_registration or None, insurance_details or None, other_certificates or None, change_status, now if submit_for_approval else None, now)
                 if pending_change:
@@ -1150,11 +1885,122 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         approval_status = "Submitted" if submit_for_approval else "Draft"
         now = int(time.time())
         with connection() as db:
+            self.save_identity_documents(db, vendor["id"], identity_documents, tan_details)
+            db.execute("INSERT INTO vendor_operating_models (account_id, operating_model, updated_at) VALUES (?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET operating_model = excluded.operating_model, updated_at = excluded.updated_at", (vendor["id"], operating_model, now))
             db.execute("INSERT INTO vendor_profiles (account_id, business_name, business_type, service_type, other_type, owner_image_path, address_line1, address_line2, city, state, postal_code, country, gst_number, fssai_certificate, vehicle_registration, insurance_details, other_certificates, approval_status, submitted_at, reviewed_by, reviewed_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?) ON CONFLICT(account_id) DO UPDATE SET business_name = excluded.business_name, business_type = excluded.business_type, service_type = excluded.service_type, other_type = excluded.other_type, owner_image_path = COALESCE(excluded.owner_image_path, vendor_profiles.owner_image_path), address_line1 = excluded.address_line1, address_line2 = excluded.address_line2, city = excluded.city, state = excluded.state, postal_code = excluded.postal_code, country = excluded.country, gst_number = excluded.gst_number, fssai_certificate = excluded.fssai_certificate, vehicle_registration = excluded.vehicle_registration, insurance_details = excluded.insurance_details, other_certificates = excluded.other_certificates, approval_status = excluded.approval_status, submitted_at = CASE WHEN excluded.approval_status = 'Submitted' THEN excluded.submitted_at ELSE NULL END, reviewed_by = NULL, reviewed_at = NULL, updated_at = excluded.updated_at", (vendor["id"], business_name, business_type, service_type, other_type or None, image_path, address_line1, address_line2 or None, city, state, postal_code, country, gst_number or None, fssai_certificate or None, vehicle_registration or None, insurance_details or None, other_certificates or None, approval_status, now if submit_for_approval else None, now))
             if submit_for_approval:
                 db.execute("UPDATE vendor_document_requests SET status = 'Resolved', resolved_at = ? WHERE account_id = ? AND status = 'Open'", (now, vendor["id"]))
         message = "Business profile submitted for approval." if submit_for_approval else "Business profile saved as a draft."
         self.send_json({"message": message, "ownerImagePath": image_path, "approvalStatus": approval_status, "certificateCount": stored_certificate_count, "newCertificateCount": len(certificate_documents)})
+
+    def vendor_save_operating_model(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json()
+        operating_model = str(data.get("operatingModel", "")).strip() if data else ""
+        if operating_model not in VENDOR_OPERATING_MODELS:
+            self.send_json({"error": "Choose a valid vendor operating model."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            db.execute("INSERT INTO vendor_operating_models (account_id, operating_model, updated_at) VALUES (?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET operating_model = excluded.operating_model, updated_at = excluded.updated_at", (vendor["id"], operating_model, int(time.time())))
+        self.send_json({"message": "Operating model saved.", "operatingModel": operating_model})
+
+    def vendor_marketplace_setup(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            setup = db.execute("SELECT bank_account_holder, bank_account_last4, ifsc_code, tax_registration, fulfilment_method, cancellation_policy, refund_policy, agreement_accepted_at, updated_at FROM vendor_marketplace_setups WHERE account_id = ?", (vendor["id"],)).fetchone()
+        if not setup:
+            self.send_json({"setup": None})
+            return
+        self.send_json({"setup": {"bankAccountHolder": setup["bank_account_holder"], "bankAccountLast4": setup["bank_account_last4"], "ifscCode": setup["ifsc_code"], "taxRegistration": setup["tax_registration"], "fulfilmentMethod": setup["fulfilment_method"], "cancellationPolicy": setup["cancellation_policy"], "refundPolicy": setup["refund_policy"], "agreementAcceptedAt": setup["agreement_accepted_at"], "updatedAt": setup["updated_at"]}})
+
+    def vendor_operating_setup(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        model = parse_qs(urlparse(self.path).query).get("model", [""])[0]
+        if model not in {"listing", "leads", "bookings"}:
+            self.send_json({"error": "Choose a valid operating model."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            setup = db.execute("SELECT setup_json, completed_at, updated_at FROM vendor_operating_setups WHERE account_id = ? AND operating_model = ?", (vendor["id"], model)).fetchone()
+        self.send_json({"setup": {"model": model, "details": json.loads(setup["setup_json"]), "completedAt": setup["completed_at"], "updatedAt": setup["updated_at"]} if setup else None})
+
+    def vendor_save_operating_setup(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json()
+        model = str(data.get("model", "")).strip() if data else ""
+        details = data.get("details") if data else None
+        if model not in {"listing", "leads", "bookings"} or not isinstance(details, dict):
+            self.send_json({"error": "Provide a valid operating model and setup details."}, HTTPStatus.BAD_REQUEST)
+            return
+        clean = {}
+        if model == "listing":
+            contact_name, public_phone, public_email, contact_preference = (str(details.get(key, "")).strip() for key in ("contactName", "publicPhone", "publicEmail", "contactPreference"))
+            if not 2 <= len(contact_name) <= 120 or not PHONE_PATTERN.fullmatch(public_phone) or not 5 <= len(public_email) <= 254 or "@" not in public_email or contact_preference not in {"Phone", "Email", "Both"}:
+                self.send_json({"error": "Complete the public listing contact details."}, HTTPStatus.BAD_REQUEST)
+                return
+            clean = {"contactName": contact_name, "publicPhone": public_phone, "publicEmail": public_email, "contactPreference": contact_preference}
+        elif model == "leads":
+            contact_name, lead_phone, lead_email, response_time, notification_method = (str(details.get(key, "")).strip() for key in ("contactName", "leadPhone", "leadEmail", "responseTime", "notificationMethod"))
+            if not 2 <= len(contact_name) <= 120 or not PHONE_PATTERN.fullmatch(lead_phone) or not 5 <= len(lead_email) <= 254 or "@" not in lead_email or response_time not in {"Within 1 hour", "Within 4 hours", "Within 1 business day", "Within 2 business days"} or notification_method not in {"Email", "Phone", "Both"}:
+                self.send_json({"error": "Complete the lead contact and response details."}, HTTPStatus.BAD_REQUEST)
+                return
+            clean = {"contactName": contact_name, "leadPhone": lead_phone, "leadEmail": lead_email, "responseTime": response_time, "notificationMethod": notification_method}
+        else:
+            booking_service, service_hours, advance_notice, cancellation_policy, reschedule_policy = (str(details.get(key, "")).strip() for key in ("bookingService", "serviceHours", "advanceNotice", "cancellationPolicy", "reschedulePolicy"))
+            if not 2 <= len(booking_service) <= 140 or not 5 <= len(service_hours) <= 500 or advance_notice not in {"Same day", "1 day", "2 days", "3 days", "1 week"} or not 20 <= len(cancellation_policy) <= 3000 or not 20 <= len(reschedule_policy) <= 3000:
+                self.send_json({"error": "Complete your booking availability and policy details."}, HTTPStatus.BAD_REQUEST)
+                return
+            clean = {"bookingService": booking_service, "serviceHours": service_hours, "advanceNotice": advance_notice, "cancellationPolicy": cancellation_policy, "reschedulePolicy": reschedule_policy}
+        now = int(time.time())
+        with connection() as db:
+            db.execute("INSERT INTO vendor_operating_setups (account_id, operating_model, setup_json, completed_at, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(account_id, operating_model) DO UPDATE SET setup_json = excluded.setup_json, completed_at = excluded.completed_at, updated_at = excluded.updated_at", (vendor["id"], model, json.dumps(clean), now, now))
+        self.send_json({"message": f"{VENDOR_OPERATING_MODELS[model]} setup saved.", "model": model})
+
+    def vendor_save_marketplace_setup(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json()
+        if data is None:
+            self.send_json({"error": "Invalid request."}, HTTPStatus.BAD_REQUEST)
+            return
+        holder = str(data.get("bankAccountHolder", "")).strip()
+        account_number = re.sub(r"[ -]", "", str(data.get("bankAccountNumber", "")))
+        ifsc_code = str(data.get("ifscCode", "")).strip().upper()
+        tax_registration = str(data.get("taxRegistration", "")).strip()
+        fulfilment_method = str(data.get("fulfilmentMethod", "")).strip()
+        cancellation_policy = str(data.get("cancellationPolicy", "")).strip()
+        refund_policy = str(data.get("refundPolicy", "")).strip()
+        agreement_accepted = data.get("agreementAccepted") is True
+        if not 2 <= len(holder) <= 120 or not re.fullmatch(r"[0-9]{9,18}", account_number) or not re.fullmatch(r"[A-Z]{4}0[A-Z0-9]{6}", ifsc_code):
+            self.send_json({"error": "Enter a valid account holder name, 9–18 digit account number, and IFSC code."}, HTTPStatus.BAD_REQUEST)
+            return
+        if len(tax_registration) > 80 or fulfilment_method not in {"Self delivery", "Courier / logistics", "Service at customer location", "Customer pickup", "Mixed"} or not 20 <= len(cancellation_policy) <= 3000 or not 20 <= len(refund_policy) <= 3000:
+            self.send_json({"error": "Complete fulfilment and policy details using the permitted lengths."}, HTTPStatus.BAD_REQUEST)
+            return
+        if not agreement_accepted:
+            self.send_json({"error": "Confirm that you reviewed and accept the Vendor Agreement before saving."}, HTTPStatus.BAD_REQUEST)
+            return
+        now = int(time.time())
+        with connection() as db:
+            db.execute("INSERT INTO vendor_marketplace_setups (account_id, bank_account_holder, bank_account_last4, ifsc_code, tax_registration, fulfilment_method, cancellation_policy, refund_policy, agreement_accepted_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET bank_account_holder = excluded.bank_account_holder, bank_account_last4 = excluded.bank_account_last4, ifsc_code = excluded.ifsc_code, tax_registration = excluded.tax_registration, fulfilment_method = excluded.fulfilment_method, cancellation_policy = excluded.cancellation_policy, refund_policy = excluded.refund_policy, agreement_accepted_at = excluded.agreement_accepted_at, updated_at = excluded.updated_at", (vendor["id"], holder, account_number[-4:], ifsc_code, tax_registration or None, fulfilment_method, cancellation_policy, refund_policy, now, now))
+        self.send_json({"message": "Marketplace setup saved. Account number is retained only as its last four digits.", "bankAccountLast4": account_number[-4:]})
 
     def vendor_review_queue(self) -> None:
         if not self.require_approver():
@@ -1991,6 +2837,127 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             products = db.execute("SELECT p.id, p.product_name, p.product_description, p.product_category, p.product_type, p.search_keywords, p.product_specifications, p.customer_actions, p.cost_paise, p.tax_details, p.available_quantity, p.delivery_charges_paise, p.self_delivery, a.first_name, a.last_name, a.phone FROM vendor_products p JOIN accounts a ON a.id = p.vendor_id WHERE p.status = 'Published' AND p.available_quantity > 0 ORDER BY p.published_at DESC").fetchall()
             media = self.product_media_rows(db, [row["id"] for row in products])
         self.send_json({"products": [{"id": row["id"], "name": row["product_name"], "description": row["product_description"], "category": row["product_category"], "productType": row["product_type"], "keywords": row["search_keywords"], "specifications": row["product_specifications"], "customerActions": json.loads(row["customer_actions"]), "costPaise": row["cost_paise"], "taxDetails": row["tax_details"], "availableQuantity": row["available_quantity"], "deliveryChargesPaise": row["delivery_charges_paise"], "selfDelivery": bool(row["self_delivery"]), "vendorName": f"{row['first_name']} {row['last_name']}", "vendorPhone": row["phone"], "media": media.get(row["id"], [])} for row in products]})
+
+    def product_reviews(self, parsed) -> None:
+        raw_product_id = parse_qs(parsed.query).get("productId", [""])[0]
+        try:
+            product_id = int(raw_product_id)
+        except (TypeError, ValueError):
+            self.send_json({"error": "Choose a valid product or service."}, HTTPStatus.BAD_REQUEST)
+            return
+        actor = self.current_account()
+        with connection() as db:
+            product = db.execute("SELECT id FROM vendor_products WHERE id = ? AND status = 'Published'", (product_id,)).fetchone()
+            if not product:
+                self.send_json({"error": "This product or service is unavailable."}, HTTPStatus.NOT_FOUND)
+                return
+            rows = db.execute("SELECT r.id, r.customer_id, r.rating, r.review_text, r.created_at, r.updated_at, a.first_name, a.last_name, rp.reply_text, rp.updated_at AS reply_updated_at FROM product_reviews r JOIN accounts a ON a.id = r.customer_id LEFT JOIN product_review_replies rp ON rp.review_id = r.id WHERE r.product_id = ? ORDER BY r.updated_at DESC, r.id DESC", (product_id,)).fetchall()
+            review_ids = [row["id"] for row in rows]
+            reactions: dict[int, dict[str, int]] = {review_id: {} for review_id in review_ids}
+            selected: dict[int, str] = {}
+            if review_ids:
+                placeholders = ",".join("?" for _ in review_ids)
+                reaction_rows = db.execute(f"SELECT review_id, reaction, COUNT(*) AS total FROM product_review_reactions WHERE review_id IN ({placeholders}) GROUP BY review_id, reaction", review_ids).fetchall()
+                for reaction in reaction_rows:
+                    reactions[reaction["review_id"]][reaction["reaction"]] = reaction["total"]
+                if actor and actor["role"] == "Customer":
+                    selected_rows = db.execute(f"SELECT review_id, reaction FROM product_review_reactions WHERE customer_id = ? AND review_id IN ({placeholders})", [actor["id"], *review_ids]).fetchall()
+                    selected = {row["review_id"]: row["reaction"] for row in selected_rows}
+            eligibility = db.execute("SELECT source_type FROM customer_review_eligibility WHERE product_id = ? AND customer_id = ?", (product_id, actor["id"])).fetchone() if actor and actor["role"] == "Customer" else None
+        average = round(sum(row["rating"] for row in rows) / len(rows), 1) if rows else 0
+        distribution = {str(rating): sum(row["rating"] == rating for row in rows) for rating in range(5, 0, -1)}
+        self.send_json({"summary": {"count": len(rows), "average": average, "scale": 5, "distribution": distribution}, "eligibleToReview": bool(eligibility), "eligibilitySource": eligibility["source_type"] if eligibility else None, "reviews": [{"id": row["id"], "rating": row["rating"], "text": row["review_text"], "customerName": f"{row['first_name']} {row['last_name'][0]}." if row["last_name"] else row["first_name"], "createdAt": row["created_at"], "updatedAt": row["updated_at"], "reply": {"text": row["reply_text"], "updatedAt": row["reply_updated_at"]} if row["reply_text"] else None, "reactions": reactions.get(row["id"], {}), "myReaction": selected.get(row["id"])} for row in rows]})
+
+    def create_product_review(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        actor = self.current_account()
+        if not actor:
+            self.send_json({"error": "Sign in as a Customer to write a review."}, HTTPStatus.UNAUTHORIZED)
+            return
+        if actor["role"] != "Customer":
+            self.send_json({"error": "Only Customers can write product and service reviews."}, HTTPStatus.FORBIDDEN)
+            return
+        data = self.read_json() or {}
+        product_id, rating = data.get("productId"), data.get("rating")
+        review_text = str(data.get("text", "")).strip()
+        if not isinstance(product_id, int) or not isinstance(rating, int) or not 1 <= rating <= 5 or not 2 <= len(review_text) <= 2000:
+            self.send_json({"error": "Choose a 1–5 star rating and write a review of 2 to 2,000 characters."}, HTTPStatus.BAD_REQUEST)
+            return
+        if self.media_content_block_reason(review_text):
+            self.send_json({"error": "That review was blocked by the safety review."}, HTTPStatus.UNPROCESSABLE_ENTITY)
+            return
+        now = int(time.time())
+        with connection() as db:
+            if not db.execute("SELECT 1 FROM vendor_products WHERE id = ? AND status = 'Published'", (product_id,)).fetchone():
+                self.send_json({"error": "This product or service is unavailable."}, HTTPStatus.NOT_FOUND)
+                return
+            if not db.execute("SELECT 1 FROM customer_review_eligibility WHERE product_id = ? AND customer_id = ?", (product_id, actor["id"])).fetchone():
+                self.send_json({"error": "You can review this only after a verified purchase or completed service."}, HTTPStatus.FORBIDDEN)
+                return
+            db.execute("INSERT INTO product_reviews (product_id, customer_id, rating, review_text, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(product_id, customer_id) DO UPDATE SET rating = excluded.rating, review_text = excluded.review_text, updated_at = excluded.updated_at", (product_id, actor["id"], rating, review_text, now, now))
+        self.send_json({"message": "Your review was saved."}, HTTPStatus.CREATED)
+
+    def reply_to_product_review(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        review_id = data.get("reviewId")
+        reply_text = str(data.get("text", "")).strip()
+        if not isinstance(review_id, int) or not 2 <= len(reply_text) <= 2000:
+            self.send_json({"error": "Write a reply of 2 to 2,000 characters."}, HTTPStatus.BAD_REQUEST)
+            return
+        if self.media_content_block_reason(reply_text):
+            self.send_json({"error": "That reply was blocked by the safety review."}, HTTPStatus.UNPROCESSABLE_ENTITY)
+            return
+        now = int(time.time())
+        with connection() as db:
+            review = db.execute("SELECT r.id FROM product_reviews r JOIN vendor_products p ON p.id = r.product_id WHERE r.id = ? AND p.vendor_id = ?", (review_id, vendor["id"])).fetchone()
+            if not review:
+                self.send_json({"error": "You can reply only to reviews on your own listings."}, HTTPStatus.FORBIDDEN)
+                return
+            db.execute("INSERT INTO product_review_replies (review_id, vendor_id, reply_text, created_at, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(review_id) DO UPDATE SET reply_text = excluded.reply_text, updated_at = excluded.updated_at", (review_id, vendor["id"], reply_text, now, now))
+        self.send_json({"message": "Vendor reply saved."})
+
+    def react_to_product_review(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        actor = self.current_account()
+        if not actor:
+            self.send_json({"error": "Sign in as a Customer to react to a review."}, HTTPStatus.UNAUTHORIZED)
+            return
+        if actor["role"] != "Customer":
+            self.send_json({"error": "Only Customers can react to reviews."}, HTTPStatus.FORBIDDEN)
+            return
+        data = self.read_json() or {}
+        review_id = data.get("reviewId")
+        reaction = str(data.get("reaction", "")).strip()
+        allowed_reactions = {"👍", "❤️", "😂", "👏", "🔥", "🌟", "🎉", "💡", "🚀", "🙌"}
+        if not isinstance(review_id, int) or reaction not in allowed_reactions:
+            self.send_json({"error": "Choose a reaction from the catalogue."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            review = db.execute("SELECT customer_id FROM product_reviews WHERE id = ?", (review_id,)).fetchone()
+            if not review:
+                self.send_json({"error": "That review could not be found."}, HTTPStatus.NOT_FOUND)
+                return
+            if review["customer_id"] == actor["id"]:
+                self.send_json({"error": "You cannot react to your own review."}, HTTPStatus.FORBIDDEN)
+                return
+            current = db.execute("SELECT reaction FROM product_review_reactions WHERE review_id = ? AND customer_id = ?", (review_id, actor["id"])).fetchone()
+            if current and current["reaction"] == reaction:
+                db.execute("DELETE FROM product_review_reactions WHERE review_id = ? AND customer_id = ?", (review_id, actor["id"]))
+                message = "Reaction removed."
+            else:
+                db.execute("INSERT INTO product_review_reactions (review_id, customer_id, reaction, created_at) VALUES (?, ?, ?, ?) ON CONFLICT(review_id, customer_id) DO UPDATE SET reaction = excluded.reaction, created_at = excluded.created_at", (review_id, actor["id"], reaction, int(time.time())))
+                message = "Reaction saved."
+        self.send_json({"message": message})
 
     def save_vendor_image(self, raw_image: object) -> tuple[str | None, str | None]:
         if raw_image in (None, ""):

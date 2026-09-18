@@ -3,12 +3,49 @@ const error = document.querySelector('#signupError');
 const toast = document.querySelector('#toast');
 const roleSelector = document.querySelector('#signupRole');
 const googleSignup = document.querySelector('#googleSignup');
+const identityDocuments = document.querySelector('#identityDocuments');
+const vendorOnlyDocuments = document.querySelector('#vendorOnlyDocuments');
+const identityFileInputs = [...identityDocuments.querySelectorAll('input[type="file"]')];
 
 function updateGoogleSignupLink() {
   googleSignup.href = `/api/auth/google?role=${encodeURIComponent(roleSelector.value)}`;
+  const needsIdentityVerification = roleSelector.value === 'Agent';
+  identityDocuments.hidden = !needsIdentityVerification;
+  vendorOnlyDocuments.hidden = roleSelector.value !== 'Vendor';
+  identityFileInputs.forEach((input) => { input.disabled = !needsIdentityVerification; });
+  document.querySelector('#aadhaarDocument').required = needsIdentityVerification;
+  document.querySelector('#panCardDocument').required = needsIdentityVerification;
+  document.querySelector('#livePhoto').required = needsIdentityVerification;
+  document.querySelector('#tanDetails').disabled = roleSelector.value !== 'Vendor';
+  document.querySelector('#msmeCertificate').disabled = roleSelector.value !== 'Vendor';
+  googleSignup.closest('.google-login').hidden = needsIdentityVerification;
+  document.querySelector('.google-signup-note').hidden = needsIdentityVerification;
 }
 roleSelector.addEventListener('change', updateGoogleSignupLink);
 updateGoogleSignupLink();
+
+function readDocument(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => resolve({ name: file.name, content: reader.result }));
+    reader.addEventListener('error', () => reject(new Error(`Could not read ${file.name}.`)));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function identityPayload(role) {
+  if (role !== 'Agent') return {};
+  const fieldMap = { aadhaar: '#aadhaarDocument', panCard: '#panCardDocument', livePhoto: '#livePhoto' };
+  if (role === 'Vendor' && document.querySelector('#msmeCertificate').files[0]) fieldMap.msmeCertificate = '#msmeCertificate';
+  const documents = {};
+  for (const [key, selector] of Object.entries(fieldMap)) {
+    const file = document.querySelector(selector).files[0];
+    if (!file) throw new Error('Upload the required Aadhaar document, PAN card, and live photo.');
+    if (file.size > 1_500_000) throw new Error(`${file.name} must be smaller than 1.5 MB.`);
+    documents[key] = await readDocument(file);
+  }
+  return documents;
+}
 
 function showToast(message) {
   toast.textContent = message;
@@ -47,6 +84,9 @@ form.addEventListener('submit', async (event) => {
         phone: document.querySelector('#phone').value,
         email: document.querySelector('#signupEmail').value,
         role: document.querySelector('#signupRole').value,
+        donorStatus: new FormData(form).get('donorStatus'),
+        identityDocuments: await identityPayload(roleSelector.value),
+        tanDetails: document.querySelector('#tanDetails').disabled ? '' : document.querySelector('#tanDetails').value,
         password: password.value,
         confirmPassword: confirmation.value
       })
