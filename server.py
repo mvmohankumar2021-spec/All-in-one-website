@@ -657,6 +657,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.request_vendor_documents()
         elif self.path == "/api/admin/payment-settings":
             self.admin_save_payment_settings()
+        elif self.path == "/api/admin/site-theme":
+            self.admin_save_site_theme()
         elif self.path == "/api/admin/market-rates":
             self.admin_save_market_rates()
         elif self.path == "/api/admin/vendor-login":
@@ -754,6 +756,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/admin/payment-settings":
             self.admin_payment_settings()
             return
+        if self.path == "/api/site-theme":
+            self.site_theme()
+            return
         if self.path == "/api/market-rates":
             self.market_rates()
             return
@@ -765,6 +770,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/index-rates":
             self.index_rates()
+            return
+        if parsed.path == "/api/train-tracking":
+            self.train_tracking(parsed)
             return
         if self.path == "/api/admin/market-rates":
             self.admin_market_rates()
@@ -868,8 +876,17 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         body = candidate.read_bytes()
         if candidate.suffix.lower() == ".html":
-            body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="field-help.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script></body>')
+            body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="field-help.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script></body>')
         self.wfile.write(body)
+
+    def train_tracking(self, parsed) -> None:
+        query = parse_qs(parsed.query)
+        train_number = (query.get("trainNumber") or [""])[0].strip()
+        journey_date = (query.get("journeyDate") or [""])[0].strip()
+        if not re.fullmatch(r"\d{5}", train_number) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", journey_date):
+            self.send_json({"error": "Enter a valid 5-digit train number and journey date."}, HTTPStatus.BAD_REQUEST)
+            return
+        self.send_json({"error": "An authorised live train-status provider has not been connected yet. Add its production credentials on the server to enable live positions."}, HTTPStatus.SERVICE_UNAVAILABLE)
 
     def legal_document(self, path: str) -> None:
         document = LEGAL_DOCUMENTS[path]
@@ -2347,6 +2364,30 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES ('product_entry_fee_paise', ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (str(product_fee_paise), admin["id"], int(time.time())))
             db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES ('agent_vendor_incentive_paise', ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (str(incentive_paise), admin["id"], int(time.time())))
         self.send_json({"message": "Payment fees and agent incentive updated.", "vendorRegistrationFeePaise": fee_paise, "productEntryFeePaise": product_fee_paise, "agentVendorIncentivePaise": incentive_paise, "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
+
+    def site_theme(self) -> None:
+        with connection() as db:
+            rows = db.execute("SELECT setting_key, setting_value FROM payment_settings WHERE setting_key IN ('site_theme', 'site_mode')").fetchall()
+        values = {row["setting_key"]: row["setting_value"] for row in rows}
+        self.send_json({"theme": values.get("site_theme", "navy"), "mode": values.get("site_mode", "light")})
+
+    def admin_save_site_theme(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        admin = self.require_admin()
+        if not admin:
+            return
+        data = self.read_json()
+        allowed_themes = {'navy', 'emerald', 'plum', 'ocean', 'charcoal', 'ruby', 'forest', 'sand', 'indigo', 'coral', 'lilac', 'jade', 'sunset', 'ice', 'mocha', 'ivory', 'blossom', 'mist', 'onyx', 'obsidian', 'nightfall', 'aurora', 'citrus', 'shakalpa-green', 'evergreen', 'alabaster', 'lavender', 'peach', 'butter', 'pistachio', 'sky', 'sepia', 'pearl', 'mint', 'powder', 'cobalt', 'graphite', 'mahogany', 'petrol', 'espresso', 'royal', 'garnet', 'moss', 'eclipse', 'steel', 'rosewood', 'cloud'}
+        if not isinstance(data, dict) or data.get('theme') not in allowed_themes or data.get('mode') not in {'light', 'dark'}:
+            self.send_json({"error": "Choose a valid theme and display mode."}, HTTPStatus.BAD_REQUEST)
+            return
+        now = int(time.time())
+        with connection() as db:
+            for key, value in (("site_theme", data["theme"]), ("site_mode", data["mode"])):
+                db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (key, value, admin["id"], now))
+        self.send_json({"message": "Homepage theme updated.", "theme": data["theme"], "mode": data["mode"]})
 
     def market_rates(self) -> None:
         with connection() as db:

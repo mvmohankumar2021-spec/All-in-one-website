@@ -1,4 +1,5 @@
 (() => {
+  if (!document.querySelector('script[data-theme-catalogue-loader]')) { const script = document.createElement('script'); script.src = 'theme-catalogue.js'; script.dataset.themeCatalogueLoader = 'true'; document.head.append(script); }
   if (location.pathname === '/' || location.pathname.endsWith('/index.html')) return;
   const nav = document.querySelector('header nav');
   if (!nav) return;
