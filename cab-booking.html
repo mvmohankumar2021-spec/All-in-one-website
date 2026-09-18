@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#18201e" />
+  <title>SHAKALPA Rides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="cab-booking.css" />
+</head>
+<body class="rides-page">
+  <header class="rides-header"><a class="brand" href="index.html"><span class="brand-mark">S</span>SHAKALPA</a><nav><a href="index.html">Home</a><a href="cab-booking.html" aria-current="page">Rides</a><a href="support.html">Support</a></nav><a class="rides-help" href="tel:112" aria-label="Emergency help">Emergency 112</a></header>
+  <main class="rides-shell">
+    <section class="rides-intro"><div><p class="eyebrow">CAB &amp; AUTO</p><h1>Go where you need, <em>with clarity.</em></h1><p>See an estimate before booking, follow an active ride, and keep safety help one tap away.</p></div><div class="ride-mode" role="tablist" aria-label="Ride workspace"><button class="active" data-mode="customer" role="tab">Customer</button><button data-mode="driver" role="tab">Driver</button></div></section>
+
+    <section class="customer-workspace" data-workspace="customer">
+      <div class="ride-grid">
+        <form id="rideBookingForm" class="ride-card booking-form" novalidate>
+          <p class="eyebrow">PLAN A RIDE</p><h2>Where are you going?</h2>
+          <div class="vehicle-choice" role="group" aria-label="Vehicle type"><label><input type="radio" name="vehicle" value="Auto" checked /><span>🛺<b>Auto</b><small>₹30 + ₹12/km</small></span></label><label><input type="radio" name="vehicle" value="Cab" /><span>🚕<b>Cab</b><small>₹40 + ₹16/km</small></span></label></div>
+          <label>Pickup location <span class="required-marker">*</span><input id="ridePickup" required minlength="3" maxlength="180" placeholder="Enter pickup point" autocomplete="street-address" /></label>
+          <label>Drop location <span class="required-marker">*</span><input id="rideDropoff" required minlength="3" maxlength="180" placeholder="Enter destination" /></label>
+          <label>Approximate distance (km) <span class="required-marker">*</span><input id="rideDistance" type="number" min="1" max="300" step="0.1" value="5" required /></label>
+          <fieldset class="ride-time"><legend>When do you want to travel?</legend><label><input type="radio" name="when" value="now" checked /> Ride now</label><label><input type="radio" name="when" value="later" /> Schedule later</label><input id="rideSchedule" type="datetime-local" hidden /></fieldset>
+          <fieldset class="payment-choice"><legend>Payment method</legend><label><input type="radio" name="payment" value="Shakalpa" checked /> <b>Shakalpa</b><small>Secure in-app payment</small></label><label><input type="radio" name="payment" value="Cash" /> <b>Cash</b><small>Pay the driver at trip end</small></label></fieldset>
+          <div class="fare-estimate"><span>Approximate fare</span><strong id="fareEstimate">₹90</strong><small>Final fare follows the driver’s quote and the running meter.</small></div>
+          <p id="bookingError" class="form-error" role="alert"></p><button class="button button-lime full" type="submit">Find a driver <span>→</span></button>
+        </form>
+        <aside class="ride-card safety-card"><p class="eyebrow">SAFETY FIRST</p><h2>Help is always close.</h2><p>Your active ride shows a dedicated SOS button. It prepares your ride details and location for emergency support.</p><ul><li>Live vehicle progress while a trip is active</li><li>Meter starts only after the driver accepts</li><li>Emergency help is available during every ride</li></ul><button id="previewSos" class="sos-button" type="button">SOS <span>Emergency help</span></button></aside>
+      </div>
+      <section class="ride-card active-ride" id="activeRide" hidden aria-live="polite"></section>
+    </section>
+
+    <section class="driver-workspace" data-workspace="driver" hidden>
+      <div class="driver-grid"><section class="ride-card"><p class="eyebrow">DRIVER CONSOLE</p><h2>Available ride requests</h2><div id="driverRequests" class="driver-requests"></div></section><section class="ride-card wallet-card"><p class="eyebrow">SHAKALPA WALLET</p><h2 id="walletBalance">₹0.00</h2><p>Shakalpa-paid completed rides are credited here. Cash rides are not added to the wallet.</p><div id="payoutStatus" class="payout-status"></div><button id="openPayout" class="button button-dark" type="button">Immediate payout <span>→</span></button></section></div>
+      <section class="ride-card" id="driverActiveRide"><p class="eyebrow">YOUR ACTIVE RIDE</p><p class="empty-state">Accept a ride request to start the meter.</p></section>
+    </section>
+  </main>
+  <dialog id="payoutDialog" class="rides-dialog"><button class="dialog-close" type="button" aria-label="Close">×</button><p class="eyebrow">FIRST PAYOUT</p><h2>Verify payout details</h2><p>Your account details are required once before an immediate payout can be requested.</p><form id="payoutForm" novalidate><label>Account holder name <span class="required-marker">*</span><input id="payoutHolder" required minlength="2" maxlength="120" /></label><label>Bank account number <span class="required-marker">*</span><input id="payoutAccount" required inputmode="numeric" pattern="[0-9]{9,24}" minlength="9" maxlength="24" /></label><label>IFSC code <span class="required-marker">*</span><input id="payoutIfsc" required pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}" maxlength="11" autocapitalize="characters" /></label><p class="form-error" id="payoutError" role="alert"></p><button class="button button-lime full" type="submit">Verify &amp; request payout <span>→</span></button></form></dialog>
+  <dialog id="sosDialog" class="rides-dialog sos-dialog"><button class="dialog-close" type="button" aria-label="Close">×</button><p class="eyebrow">EMERGENCY SUPPORT</p><h2>Do you need urgent help?</h2><p id="sosDetail">We will prepare your current ride details and location. Call emergency services immediately if there is immediate danger.</p><div class="sos-actions"><a class="button button-lime" href="tel:112">Call 112 now</a><button class="button button-dark" id="shareSos" type="button">Share ride details</button></div></dialog>
+  <div id="rideToast" class="toast" role="status"></div>
+  <script src="cab-booking.js"></script>
+</body>
+</html>

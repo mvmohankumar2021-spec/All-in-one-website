@@ -290,6 +290,38 @@ def init_database() -> None:
                 updated_at INTEGER NOT NULL,
                 FOREIGN KEY(updated_by) REFERENCES accounts(id) ON DELETE SET NULL
             );
+            CREATE TABLE IF NOT EXISTS agent_wallets (
+                account_id INTEGER PRIMARY KEY,
+                balance_paise INTEGER NOT NULL DEFAULT 0 CHECK(balance_paise >= 0),
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS agent_incentive_credits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                agent_id INTEGER NOT NULL,
+                vendor_id INTEGER NOT NULL,
+                amount_paise INTEGER NOT NULL CHECK(amount_paise >= 0),
+                created_at INTEGER NOT NULL,
+                UNIQUE(agent_id, vendor_id),
+                FOREIGN KEY(agent_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS agent_payout_accounts (
+                account_id INTEGER PRIMARY KEY,
+                account_holder TEXT NOT NULL,
+                account_last4 TEXT NOT NULL,
+                ifsc_code TEXT NOT NULL,
+                verified_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS agent_wallet_payouts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                agent_id INTEGER NOT NULL,
+                amount_paise INTEGER NOT NULL CHECK(amount_paise > 0),
+                status TEXT NOT NULL DEFAULT 'Requested',
+                requested_at INTEGER NOT NULL,
+                FOREIGN KEY(agent_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
             CREATE TABLE IF NOT EXISTS vendor_registration_payments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_id INTEGER NOT NULL,
@@ -371,6 +403,21 @@ def init_database() -> None:
                 created_at INTEGER NOT NULL
             );
             CREATE INDEX IF NOT EXISTS contact_messages_created_idx ON contact_messages(created_at DESC);
+            CREATE TABLE IF NOT EXISTS customer_recharges (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                service_type TEXT NOT NULL,
+                account_reference TEXT NOT NULL,
+                plan_name TEXT NOT NULL,
+                amount_paise INTEGER NOT NULL CHECK(amount_paise >= 1000),
+                payment_method TEXT NOT NULL CHECK(payment_method IN ('Wallet', 'Other payment method')),
+                status TEXT NOT NULL DEFAULT 'Payment pending',
+                email_sent INTEGER NOT NULL DEFAULT 0,
+                sms_sent INTEGER NOT NULL DEFAULT 0,
+                created_at INTEGER NOT NULL,
+                FOREIGN KEY(customer_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS customer_recharges_customer_idx ON customer_recharges(customer_id, created_at DESC);
             CREATE TABLE IF NOT EXISTS support_tickets (id INTEGER PRIMARY KEY AUTOINCREMENT, requester_name TEXT NOT NULL, requester_email TEXT NOT NULL, requester_phone TEXT NOT NULL, support_type TEXT NOT NULL, support_for TEXT NOT NULL, vendor_id INTEGER, requester_token_hash TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(vendor_id) REFERENCES accounts(id) ON DELETE SET NULL);
             CREATE TABLE IF NOT EXISTS support_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, ticket_id INTEGER NOT NULL, sender_name TEXT NOT NULL, sender_role TEXT NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE);
             CREATE INDEX IF NOT EXISTS support_messages_ticket_idx ON support_messages(ticket_id, created_at);
@@ -582,6 +629,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.signout()
         elif self.path == "/api/contact":
             self.contact_submit()
+        elif self.path == "/api/recharges":
+            self.create_recharge()
         elif self.path == "/api/support":
             self.support_submit()
         elif self.path == "/api/support/messages":
@@ -592,6 +641,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.employee_create_account()
         elif self.path == "/api/agent/vendors":
             self.agent_create_vendor()
+        elif self.path == "/api/agent/wallet/payout":
+            self.agent_request_wallet_payout()
         elif self.path == "/api/vendor/profile":
             self.vendor_save_profile()
         elif self.path == "/api/vendor/operating-model":
@@ -726,6 +777,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/agent/vendors":
             self.agent_list_vendors()
+            return
+        if self.path == "/api/agent/wallet":
+            self.agent_wallet()
             return
         if self.path == "/api/vendor/profile":
             self.vendor_profile()
@@ -1121,6 +1175,65 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         with connection() as db:
             db.execute("INSERT INTO contact_messages (full_name, contact_number, email, enquiry_for, email_sent, created_at) VALUES (?, ?, ?, ?, ?, ?)", (full_name, contact_number, email_address, enquiry_for, int(email_sent), now))
         self.send_json({"message": "Thanks. Your contact request has been sent." if email_sent else "Thanks. Your contact request has been received.", "emailSent": email_sent}, HTTPStatus.CREATED)
+
+    def create_recharge(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        customer = self.current_account()
+        if not customer:
+            self.send_json({"error": "Sign in as a Customer before making a recharge payment."}, HTTPStatus.UNAUTHORIZED)
+            return
+        if customer["role"] != "Customer":
+            self.send_json({"error": "Recharge payments are available from a Customer account."}, HTTPStatus.FORBIDDEN)
+            return
+        data = self.read_json()
+        if data is None:
+            self.send_json({"error": "Invalid recharge request."}, HTTPStatus.BAD_REQUEST)
+            return
+        service = str(data.get("serviceType", "")).strip()
+        reference = str(data.get("accountReference", "")).strip()
+        plan = str(data.get("planName", "")).strip()
+        payment_method = str(data.get("paymentMethod", "")).strip()
+        amount_paise = data.get("amountPaise")
+        allowed_services = {"FASTag recharge", "Mobile prepaid", "Mobile postpaid", "DTH recharge", "Broadband recharge", "Landline bill", "Cable TV recharge", "Metro recharge", "NCMC recharge"}
+        if service not in allowed_services or not 2 <= len(reference) <= 80 or not 2 <= len(plan) <= 120 or payment_method not in {"Wallet", "Other payment method"} or not isinstance(amount_paise, int) or isinstance(amount_paise, bool) or not 1000 <= amount_paise <= 10_000_000:
+            self.send_json({"error": "Choose a valid service, plan, account reference, and payment amount."}, HTTPStatus.BAD_REQUEST)
+            return
+        now = int(time.time())
+        with connection() as db:
+            recharge_id = db.execute("INSERT INTO customer_recharges (customer_id, service_type, account_reference, plan_name, amount_paise, payment_method, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (customer["id"], service, reference, plan, amount_paise, payment_method, now)).lastrowid
+        delivery = self.send_recharge_notification(customer, recharge_id, service, reference, plan, amount_paise, payment_method)
+        with connection() as db:
+            db.execute("UPDATE customer_recharges SET email_sent = ?, sms_sent = ? WHERE id = ?", (int(delivery["emailSent"]), int(delivery["smsSent"]), recharge_id))
+        self.send_json({"message": "Recharge payment request created. Complete payment to activate the plan.", "rechargeId": recharge_id, "emailSent": delivery["emailSent"], "smsSent": delivery["smsSent"]}, HTTPStatus.CREATED)
+
+    def send_recharge_notification(self, customer: sqlite3.Row, recharge_id: int, service: str, reference: str, plan: str, amount_paise: int, payment_method: str) -> dict[str, bool]:
+        masked_reference = f"••••{reference[-4:]}" if len(reference) > 4 else reference
+        amount = f"₹{amount_paise / 100:,.2f}"
+        body = f"Hello {customer['first_name']},\n\nYour {service} payment request has been created.\nPlan: {plan}\nAccount: {masked_reference}\nAmount: {amount}\nPayment method: {payment_method}\nStatus: Payment pending\n\nComplete the payment to activate the plan."
+        email_sent = False
+        sms_sent = False
+        if SMTP_HOST and SMTP_FROM:
+            try:
+                email = EmailMessage(); email["Subject"] = f"SHAKALPA recharge payment request #{recharge_id}"; email["From"] = SMTP_FROM; email["To"] = customer["email"]; email.set_content(body)
+                with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
+                    if os.getenv("SMTP_USE_TLS", "1") != "0": smtp.starttls()
+                    if SMTP_USER: smtp.login(SMTP_USER, SMTP_PASSWORD)
+                    smtp.send_message(email)
+                email_sent = True
+            except (OSError, smtplib.SMTPException):
+                pass
+        if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER:
+            try:
+                sms = f"SHAKALPA: Recharge #{recharge_id} created for {service}, {amount}. Status: payment pending. Complete payment to activate."
+                authorization = base64.b64encode(f"{TWILIO_ACCOUNT_SID}:{TWILIO_AUTH_TOKEN}".encode("utf-8")).decode("ascii")
+                request = urllib.request.Request(f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json", data=urlencode({"To": customer["phone"], "From": TWILIO_FROM_NUMBER, "Body": sms}).encode("utf-8"), headers={"Authorization": f"Basic {authorization}", "Content-Type": "application/x-www-form-urlencoded"}, method="POST")
+                with urllib.request.urlopen(request, timeout=10): pass
+                sms_sent = True
+            except (urllib.error.URLError, urllib.error.HTTPError, ValueError):
+                pass
+        return {"emailSent": email_sent, "smsSent": sms_sent}
 
     def support_vendors(self) -> None:
         with connection() as db:
@@ -1730,11 +1843,54 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             accounts = db.execute("SELECT id, first_name, last_name, phone, email, role, created_at FROM accounts WHERE role = 'Vendor' ORDER BY created_at DESC, id DESC").fetchall()
         self.send_json({"accounts": [{"id": row["id"], "firstName": row["first_name"], "lastName": row["last_name"], "phone": row["phone"], "email": row["email"], "role": row["role"], "createdAt": row["created_at"]} for row in accounts]})
 
+    def agent_wallet(self) -> None:
+        agent = self.require_agent()
+        if not agent:
+            return
+        with connection() as db:
+            wallet = db.execute("SELECT balance_paise, updated_at FROM agent_wallets WHERE account_id = ?", (agent["id"],)).fetchone()
+            account = db.execute("SELECT account_holder, account_last4, ifsc_code, verified_at FROM agent_payout_accounts WHERE account_id = ?", (agent["id"],)).fetchone()
+            credits = db.execute("SELECT c.amount_paise, c.created_at, a.first_name, a.last_name FROM agent_incentive_credits c JOIN accounts a ON a.id = c.vendor_id WHERE c.agent_id = ? ORDER BY c.created_at DESC", (agent["id"],)).fetchall()
+            payouts = db.execute("SELECT amount_paise, status, requested_at FROM agent_wallet_payouts WHERE agent_id = ? ORDER BY requested_at DESC", (agent["id"],)).fetchall()
+        self.send_json({"balancePaise": wallet["balance_paise"] if wallet else 0, "updatedAt": wallet["updated_at"] if wallet else None, "payoutAccount": {"accountHolder": account["account_holder"], "accountLast4": account["account_last4"], "ifscCode": account["ifsc_code"], "verifiedAt": account["verified_at"]} if account else None, "credits": [{"amountPaise": row["amount_paise"], "createdAt": row["created_at"], "vendorName": f"{row['first_name']} {row['last_name']}"} for row in credits], "payouts": [{"amountPaise": row["amount_paise"], "status": row["status"], "requestedAt": row["requested_at"]} for row in payouts]})
+
+    def agent_request_wallet_payout(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        agent = self.require_agent()
+        if not agent:
+            return
+        data = self.read_json()
+        if data is None:
+            self.send_json({"error": "Invalid payout request."}, HTTPStatus.BAD_REQUEST)
+            return
+        holder = str(data.get("accountHolder", "")).strip()
+        account_number = re.sub(r"\s+", "", str(data.get("accountNumber", "")))
+        ifsc = str(data.get("ifscCode", "")).strip().upper()
+        now = int(time.time())
+        with connection() as db:
+            verified_account = db.execute("SELECT account_holder, account_last4, ifsc_code FROM agent_payout_accounts WHERE account_id = ?", (agent["id"],)).fetchone()
+            if not verified_account and (not holder or not re.fullmatch(r"[0-9]{9,24}", account_number) or not re.fullmatch(r"[A-Z]{4}0[A-Z0-9]{6}", ifsc)):
+                self.send_json({"error": "Enter valid payout account details."}, HTTPStatus.BAD_REQUEST)
+                return
+            wallet = db.execute("SELECT balance_paise FROM agent_wallets WHERE account_id = ?", (agent["id"],)).fetchone()
+            balance = wallet["balance_paise"] if wallet else 0
+            if balance <= 0:
+                self.send_json({"error": "There is no available incentive balance to withdraw."}, HTTPStatus.BAD_REQUEST)
+                return
+            if not verified_account:
+                db.execute("INSERT INTO agent_payout_accounts (account_id, account_holder, account_last4, ifsc_code, verified_at) VALUES (?, ?, ?, ?, ?)", (agent["id"], holder, account_number[-4:], ifsc, now))
+            db.execute("INSERT INTO agent_wallet_payouts (agent_id, amount_paise, status, requested_at) VALUES (?, ?, 'Requested', ?)", (agent["id"], balance, now))
+            db.execute("INSERT INTO agent_wallets (account_id, balance_paise, updated_at) VALUES (?, 0, ?) ON CONFLICT(account_id) DO UPDATE SET balance_paise = 0, updated_at = excluded.updated_at", (agent["id"], now))
+        self.send_json({"message": "Your available incentive withdrawal was requested.", "amountPaise": balance})
+
     def agent_create_vendor(self) -> None:
         if not self.origin_is_valid():
             self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
             return
-        if not self.require_agent():
+        agent = self.require_agent()
+        if not agent:
             return
         data = self.read_json()
         if data is None:
@@ -1750,10 +1906,13 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 now = int(time.time())
                 cursor = db.execute("INSERT INTO accounts (first_name, last_name, phone, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (account["first_name"], account["last_name"], account["phone"], account["email"], hash_password(account["password"]), "Vendor", now))
                 assign_account_code(db, cursor.lastrowid, "Vendor", account["first_name"], now)
+                incentive = self.agent_vendor_incentive_paise(db)
+                db.execute("INSERT INTO agent_incentive_credits (agent_id, vendor_id, amount_paise, created_at) VALUES (?, ?, ?, ?)", (agent["id"], cursor.lastrowid, incentive, now))
+                db.execute("INSERT INTO agent_wallets (account_id, balance_paise, updated_at) VALUES (?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET balance_paise = balance_paise + excluded.balance_paise, updated_at = excluded.updated_at", (agent["id"], incentive, now))
         except sqlite3.IntegrityError:
             self.send_json({"error": "An account already exists for that email."}, HTTPStatus.CONFLICT)
             return
-        self.send_json({"message": "Vendor account created."}, HTTPStatus.CREATED)
+        self.send_json({"message": "Vendor account created.", "incentivePaise": incentive}, HTTPStatus.CREATED)
 
     def vendor_profile(self) -> None:
         vendor = self.require_vendor()
@@ -2150,11 +2309,21 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         except (TypeError, ValueError):
             return 0
 
+    def agent_vendor_incentive_paise(self, db: sqlite3.Connection | None = None) -> int:
+        if db is None:
+            with connection() as own_db:
+                return self.agent_vendor_incentive_paise(own_db)
+        row = db.execute("SELECT setting_value FROM payment_settings WHERE setting_key = 'agent_vendor_incentive_paise'").fetchone()
+        try:
+            return max(0, int(row["setting_value"])) if row else 0
+        except (TypeError, ValueError):
+            return 0
+
     def admin_payment_settings(self) -> None:
         if not self.require_admin():
             return
         fee_paise = self.registration_fee_paise()
-        self.send_json({"vendorRegistrationFeePaise": fee_paise, "productEntryFeePaise": self.product_entry_fee_paise(), "currency": "INR", "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
+        self.send_json({"vendorRegistrationFeePaise": fee_paise, "productEntryFeePaise": self.product_entry_fee_paise(), "agentVendorIncentivePaise": self.agent_vendor_incentive_paise(), "currency": "INR", "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
 
     def admin_save_payment_settings(self) -> None:
         if not self.origin_is_valid():
@@ -2164,18 +2333,20 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not admin:
             return
         data = self.read_json()
-        if data is None or not isinstance(data.get("vendorRegistrationFeePaise"), int) or not isinstance(data.get("productEntryFeePaise"), int):
-            self.send_json({"error": "Enter valid Vendor registration and product entry fees."}, HTTPStatus.BAD_REQUEST)
+        if data is None or not all(isinstance(data.get(field), int) and not isinstance(data.get(field), bool) for field in ("vendorRegistrationFeePaise", "productEntryFeePaise", "agentVendorIncentivePaise")):
+            self.send_json({"error": "Enter valid Vendor, product, and agent incentive amounts."}, HTTPStatus.BAD_REQUEST)
             return
         fee_paise = data["vendorRegistrationFeePaise"]
         product_fee_paise = data["productEntryFeePaise"]
-        if not 0 <= fee_paise <= 100_000_000 or not 0 <= product_fee_paise <= 100_000_000:
-            self.send_json({"error": "Fees must be between ₹0 and ₹1,000,000."}, HTTPStatus.BAD_REQUEST)
+        incentive_paise = data["agentVendorIncentivePaise"]
+        if not all(0 <= amount <= 100_000_000 for amount in (fee_paise, product_fee_paise, incentive_paise)):
+            self.send_json({"error": "Amounts must be between ₹0 and ₹1,000,000."}, HTTPStatus.BAD_REQUEST)
             return
         with connection() as db:
             db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES ('vendor_registration_fee_paise', ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (str(fee_paise), admin["id"], int(time.time())))
             db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES ('product_entry_fee_paise', ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (str(product_fee_paise), admin["id"], int(time.time())))
-        self.send_json({"message": "Payment fees updated.", "vendorRegistrationFeePaise": fee_paise, "productEntryFeePaise": product_fee_paise, "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
+            db.execute("INSERT INTO payment_settings (setting_key, setting_value, updated_by, updated_at) VALUES ('agent_vendor_incentive_paise', ?, ?, ?) ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_by = excluded.updated_by, updated_at = excluded.updated_at", (str(incentive_paise), admin["id"], int(time.time())))
+        self.send_json({"message": "Payment fees and agent incentive updated.", "vendorRegistrationFeePaise": fee_paise, "productEntryFeePaise": product_fee_paise, "agentVendorIncentivePaise": incentive_paise, "gatewayConfigured": bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)})
 
     def market_rates(self) -> None:
         with connection() as db:
