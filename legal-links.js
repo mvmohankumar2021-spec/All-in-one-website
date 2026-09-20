@@ -1,4 +1,6 @@
 (() => {
+  const serviceMode = document.querySelector('#typeMode option[value="service"]');
+  if (serviceMode) serviceMode.textContent = 'Service';
   if (location.pathname.endsWith('/policy-centre.html')) return;
   const link = document.createElement('a');
   link.href = 'policy-centre.html'; link.className = 'policy-centre-link'; link.textContent = 'Policies';

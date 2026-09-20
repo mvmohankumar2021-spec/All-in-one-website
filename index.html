@@ -9,17 +9,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="styles.css?v=20260920-marketplace-3" />
+    <link rel="stylesheet" href="theme.css?v=20260920-marketplace-24" />
   </head>
-  <body>
+  <body class="homepage">
     <div class="announcement"><span>New:</span> One platform for products, appointments & teams <a href="#roles">Explore workspaces →</a></div>
     <header class="site-header">
       <a class="brand" href="#home" aria-label="SHAKALPA home"><span class="brand-mark">S</span>SHAKALPA</a>
       <nav aria-label="Main navigation">
         <a href="#shop">Shop</a><a href="#services">Services</a><a href="shabox.html">ShaBox</a><a href="#roles">Workspaces</a><a href="#security">Security</a><a href="about.html">About us</a>
       </nav>
-      <div class="header-actions"><button class="icon-button" id="cartButton" aria-label="View shopping cart">Bag <span id="cartCount">0</span></button><button class="button button-dark" id="signInButton">Log in</button></div>
+      <div class="header-actions"><button class="icon-button cart-symbol" id="cartButton" aria-label="View shopping cart, 0 items" title="Shopping cart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 7H6"></path><circle cx="9" cy="20" r="1.25"></circle><circle cx="18" cy="20" r="1.25"></circle></svg><span id="cartCount" aria-live="polite">0</span></button><button class="button button-dark" id="signInButton">Log in</button></div>
     </header>
 
     <main id="home">
@@ -59,6 +59,6 @@
     <dialog id="authModal"><button class="close-modal" aria-label="Close">×</button><p class="eyebrow">SECURE ACCESS</p><h2 id="modalTitle">Welcome back</h2><p class="modal-copy">Choose your workspace and sign in securely.</p><form id="loginForm" novalidate><label>Email<input type="email" id="email" autocomplete="email" placeholder="you@company.com" required maxlength="254" /></label><label>Password<input type="password" id="password" autocomplete="current-password" placeholder="Enter your password" required minlength="8" maxlength="128" /></label><p class="form-error" id="formError" role="alert"></p><button class="button button-dark full" type="submit">Sign in securely <span>→</span></button></form><p class="modal-note">Demo only. In production, use SSO/MFA and server-side sessions.</p></dialog>
     <aside class="cart-panel" id="cartPanel" aria-label="Shopping cart"><div class="cart-header"><h2>Your bag</h2><button id="closeCart" aria-label="Close cart">×</button></div><div id="cartItems"><p class="empty-cart">Your bag is ready when you are.</p></div><div class="cart-footer"><div><span>Subtotal</span><strong id="cartTotal">$0.00</strong></div><button class="button button-lime full" id="checkoutButton">Secure checkout <span>→</span></button></div></aside><div class="overlay" id="overlay"></div>
     <div class="toast" id="toast" role="status"></div>
-    <script src="password-controls.js"></script><script src="app.js"></script><script src="converter.js"></script><script src="calculator.js"></script><script src="recharge.js"></script><script src="tracking.js"></script><script src="product-reviews.js"></script><script src="toolbar-fallback.js"></script>
+    <script src="password-controls.js"></script><script src="app.js?v=20260920-profile-refresh-1"></script><script src="converter.js"></script><script src="calculator.js"></script><script src="recharge.js"></script><script src="tracking.js"></script><script src="product-reviews.js?v=20260920-price-ratings-1"></script><script src="toolbar-fallback.js"></script><script src="role-labels.js"></script><script src="profile-menu.js?v=20260920-profile-1"></script>
   </body>
 </html>

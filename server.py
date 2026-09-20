@@ -8,6 +8,7 @@ from __future__ import annotations
 import base64
 import argparse
 import binascii
+from collections import defaultdict, deque
 import getpass
 import hashlib
 import hmac
@@ -22,7 +23,10 @@ import threading
 import time
 import urllib.error
 import urllib.request
+import zipfile
+import xml.etree.ElementTree as ET
 from email.message import EmailMessage
+from html import escape
 from http import HTTPStatus
 from http.cookies import SimpleCookie
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -32,9 +36,11 @@ from urllib.parse import parse_qs, urlencode, urlparse
 ROOT = Path(__file__).resolve().parent
 DATABASE = ROOT / "nexahub.db"
 UPLOADS = ROOT / "uploads"
-# Bind to the LAN so devices on the same private Wi-Fi can use the local preview.
-# Firewall access is restricted to the Private profile by the launch instructions.
-HOST, PORT = "0.0.0.0", 8080
+# Local-only is the safe default. Production traffic must terminate TLS before
+# it reaches this app and explicitly opt in with SHAKALPA_HOST / NEXAHUB_HTTPS.
+HOST, PORT = os.getenv("SHAKALPA_HOST", "127.0.0.1"), int(os.getenv("SHAKALPA_PORT", "8080"))
+HTTPS_ENABLED = os.getenv("NEXAHUB_HTTPS") == "1"
+ALLOWED_ORIGINS = {value.strip().rstrip("/") for value in os.getenv("SHAKALPA_ALLOWED_ORIGINS", f"http://localhost:{PORT},http://127.0.0.1:{PORT}").split(",") if value.strip()}
 MAX_BODY_BYTES = 56_000_000
 MAX_IMAGE_BYTES = 2 * 1024 * 1024
 MAX_CERTIFICATE_BYTES = 1_500_000
@@ -81,7 +87,51 @@ LEGAL_DOCUMENTS = {
     "/legal/privacy-policy": Path.home() / "Downloads" / "SHAKALPA_Privacy_Policy_India_Draft.docx",
     "/legal/terms-and-conditions": Path.home() / "Downloads" / "SHAKALPA_Terms_and_Conditions_India_Draft.docx",
     "/legal/vendor-agreement": Path.home() / "Downloads" / "SHAKALPA_Vendor_Agreement_India_Draft.docx",
+    "/legal/code-of-conduct": ROOT / "legal-documents" / "SHAKALPA_Code_of_Conduct_India_Draft.docx",
+    "/legal/electrical-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Electrical_Safety_Declaration_India_Draft.docx",
+    "/legal/background-verification-consent": ROOT / "legal-documents" / "SHAKALPA_Background_Verification_Consent_India_Draft.docx",
 }
+RATE_LIMIT_LOCK = threading.Lock()
+RATE_LIMITS: dict[str, deque[float]] = defaultdict(deque)
+
+
+def docx_preview_html(document: Path) -> str:
+    """Extract a safe, readable HTML preview from a SHAKALPA DOCX policy."""
+    word_ns = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    with zipfile.ZipFile(document) as archive:
+        root = ET.fromstring(archive.read("word/document.xml"))
+
+    def text_of(element) -> str:
+        return "".join(node.text or "" for node in element.iter(f"{word_ns}t")).strip()
+
+    output: list[str] = []
+    title_written = False
+    body = root.find(f"{word_ns}body")
+    for node in list(body or []):
+        if node.tag == f"{word_ns}p":
+            text = text_of(node)
+            if not text:
+                continue
+            style = node.find(f"{word_ns}pPr/{word_ns}pStyle")
+            style_name = (style.get(f"{word_ns}val") if style is not None else "") or ""
+            if not title_written:
+                output.append(f"<h1>{escape(text)}</h1>")
+                title_written = True
+            elif "Heading" in style_name or style_name.lower() in {"title", "subtitle"}:
+                output.append(f"<h2>{escape(text)}</h2>")
+            else:
+                output.append(f"<p>{escape(text)}</p>")
+        elif node.tag == f"{word_ns}tbl":
+            rows = []
+            for row in node.findall(f"{word_ns}tr"):
+                cells = [f"<td>{escape(text_of(cell))}</td>" for cell in row.findall(f"{word_ns}tc")]
+                if cells:
+                    rows.append(f"<tr>{''.join(cells)}</tr>")
+            if rows:
+                output.append(f"<table>{''.join(rows)}</table>")
+    return "".join(output) or "<h1>Document preview unavailable</h1>"
+
+
 NAME_PATTERN = re.compile(r"^[A-Za-zÀ-ÿ' -]{2,50}$")
 PHONE_PATTERN = re.compile(r"^[0-9+() -]{7,20}$")
 MEDIA_BLOCKED_TERMS = {
@@ -151,6 +201,12 @@ def init_database() -> None:
                 FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions(expires_at);
+            CREATE TABLE IF NOT EXISTS account_profile_images (
+                account_id INTEGER PRIMARY KEY,
+                image_path TEXT NOT NULL,
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
             CREATE TABLE IF NOT EXISTS oauth_states (
                 state TEXT PRIMARY KEY,
                 requested_role TEXT NOT NULL,
@@ -219,6 +275,13 @@ def init_database() -> None:
                 completed_at INTEGER NOT NULL,
                 updated_at INTEGER NOT NULL,
                 PRIMARY KEY(account_id, operating_model),
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS electrical_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Application Submitted',
+                updated_at INTEGER NOT NULL,
                 FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE TABLE IF NOT EXISTS vendor_profile_changes (
@@ -538,6 +601,12 @@ def init_database() -> None:
         staff_columns = {row["name"] for row in db.execute("PRAGMA table_info(vendor_staff)")}
         if "offboarded_at" not in staff_columns:
             db.execute("ALTER TABLE vendor_staff ADD COLUMN offboarded_at INTEGER")
+        electrical_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Electrical Services")).fetchone()
+        if not electrical_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Home Services", "Electrical Services", int(time.time())))
+            electrical_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Electrical Services")).fetchone()
+        for service in ("Electrical Repair", "Home Wiring", "Switch & Socket Repair", "Fan Installation", "Light Installation", "Inverter Installation", "Electrical Inspection"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (electrical_taxonomy["id"], service, "electrical service"))
         legacy_accounts = db.execute("SELECT id, first_name, role, created_at FROM accounts WHERE account_code IS NULL OR account_code = ''").fetchall()
         for account in legacy_accounts:
             staff = db.execute("SELECT vendor_id FROM vendor_staff WHERE account_id = ?", (account["id"],)).fetchone()
@@ -618,7 +687,34 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         # Avoid emitting request payloads or credentials into local logs.
         print(f"[{self.log_date_time_string()}] {self.command} {self.path} {args[1] if len(args) > 1 else ''}")
 
+    def end_headers(self) -> None:
+        self.send_header("Content-Security-Policy", "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self' https://checkout.razorpay.com https://maps.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://*.googleusercontent.com; media-src 'self' blob:; connect-src 'self' https://nominatim.openstreetmap.org https://api.open-meteo.com; frame-src https://www.google.com https://maps.google.com https://*.google.com")
+        self.send_header("Permissions-Policy", "camera=(self), geolocation=(self), microphone=(), payment=(self)")
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+        self.send_header("Cross-Origin-Resource-Policy", "same-origin")
+        if HTTPS_ENABLED:
+            self.send_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        super().end_headers()
+
+    def rate_limit_allowed(self) -> bool:
+        client = self.client_address[0]
+        is_signin = self.path == "/api/signin"
+        window, maximum = (15 * 60, 10) if is_signin else (60, 90)
+        key = f"{'signin' if is_signin else 'write'}:{client}"
+        now = time.monotonic()
+        with RATE_LIMIT_LOCK:
+            attempts = RATE_LIMITS[key]
+            while attempts and attempts[0] <= now - window:
+                attempts.popleft()
+            if len(attempts) >= maximum:
+                return False
+            attempts.append(now)
+        return True
+
     def do_POST(self) -> None:
+        if not self.rate_limit_allowed():
+            self.send_json({"error": "Too many requests. Please wait and try again."}, HTTPStatus.TOO_MANY_REQUESTS)
+            return
         if self.path == "/api/signup":
             self.signup()
         elif self.path == "/api/setup-admin":
@@ -627,6 +723,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.signin()
         elif self.path == "/api/signout":
             self.signout()
+        elif self.path == "/api/account/profile-image":
+            self.account_save_profile_image()
         elif self.path == "/api/contact":
             self.contact_submit()
         elif self.path == "/api/recharges":
@@ -651,6 +749,10 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.vendor_save_marketplace_setup()
         elif self.path == "/api/vendor/operating-setup":
             self.vendor_save_operating_setup()
+        elif self.path == "/api/vendor/electrical-onboarding":
+            self.vendor_save_electrical_onboarding()
+        elif self.path == "/api/vendor/electrical-certificates":
+            self.vendor_upload_electrical_certificates()
         elif self.path == "/api/reviews/vendor-approve":
             self.approve_vendor_profile()
         elif self.path == "/api/reviews/request-documents":
@@ -739,7 +841,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.google_auth_callback(parsed)
             return
         if parsed.path in LEGAL_DOCUMENTS:
-            self.legal_document(parsed.path)
+            self.legal_document(parsed)
             return
         if self.path == "/api/session":
             self.session_status()
@@ -797,6 +899,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/vendor/operating-setup":
             self.vendor_operating_setup()
+            return
+        if self.path == "/api/vendor/electrical-onboarding":
+            self.vendor_electrical_onboarding()
             return
         if self.path == "/api/vendor/registration-payment":
             self.vendor_registration_payment()
@@ -876,7 +981,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         body = candidate.read_bytes()
         if candidate.suffix.lower() == ".html":
-            body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="field-help.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script></body>')
+            body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="electrical-partner.js"></script><script src="field-help.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script><script src="role-labels.js"></script><script src="profile-menu.js"></script></body>')
         self.wfile.write(body)
 
     def train_tracking(self, parsed) -> None:
@@ -888,10 +993,28 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         self.send_json({"error": "An authorised live train-status provider has not been connected yet. Add its production credentials on the server to enable live positions."}, HTTPStatus.SERVICE_UNAVAILABLE)
 
-    def legal_document(self, path: str) -> None:
-        document = LEGAL_DOCUMENTS[path]
+    def legal_document(self, parsed) -> None:
+        """Show legal documents in the browser, with downloading as an explicit choice."""
+        document = LEGAL_DOCUMENTS[parsed.path]
         if not document.is_file():
             self.send_json({"error": "The requested legal document is unavailable."}, HTTPStatus.NOT_FOUND)
+            return
+        if (parse_qs(parsed.query).get("download") or [""])[0] != "1":
+            try:
+                preview_html = docx_preview_html(document)
+            except (KeyError, OSError, zipfile.BadZipFile, ET.ParseError):
+                self.send_json({"error": "The requested legal document could not be displayed."}, HTTPStatus.INTERNAL_SERVER_ERROR)
+                return
+            download_url = f"{parsed.path}?download=1"
+            page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{escape(document.stem.replace('_', ' '))} | SHAKALPA</title><style>body{{margin:0;background:#eef1eb;color:#18201e;font:16px/1.6 Arial,sans-serif}}main{{max-width:850px;margin:0 auto;background:#fff;min-height:100vh;padding:36px clamp(22px,6vw,68px);box-sizing:border-box}}.bar{{display:flex;justify-content:space-between;gap:16px;align-items:center;padding-bottom:24px;border-bottom:1px solid #d9e1d7;margin-bottom:30px}}.brand{{font-weight:800;letter-spacing:.08em;font-size:13px}}.download{{display:inline-block;background:#18201e;color:#fff;padding:10px 14px;text-decoration:none;font-weight:700;font-size:13px;border-radius:4px}}h1{{font-family:Georgia,serif;font-size:34px;line-height:1.15;margin:0 0 22px}}h2{{font-family:Georgia,serif;font-size:22px;line-height:1.25;margin:30px 0 10px}}p{{margin:0 0 14px}}table{{width:100%;border-collapse:collapse;margin:18px 0 22px;font-size:14px}}td{{border:1px solid #d9e1d7;padding:9px;vertical-align:top}}tr:first-child td{{font-weight:700;background:#f4f7f2}}.notice{{font-size:13px;color:#536059;margin:0}}@media(max-width:560px){{main{{padding:25px 20px}}.bar{{align-items:flex-start;flex-direction:column}}h1{{font-size:28px}}}}</style></head><body><main><div class="bar"><span class="brand">SHAKALPA · POLICY DOCUMENT</span><a class="download" href="{download_url}">Download document</a></div><p class="notice">Read this document here. Download it only if you need a copy.</p>{preview_html}</main></body></html>'''
+            body = page.encode("utf-8")
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("X-Frame-Options", "DENY")
+            self.end_headers()
+            self.wfile.write(body)
             return
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
@@ -1042,8 +1165,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             raise
 
     def origin_is_valid(self) -> bool:
-        origin = self.headers.get("Origin")
-        return not origin or origin == f"http://{self.headers.get('Host')}"
+        origin = (self.headers.get("Origin") or "").rstrip("/")
+        return bool(origin) and origin in ALLOWED_ORIGINS
 
     def signup(self) -> None:
         if not self.origin_is_valid():
@@ -1583,7 +1706,28 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
 
     def session_status(self) -> None:
         account = self.current_account()
-        self.send_json({"authenticated": bool(account), "account": {"firstName": account["first_name"], "lastName": account["last_name"], "role": account["role"]} if account else None, "adminView": bool(account and self.headers.get("X-SHAKALPA-Admin-Vendor-View"))})
+        image_path = None
+        if account:
+            with connection() as db:
+                row = db.execute("SELECT image_path FROM account_profile_images WHERE account_id = ?", (account["id"],)).fetchone()
+            image_path = row["image_path"] if row else None
+        self.send_json({"authenticated": bool(account), "account": {"firstName": account["first_name"], "lastName": account["last_name"], "role": account["role"], "profileImage": image_path} if account else None, "adminView": bool(account and self.headers.get("X-SHAKALPA-Admin-Vendor-View"))})
+
+    def account_save_profile_image(self) -> None:
+        account = self.current_account()
+        if not account:
+            self.send_json({"error": "Sign in to update your profile photo."}, HTTPStatus.UNAUTHORIZED)
+            return
+        data = self.read_json()
+        if data is None:
+            return
+        image_path, error = self.save_vendor_image(data.get("image"))
+        if error or not image_path:
+            self.send_json({"error": error or "Choose a profile image to upload."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            db.execute("INSERT INTO account_profile_images (account_id, image_path, updated_at) VALUES (?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET image_path = excluded.image_path, updated_at = excluded.updated_at", (account["id"], image_path, int(time.time())))
+        self.send_json({"message": "Profile photo updated.", "profileImage": image_path})
 
     def current_account(self) -> sqlite3.Row | None:
         view_token = self.headers.get("X-SHAKALPA-Admin-Vendor-View", "")
@@ -2026,6 +2170,14 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             if not operating_setup:
                 self.send_json({"error": f"Complete the {VENDOR_OPERATING_MODELS[operating_model]} setup before submitting for approval."}, HTTPStatus.BAD_REQUEST)
                 return
+        electrical_terms = ("electrical", "wiring", "socket", "fan installation", "light installation", "inverter", "inspection")
+        is_electrical_service = any(term in f"{business_type} {service_type}".lower() for term in electrical_terms)
+        if submit_for_approval and is_electrical_service:
+            with connection() as db:
+                electrical_application = db.execute("SELECT 1 FROM electrical_partner_onboarding WHERE account_id = ?", (vendor["id"],)).fetchone()
+            if not electrical_application:
+                self.send_json({"error": "Complete and submit the Electrical Service Partner onboarding form before submitting this profile for approval."}, HTTPStatus.BAD_REQUEST)
+                return
         certificate_documents, certificate_error = self.save_vendor_certificates(vendor["id"], data.get("certificateDocuments"))
         if certificate_error:
             self.send_json({"error": certificate_error}, HTTPStatus.BAD_REQUEST)
@@ -2068,6 +2220,92 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 db.execute("UPDATE vendor_document_requests SET status = 'Resolved', resolved_at = ? WHERE account_id = ? AND status = 'Open'", (now, vendor["id"]))
         message = "Business profile submitted for approval." if submit_for_approval else "Business profile saved as a draft."
         self.send_json({"message": message, "ownerImagePath": image_path, "approvalStatus": approval_status, "certificateCount": stored_certificate_count, "newCertificateCount": len(certificate_documents)})
+
+    def vendor_electrical_onboarding(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            row = db.execute("SELECT details_json, application_status, updated_at FROM electrical_partner_onboarding WHERE account_id = ?", (vendor["id"],)).fetchone()
+            profile = db.execute("SELECT approval_status FROM vendor_profiles WHERE account_id = ?", (vendor["id"],)).fetchone()
+        if profile and profile["approval_status"] == "Approved":
+            status = "Active"
+        elif row and profile and profile["approval_status"] == "Submitted":
+            status = "Verification"
+        else:
+            status = row["application_status"] if row else "Not started"
+        self.send_json({"onboarding": {"details": json.loads(row["details_json"]), "status": status, "updatedAt": row["updated_at"]} if row else {"details": {}, "status": status, "updatedAt": None}})
+
+    def vendor_save_electrical_onboarding(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        allowed_services = {"Electrical Repair", "Home Wiring", "Switch & Socket Repair", "Fan Installation", "Light Installation", "Inverter Installation", "Electrical Inspection"}
+        services = data.get("services")
+        if not isinstance(services, list) or not services or not set(services).issubset(allowed_services):
+            self.send_json({"error": "Select at least one supported electrical service."}, HTTPStatus.BAD_REQUEST)
+            return
+        service_details = data.get("serviceDetails") if isinstance(data.get("serviceDetails"), dict) else {}
+        clean_services = {}
+        for service in services:
+            item = service_details.get(service) if isinstance(service_details.get(service), dict) else {}
+            try:
+                years, price = int(item.get("years", 0)), float(item.get("visitPrice", -1))
+            except (TypeError, ValueError):
+                years, price = -1, -1
+            if not 0 <= years <= 60 or not 0 <= price <= 100000:
+                self.send_json({"error": f"Enter valid experience and starting price for {service}."}, HTTPStatus.BAD_REQUEST)
+                return
+            clean_services[service] = {"years": years, "visitPrice": price}
+        text = lambda key, maximum=500: str(data.get(key, "")).strip()[:maximum]
+        city, service_areas, working_hours = text("city", 80), text("serviceAreas", 500), text("workingHours", 160)
+        holder, account_number, ifsc = text("accountHolder", 120), re.sub(r"[ -]", "", text("accountNumber", 24)), text("ifsc", 20).upper()
+        working_days = data.get("workingDays") if isinstance(data.get("workingDays"), list) else []
+        agreements = data.get("agreements") if isinstance(data.get("agreements"), dict) else {}
+        material_policy = text("materialPolicy", 500)
+        if not city or not service_areas or not working_hours or not working_days or not material_policy or not 2 <= len(holder) <= 120 or not re.fullmatch(r"[0-9]{9,18}", account_number) or not re.fullmatch(r"[A-Z]{4}0[A-Z0-9]{6}", ifsc):
+            self.send_json({"error": "Complete service area, material policy, availability, and valid bank details."}, HTTPStatus.BAD_REQUEST)
+            return
+        if not all(agreements.get(key) is True for key in ("partnerAgreement", "terms", "privacy", "conduct", "safety")):
+            self.send_json({"error": "Accept all required SHAKALPA agreements and the safety declaration."}, HTTPStatus.BAD_REQUEST)
+            return
+        high_risk = {"Home Wiring", "Inverter Installation", "Electrical Inspection"}
+        qualification, licence = text("qualification", 300), text("licence", 300)
+        if high_risk.intersection(services) and (len(qualification) < 2 or len(licence) < 2):
+            self.send_json({"error": "Provide qualification and relevant licence or registration details for the selected higher-safety services."}, HTTPStatus.BAD_REQUEST)
+            return
+        now = int(time.time())
+        with connection() as db:
+            if high_risk.intersection(services):
+                certificate = db.execute("SELECT 1 FROM vendor_certificates WHERE account_id = ? LIMIT 1", (vendor["id"],)).fetchone()
+                if not certificate:
+                    self.send_json({"error": "Upload the relevant electrical qualification or licence certificate before submitting higher-safety services."}, HTTPStatus.BAD_REQUEST)
+                    return
+            agreement_records = {key: {"accepted": True, "version": "1.0", "acceptedAt": now} for key in ("partnerAgreement", "terms", "privacy", "conduct", "safety")}
+            details = {"services": services, "serviceDetails": clean_services, "qualification": qualification, "licence": licence, "city": city, "serviceAreas": service_areas, "radius": text("radius", 40), "inspectionCharge": text("inspectionCharge", 40), "labourCharges": text("labourCharges", 100), "emergencyCharges": text("emergencyCharges", 100), "materialPolicy": material_policy, "workingDays": working_days, "workingHours": working_hours, "emergencyAvailable": data.get("emergencyAvailable") is True, "accountHolder": holder, "accountLast4": account_number[-4:], "ifsc": ifsc, "bankVerificationStatus": "Pending document verification", "upiId": text("upiId", 120), "backgroundConsent": data.get("backgroundConsent") is True, "backgroundVerificationStatus": "Consent received" if data.get("backgroundConsent") is True else "Not requested", "agreementRecords": agreement_records, "agreements": agreements}
+            db.execute("INSERT INTO electrical_partner_onboarding (account_id, details_json, application_status, updated_at) VALUES (?, ?, 'Application Submitted', ?) ON CONFLICT(account_id) DO UPDATE SET details_json = excluded.details_json, application_status = excluded.application_status, updated_at = excluded.updated_at", (vendor["id"], json.dumps(details), now))
+        self.send_json({"message": "Electrical Service Partner application submitted. KYC and SHAKALPA verification are pending.", "status": "Application Submitted"})
+
+    def vendor_upload_electrical_certificates(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        documents, error = self.save_vendor_certificates(vendor["id"], data.get("documents"))
+        if error:
+            self.send_json({"error": error}, HTTPStatus.BAD_REQUEST)
+            return
+        if not documents:
+            self.send_json({"error": "Choose at least one qualification or licence document to upload."}, HTTPStatus.BAD_REQUEST)
+            return
+        self.send_json({"message": "Qualification document uploaded for SHAKALPA review.", "count": len(documents)})
 
     def vendor_save_operating_model(self) -> None:
         if not self.origin_is_valid():
@@ -3299,8 +3537,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         if cookie:
-            secure = "; Secure" if os.getenv("NEXAHUB_HTTPS") == "1" else ""
-            self.send_header("Set-Cookie", f"nh_session={cookie}; HttpOnly; SameSite=Lax; Path=/; Max-Age={SESSION_AGE_SECONDS}{secure}")
+            secure = "; Secure" if HTTPS_ENABLED else ""
+            self.send_header("Set-Cookie", f"nh_session={cookie}; HttpOnly; SameSite=Strict; Path=/; Max-Age={SESSION_AGE_SECONDS}{secure}")
         self.end_headers()
 
     def send_json(self, payload: dict, status: HTTPStatus = HTTPStatus.OK, cookie: str | None = None, clear_cookie: bool = False) -> None:
@@ -3311,10 +3549,11 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         if cookie:
-            secure = "; Secure" if os.getenv("NEXAHUB_HTTPS") == "1" else ""
-            self.send_header("Set-Cookie", f"nh_session={cookie}; HttpOnly; SameSite=Lax; Path=/; Max-Age={SESSION_AGE_SECONDS}{secure}")
+            secure = "; Secure" if HTTPS_ENABLED else ""
+            self.send_header("Set-Cookie", f"nh_session={cookie}; HttpOnly; SameSite=Strict; Path=/; Max-Age={SESSION_AGE_SECONDS}{secure}")
         if clear_cookie:
             self.send_header("Set-Cookie", "nh_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0")
+            self.send_header("Set-Cookie", "nh_admin_view=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0")
         self.end_headers()
         self.wfile.write(body)
 
@@ -3328,6 +3567,8 @@ if __name__ == "__main__":
     parser.add_argument("--phone", help="Account holder contact number.")
     parser.add_argument("--email", help="Account holder email address.")
     arguments = parser.parse_args()
+    if HOST not in {"127.0.0.1", "localhost", "::1"} and not HTTPS_ENABLED:
+        raise SystemExit("Refusing to expose SHAKALPA over HTTP. Put it behind HTTPS and set NEXAHUB_HTTPS=1 with SHAKALPA_ALLOWED_ORIGINS.")
     init_database()
     if arguments.create_user:
         required = (arguments.role, arguments.first_name, arguments.last_name, arguments.phone, arguments.email)
@@ -3335,5 +3576,5 @@ if __name__ == "__main__":
             parser.error("--create-user requires --role, --first-name, --last-name, --phone, and --email.")
         create_staff_account(arguments.role, arguments.first_name, arguments.last_name, arguments.phone, arguments.email)
         raise SystemExit(0)
-    print(f"SHAKALPA is running at http://localhost:{PORT}")
+    print(f"SHAKALPA is running at {'https' if HTTPS_ENABLED else 'http'}://{HOST}:{PORT}")
     ThreadingHTTPServer((HOST, PORT), SHAKALPAHandler).serve_forever()

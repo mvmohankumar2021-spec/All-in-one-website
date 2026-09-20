@@ -52,7 +52,19 @@
     const section = document.createElement('section');
     section.className = 'product-reviews';
     section.innerHTML = `<button class="review-toggle" type="button">★ Ratings & reviews <span class="review-summary">View</span></button><div class="product-review-body" hidden><div class="review-composer">${composerMarkup(false)}</div><div class="review-breakdown-wrap"></div><div class="product-review-list"></div></div>`;
-    card.append(section);
+    const price = card.querySelector('.product-info > span');
+    if (price) {
+      const priceColumn = document.createElement('div');
+      priceColumn.className = 'product-price-column';
+      price.replaceWith(priceColumn);
+      priceColumn.append(price, section);
+      section.classList.add('product-reviews--price');
+      const toggle = section.querySelector('.review-toggle');
+      toggle.setAttribute('aria-label', 'Ratings and reviews');
+      toggle.innerHTML = `★ Ratings <span class="review-summary">View</span>`;
+    } else {
+      card.append(section);
+    }
   }
 
   function hydrate() { grid.querySelectorAll('[data-product-id]').forEach(addReviewPanel); }

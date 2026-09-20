@@ -31,13 +31,13 @@
           <p class="form-lede">It only takes a minute to get started.</p>
           <form id="signupForm" novalidate>
             <p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
-            <label>Account type <span class="required-marker" aria-hidden="true">*</span><select id="signupRole" name="role" required><option value="Customer">Customer</option><option value="Vendor">Vendor</option><option value="Agent">Agent</option></select></label>
+            <label data-help="Select account type.">Account type <span class="required-marker" aria-hidden="true">*</span><select id="signupRole" name="role" required><option value="" selected disabled>Select account type</option><option value="Customer">SHAKALPA Member</option><option value="Vendor">SHAKALPA Partner</option><option value="Agent">SHAKALPA Associate</option></select></label>
             <div class="name-grid">
-              <label>First name <span class="required-marker" aria-hidden="true">*</span><input id="firstName" name="firstName" type="text" autocomplete="given-name" placeholder="Amara" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
-              <label>Last name <span class="required-marker" aria-hidden="true">*</span><input id="lastName" name="lastName" type="text" autocomplete="family-name" placeholder="Cole" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
+              <label data-help="Enter first name.">First name <span class="required-marker" aria-hidden="true">*</span><input id="firstName" name="firstName" type="text" autocomplete="given-name" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
+              <label data-help="Enter last name.">Last name <span class="required-marker" aria-hidden="true">*</span><input id="lastName" name="lastName" type="text" autocomplete="family-name" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" /></label>
             </div>
-            <label>Contact number <span class="required-marker" aria-hidden="true">*</span><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+1 555 000 0000" required minlength="7" maxlength="20" pattern="[0-9+() -]{7,20}" /></label>
-            <label>Email address <span class="required-marker" aria-hidden="true">*</span><input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="amara@example.com" required maxlength="254" /></label>
+            <label data-help="Enter your contact number.">Contact number <span class="required-marker" aria-hidden="true">*</span><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required minlength="7" maxlength="20" pattern="[0-9+() -]{7,20}" /></label>
+            <label data-help="Enter your email address.">Email address <span class="required-marker" aria-hidden="true">*</span><input id="signupEmail" name="email" type="email" autocomplete="email" required maxlength="254" /></label>
             <fieldset class="donor-preference"><legend>Are you a blood donor? <span class="required-marker" aria-hidden="true">*</span></legend><label><input type="radio" name="donorStatus" value="Yes" required /> Yes</label><label><input type="radio" name="donorStatus" value="No" /> No</label><label><input type="radio" name="donorStatus" value="Decide later" /> Decide later</label></fieldset>
             <fieldset class="identity-documents" id="identityDocuments" hidden>
               <legend>Identity verification</legend>

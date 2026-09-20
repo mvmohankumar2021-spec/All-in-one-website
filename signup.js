@@ -56,7 +56,7 @@ function showToast(message) {
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   error.textContent = '';
-  const fields = [...form.elements].filter((element) => element.tagName === 'INPUT');
+  const fields = [...form.elements].filter((element) => element.tagName === 'INPUT' || element.tagName === 'SELECT');
   const invalid = fields.find((field) => !field.validity.valid);
   if (invalid) {
     error.textContent = 'Please check each field and enter valid account details.';
@@ -94,6 +94,7 @@ form.addEventListener('submit', async (event) => {
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Could not create your account.');
     form.reset();
+    updateGoogleSignupLink();
     showToast('Account created. You can now sign in.');
     window.setTimeout(() => { window.location.href = 'index.html'; }, 1100);
   } catch (requestError) {

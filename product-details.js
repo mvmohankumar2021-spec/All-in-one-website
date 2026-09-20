@@ -22,14 +22,32 @@
     }
     const media = product.mediaUrl || product.media || fallbackImages[fallbackIndex] || '';
     const mediaMarkup = media ? (String(media).match(/\.(mp4|webm)(\?.*)?$/i) ? `<video src="${escapeHtml(media)}" controls playsinline></video>` : `<img src="${escapeHtml(media)}" alt="${escapeHtml(product.name)}">`) : '<div class="fallback-art" aria-hidden="true"></div>';
-    root.innerHTML = `<a class="product-detail-back" href="index.html#shop">← Back to shop</a><section class="product-detail-layout"><div class="product-detail-media">${mediaMarkup}</div><div class="product-detail-info">${product.tag ? `<span class="product-detail-tag">${escapeHtml(product.tag)}</span>` : ''}<p class="eyebrow">PRODUCT DETAILS</p><h1>${escapeHtml(product.name)}</h1><p class="product-detail-price">${money(product.price, product.currency)}</p><p class="product-detail-type">${escapeHtml(product.type || 'SHAKALPA listing')}</p><p class="product-detail-description">${escapeHtml(product.description || `Discover ${product.name} on SHAKALPA.`)}</p><section class="product-detail-specs"><h2>Specifications</h2><p>${escapeHtml(product.specifications || 'Contact the seller for detailed specifications.')}</p></section><div class="product-detail-actions"><button class="button button-lime" id="detailAdd">Add to bag <span>→</span></button><a class="button button-dark" href="index.html#shop">Continue shopping <span>→</span></a></div></div></section>`;
+    root.innerHTML = `<a class="product-detail-back" href="index.html#shop">← Back to shop</a><section class="product-detail-layout"><div class="product-detail-media">${mediaMarkup}</div><div class="product-detail-info">${product.tag && product.tag !== 'VENDOR' ? `<span class="product-detail-tag">${escapeHtml(product.tag)}</span>` : ''}<p class="eyebrow">PRODUCT DETAILS</p><h1>${escapeHtml(product.name)}</h1><p class="product-detail-price">${money(product.price, product.currency)}</p><p class="product-detail-type">${escapeHtml(product.type || 'SHAKALPA listing')}</p><p class="product-detail-description">${escapeHtml(product.description || `Discover ${product.name} on SHAKALPA.`)}</p><section class="product-detail-specs"><h2>Specifications</h2><p>${escapeHtml(product.specifications || 'Contact the seller for detailed specifications.')}</p></section>${product.id ? `<section class="detail-reviews" id="detailReviews"><button type="button" class="detail-review-toggle" aria-expanded="false">★ Ratings &amp; reviews <span id="detailReviewSummary">View</span></button><div class="detail-review-body" id="detailReviewBody" hidden></div></section>` : ''}<div class="product-detail-actions"><button class="button button-lime" id="detailAdd">Add to bag <span>→</span></button><a class="button button-dark" href="index.html#shop">Continue shopping <span>→</span></a></div></div></section>`;
     document.querySelector('#detailAdd').addEventListener('click', () => { sessionStorage.setItem('shakalpa-detail-product', JSON.stringify(product)); document.querySelector('#detailAdd').textContent = 'Added to bag ✓'; });
+    const reviewToggle = document.querySelector('.detail-review-toggle');
+    if (reviewToggle) reviewToggle.addEventListener('click', async () => {
+      const reviewBody = document.querySelector('#detailReviewBody');
+      const isOpening = reviewBody.hidden;
+      reviewBody.hidden = !isOpening;
+      reviewToggle.setAttribute('aria-expanded', String(isOpening));
+      if (!isOpening || reviewBody.dataset.loaded) return;
+      reviewBody.innerHTML = '<small>Loading ratings and reviews…</small>';
+      try {
+        const response = await fetch(`/api/product-reviews?productId=${encodeURIComponent(product.id)}`, { credentials: 'same-origin' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not load reviews.');
+        const summary = data.summary || { count: 0, average: 0 };
+        document.querySelector('#detailReviewSummary').textContent = summary.count ? `${summary.average}/5 · ${summary.count}` : 'No reviews yet';
+        reviewBody.innerHTML = data.reviews?.length ? data.reviews.map((review) => `<article><div><b>${escapeHtml(review.customerName)}</b><span>${'★'.repeat(Math.max(0, Math.min(5, Number(review.rating) || 0)))}${'☆'.repeat(Math.max(0, 5 - (Number(review.rating) || 0)))}</span></div><p>${escapeHtml(review.text)}</p></article>`).join('') : '<small>No reviews yet. Be the first to rate this product.</small>';
+        reviewBody.dataset.loaded = 'true';
+      } catch (error) { reviewBody.innerHTML = `<small>${escapeHtml(error.message)}</small>`; }
+    });
   };
   const loadProduct = () => {
     if (key.startsWith('id-')) {
       fetch('/api/products', { credentials: 'same-origin' }).then(response => response.ok ? response.json() : Promise.reject()).then(data => {
         const source = data.products.find(item => Number(item.id) === Number(key.slice(3)));
-        showProduct(source && { id: source.id, name: source.name, type: [source.category, source.productType, source.vendorName].filter(Boolean).join(' · '), price: source.costPaise / 100, currency: 'INR', tag: 'VENDOR', mediaUrl: source.media?.[0], specifications: source.specifications, description: source.keywords ? `Keywords: ${source.keywords}` : '' });
+        showProduct(source && { id: source.id, name: source.name, type: [source.category, source.productType].filter(Boolean).join(' · '), price: source.costPaise / 100, currency: 'INR', tag: 'VENDOR', mediaUrl: source.media?.[0], specifications: source.specifications, description: source.keywords ? `Keywords: ${source.keywords}` : '' });
       }).catch(() => showProduct(null));
     } else {
       const index = Number(key);

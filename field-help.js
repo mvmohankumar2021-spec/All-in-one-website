@@ -7,6 +7,7 @@
   const messageFor = (label, field) => label.dataset.help || label.querySelector('.upload-note, small:not(.optional)')?.textContent.trim() || field.dataset.help || field.getAttribute('placeholder') || `Provide ${labelText(label)}.`;
   const closeAll = () => { document.querySelectorAll('.global-help-detail').forEach((detail) => { detail.hidden = true; }); document.querySelectorAll('.global-help-button').forEach((button) => button.setAttribute('aria-expanded', 'false')); };
   document.querySelectorAll('label').forEach((label) => {
+    if (label.closest('.electrical-service-grid')) return;
     if (label.querySelector('.required-marker')) label.classList.add('has-required-marker');
     const requiredField = label.querySelector('input[required]:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]), select[required], textarea[required]');
     if (requiredField && !label.querySelector('.required-marker')) {
@@ -26,5 +27,27 @@
     button.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); const show = detail.hidden; closeAll(); detail.hidden = !show; button.setAttribute('aria-expanded', String(show)); });
     label.classList.add('global-help-label'); label.append(button, detail);
   });
-  document.addEventListener('click', (event) => { if (!event.target.closest('.global-help-button, .global-help-detail')) closeAll(); });
+  // Use one viewport-level popover for every help icon. Field-level popovers can
+  // otherwise be clipped by cards and scrolling form panels.
+  const popover = document.createElement('div');
+  popover.className = 'universal-help-popover'; popover.hidden = true;
+  popover.setAttribute('role', 'tooltip'); document.body.append(popover);
+  const helpSelector = '.global-help-button, .field-help-button, .electrical-section-help';
+  const helpText = (button) => button.parentElement?.querySelector('.global-help-detail, .field-help-detail, .electrical-section-help-detail')?.textContent.trim() || button.getAttribute('aria-label') || 'More information is available for this field.';
+  document.querySelectorAll(helpSelector).forEach((button) => { button.title = helpText(button); });
+  const hidePopover = () => { popover.hidden = true; document.querySelectorAll(helpSelector).forEach((button) => button.setAttribute('aria-expanded', 'false')); closeAll(); };
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest(helpSelector);
+    if (!button) { if (!event.target.closest('.universal-help-popover')) hidePopover(); return; }
+    event.preventDefault(); event.stopImmediatePropagation();
+    const wasOpen = !popover.hidden && popover.dataset.owner === button.getAttribute('aria-label');
+    if (wasOpen) { hidePopover(); return; }
+    hidePopover();
+    popover.textContent = helpText(button); popover.dataset.owner = button.getAttribute('aria-label') || '';
+    const rect = button.getBoundingClientRect(); const width = Math.min(290, window.innerWidth - 24);
+    popover.style.width = `${width}px`; popover.style.left = `${Math.max(12, Math.min(window.innerWidth - width - 12, rect.right - width))}px`;
+    popover.style.top = `${Math.min(window.innerHeight - 80, rect.bottom + 8)}px`;
+    popover.hidden = false; button.setAttribute('aria-expanded', 'true');
+  }, true);
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') hidePopover(); });
 })();
