@@ -7,7 +7,7 @@
   const messageFor = (label, field) => label.dataset.help || label.querySelector('.upload-note, small:not(.optional)')?.textContent.trim() || field.dataset.help || field.getAttribute('placeholder') || `Provide ${labelText(label)}.`;
   const closeAll = () => { document.querySelectorAll('.global-help-detail').forEach((detail) => { detail.hidden = true; }); document.querySelectorAll('.global-help-button').forEach((button) => button.setAttribute('aria-expanded', 'false')); };
   document.querySelectorAll('label').forEach((label) => {
-    if (label.closest('.electrical-service-grid')) return;
+    if (label.closest('.electrical-service-grid, .plumbing-onboarding')) return;
     if (label.querySelector('.required-marker')) label.classList.add('has-required-marker');
     const requiredField = label.querySelector('input[required]:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]), select[required], textarea[required]');
     if (requiredField && !label.querySelector('.required-marker')) {

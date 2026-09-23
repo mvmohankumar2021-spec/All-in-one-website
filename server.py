@@ -89,6 +89,25 @@ LEGAL_DOCUMENTS = {
     "/legal/vendor-agreement": Path.home() / "Downloads" / "SHAKALPA_Vendor_Agreement_India_Draft.docx",
     "/legal/code-of-conduct": ROOT / "legal-documents" / "SHAKALPA_Code_of_Conduct_India_Draft.docx",
     "/legal/electrical-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Electrical_Safety_Declaration_India_Draft.docx",
+    "/legal/furniture-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Furniture_Safety_Declaration_India_Draft.docx",
+    "/legal/plumbing-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Plumbing_Safety_Declaration_India_Draft.docx",
+    "/legal/painting-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Painting_Safety_Declaration_India_Draft.docx",
+    "/legal/cleaning-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Cleaning_Safety_Declaration_India_Draft.docx",
+    "/legal/pest-control-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Pest_Control_Safety_Declaration_India_Draft.docx",
+    "/legal/appliance-repair-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Appliance_Repair_Safety_Declaration_India_Draft.docx",
+    "/legal/garden-services-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Garden_Services_Safety_Declaration_India_Draft.docx",
+    "/legal/home-technical-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Home_Technical_Safety_Declaration_India_Draft.docx",
+    "/legal/construction-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Construction_Safety_Declaration_India_Draft.docx",
+    "/legal/architectural-engineering-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Architectural_Engineering_Compliance_Declaration_India_Draft.docx",
+    "/legal/interior-design-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Interior_Design_Compliance_Declaration_India_Draft.docx",
+    "/legal/flooring-cladding-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Flooring_Cladding_Safety_Declaration_India_Draft.docx",
+    "/legal/fabrication-metalwork-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Fabrication_Metalwork_Safety_Declaration_India_Draft.docx",
+    "/legal/building-materials-supply-declaration": ROOT / "legal-documents" / "SHAKALPA_Building_Materials_Supply_Quality_Safety_Declaration_India_Draft.docx",
+    "/legal/real-estate-sales-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Real_Estate_Sales_Compliance_Declaration_India_Draft.docx",
+    "/legal/real-estate-rental-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Real_Estate_Rental_Compliance_Declaration_India_Draft.docx",
+    "/legal/accommodation-safety-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Accommodation_Safety_Guest_Compliance_Declaration_India_Draft.docx",
+    "/legal/real-estate-services-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Real_Estate_Services_Compliance_Declaration_India_Draft.docx",
+    "/legal/marketplace-payments-cancellation-refund-policy": ROOT / "legal-documents" / "SHAKALPA_Marketplace_Payments_Cancellation_Refund_Policy_India_Draft.docx",
     "/legal/background-verification-consent": ROOT / "legal-documents" / "SHAKALPA_Background_Verification_Consent_India_Draft.docx",
 }
 RATE_LIMIT_LOCK = threading.Lock()
@@ -278,6 +297,20 @@ def init_database() -> None:
                 FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE TABLE IF NOT EXISTS electrical_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Application Submitted',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS plumbing_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Application Submitted',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS furniture_partner_onboarding (
                 account_id INTEGER PRIMARY KEY,
                 details_json TEXT NOT NULL,
                 application_status TEXT NOT NULL DEFAULT 'Application Submitted',
@@ -607,6 +640,66 @@ def init_database() -> None:
             electrical_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Electrical Services")).fetchone()
         for service in ("Electrical Repair", "Home Wiring", "Switch & Socket Repair", "Fan Installation", "Light Installation", "Inverter Installation", "Electrical Inspection"):
             db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (electrical_taxonomy["id"], service, "electrical service"))
+        construction_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Construction Services")).fetchone()
+        if not construction_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Home Services", "Construction Services", int(time.time())))
+            construction_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Construction Services")).fetchone()
+        for service in ("Residential Construction", "Commercial Construction", "Building Renovation", "Civil Contracting", "Structural Work", "Site Supervision"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (construction_taxonomy["id"], service, "construction civil contractor"))
+        design_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Architectural & Engineering Services")).fetchone()
+        if not design_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Home Services", "Architectural & Engineering Services", int(time.time())))
+            design_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Architectural & Engineering Services")).fetchone()
+        for service in ("Architectural Design", "Civil Engineering", "Structural Engineering", "Building Plan Approval", "3D Elevation Design"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (design_taxonomy["id"], service, "architectural engineering design"))
+        interior_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Interior Design Services")).fetchone()
+        if not interior_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Home Services", "Interior Design Services", int(time.time())))
+            interior_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Interior Design Services")).fetchone()
+        for service in ("Home Interior Design", "Office Interior Design", "Modular Kitchen", "Wardrobe Design", "False Ceiling", "Space Planning"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (interior_taxonomy["id"], service, "interior design modular furniture"))
+        flooring_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Flooring & Wall Cladding Services")).fetchone()
+        if not flooring_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Home Services", "Flooring & Wall Cladding Services", int(time.time())))
+            flooring_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Flooring & Wall Cladding Services")).fetchone()
+        for service in ("Tile Installation", "Marble Flooring", "Granite Flooring", "Wooden Flooring", "Epoxy Flooring", "Wall Cladding"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (flooring_taxonomy["id"], service, "flooring tile marble granite cladding"))
+        fabrication_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Fabrication & Metalwork Services")).fetchone()
+        if not fabrication_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Home Services", "Fabrication & Metalwork Services", int(time.time())))
+            fabrication_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Fabrication & Metalwork Services")).fetchone()
+        for service in ("Steel Fabrication", "Aluminium Fabrication", "Glass Work", "Welding", "Gate Fabrication", "Grill Work"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (fabrication_taxonomy["id"], service, "fabrication welding metal glass gate grill"))
+        materials_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Building Materials Supply")).fetchone()
+        if not materials_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Home Services", "Building Materials Supply", int(time.time())))
+            materials_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Home Services", "Building Materials Supply")).fetchone()
+        for service in ("Cement Supply", "Steel Supply", "Bricks & Blocks", "Sand & Aggregates", "Tiles & Sanitaryware", "Hardware Supply", "Doors & Windows"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (materials_taxonomy["id"], service, "building materials supplier"))
+        real_estate_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Real Estate & Property", "Property Sales")).fetchone()
+        if not real_estate_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Real Estate & Property", "Property Sales", int(time.time())))
+            real_estate_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Real Estate & Property", "Property Sales")).fetchone()
+        for service in ("Residential Property Sale", "Commercial Property Sale", "Land & Plot Sale", "New Projects", "Resale Property"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (real_estate_taxonomy["id"], service, "real estate property sale rera"))
+        rental_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Real Estate & Property", "Property Rental")).fetchone()
+        if not rental_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Real Estate & Property", "Property Rental", int(time.time())))
+            rental_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Real Estate & Property", "Property Rental")).fetchone()
+        for service in ("House Rental", "Apartment Rental", "Commercial Rental", "Office Rental", "Shop Rental", "Warehouse Rental"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (rental_taxonomy["id"], service, "real estate property rental lease"))
+        accommodation_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Hotels & Accommodation", "Accommodation Services")).fetchone()
+        if not accommodation_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Hotels & Accommodation", "Accommodation Services", int(time.time())))
+            accommodation_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Hotels & Accommodation", "Accommodation Services")).fetchone()
+        for service in ("PG Accommodation", "Hostels", "Service Apartments", "Guest Houses"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (accommodation_taxonomy["id"], service, "accommodation pg hostel guest house"))
+        real_estate_services_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Real Estate & Property", "Real Estate Services")).fetchone()
+        if not real_estate_services_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Real Estate & Property", "Real Estate Services", int(time.time())))
+            real_estate_services_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Real Estate & Property", "Real Estate Services")).fetchone()
+        for service in ("Real Estate Agent", "Property Management", "Property Valuation", "Property Legal Service", "Home Loan Assistance"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (real_estate_services_taxonomy["id"], service, "real estate agent management valuation legal home loan"))
         legacy_accounts = db.execute("SELECT id, first_name, role, created_at FROM accounts WHERE account_code IS NULL OR account_code = ''").fetchall()
         for account in legacy_accounts:
             staff = db.execute("SELECT vendor_id FROM vendor_staff WHERE account_id = ?", (account["id"],)).fetchone()
@@ -751,6 +844,14 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.vendor_save_operating_setup()
         elif self.path == "/api/vendor/electrical-onboarding":
             self.vendor_save_electrical_onboarding()
+        elif self.path == "/api/vendor/plumbing-onboarding":
+            self.vendor_save_plumbing_onboarding()
+        elif self.path == "/api/vendor/furniture-onboarding":
+            self.vendor_save_furniture_onboarding()
+        elif self.path == "/api/vendor/furniture-certificates":
+            self.vendor_upload_furniture_certificates()
+        elif self.path == "/api/vendor/plumbing-certificates":
+            self.vendor_upload_plumbing_certificates()
         elif self.path == "/api/vendor/electrical-certificates":
             self.vendor_upload_electrical_certificates()
         elif self.path == "/api/reviews/vendor-approve":
@@ -903,6 +1004,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/vendor/electrical-onboarding":
             self.vendor_electrical_onboarding()
             return
+        if self.path == "/api/vendor/plumbing-onboarding":
+            self.vendor_plumbing_onboarding()
+            return
+        if self.path == "/api/vendor/furniture-onboarding":
+            self.vendor_furniture_onboarding()
+            return
         if self.path == "/api/vendor/registration-payment":
             self.vendor_registration_payment()
             return
@@ -981,7 +1088,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         body = candidate.read_bytes()
         if candidate.suffix.lower() == ".html":
-            body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="electrical-partner.js"></script><script src="field-help.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script><script src="role-labels.js"></script><script src="profile-menu.js"></script></body>')
+            body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="electrical-partner.js"></script><script src="plumbing-partner.js"></script><script src="furniture-partner.js"></script><script src="painting-partner.js"></script><script src="construction-partner.js"></script><script src="architecture-engineering-partner.js"></script><script src="interior-design-partner.js"></script><script src="flooring-cladding-partner.js"></script><script src="fabrication-metalwork-partner.js"></script><script src="building-materials-partner.js"></script><script src="real-estate-sales-partner.js"></script><script src="real-estate-rental-partner.js"></script><script src="accommodation-partner.js"></script><script src="real-estate-services-partner.js"></script><script src="onboarding-payment-details.js"></script><script src="onboarding-help.js"></script><script src="field-help.js"></script><script src="marketplace-policy-links.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script><script src="role-labels.js"></script><script src="profile-menu.js"></script></body>')
         self.wfile.write(body)
 
     def train_tracking(self, parsed) -> None:
@@ -2162,7 +2269,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             with connection() as db:
                 marketplace_setup = db.execute("SELECT 1 FROM vendor_marketplace_setups WHERE account_id = ?", (vendor["id"],)).fetchone()
             if not marketplace_setup:
-                self.send_json({"error": "Complete Marketplace setup, including payout, policies, and Vendor Agreement confirmation, before submitting for approval."}, HTTPStatus.BAD_REQUEST)
+                self.send_json({"error": "Complete Marketplace setup, including payout and marketplace policy details, before submitting for approval."}, HTTPStatus.BAD_REQUEST)
                 return
         if submit_for_approval and operating_model in {"listing", "leads", "bookings"}:
             with connection() as db:
@@ -2220,6 +2327,130 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 db.execute("UPDATE vendor_document_requests SET status = 'Resolved', resolved_at = ? WHERE account_id = ? AND status = 'Open'", (now, vendor["id"]))
         message = "Business profile submitted for approval." if submit_for_approval else "Business profile saved as a draft."
         self.send_json({"message": message, "ownerImagePath": image_path, "approvalStatus": approval_status, "certificateCount": stored_certificate_count, "newCertificateCount": len(certificate_documents)})
+
+    def vendor_plumbing_onboarding(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            row = db.execute("SELECT details_json, application_status, updated_at FROM plumbing_partner_onboarding WHERE account_id = ?", (vendor["id"],)).fetchone()
+        self.send_json({"onboarding": {"details": json.loads(row["details_json"]), "status": row["application_status"], "updatedAt": row["updated_at"]} if row else {"details": {}, "status": "Not started", "updatedAt": None}})
+
+    def vendor_save_plumbing_onboarding(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        allowed = {"Pipe Repair", "Tap Repair", "Leak Repair", "Bathroom Plumbing", "Kitchen Plumbing", "Water Tank Installation", "Drain Cleaning"}
+        services = data.get("services") if isinstance(data.get("services"), list) else []
+        if not services or not set(services).issubset(allowed):
+            self.send_json({"error": "Select at least one supported plumbing service."}, HTTPStatus.BAD_REQUEST)
+            return
+        details = data.get("serviceDetails") if isinstance(data.get("serviceDetails"), dict) else {}
+        for service in services:
+            item = details.get(service) if isinstance(details.get(service), dict) else {}
+            try:
+                if not 0 <= int(item.get("years")) <= 60 or not 0 <= float(item.get("visitPrice")) <= 100000:
+                    raise ValueError
+            except (TypeError, ValueError):
+                self.send_json({"error": f"Enter valid experience and starting price for {service}."}, HTTPStatus.BAD_REQUEST)
+                return
+        text = lambda key, maximum=500: str(data.get(key, "")).strip()[:maximum]
+        required = (text("city", 80), text("serviceAreas"), text("workingHours", 160), text("materialPolicy"), text("accountHolder", 120), text("accountNumber", 24), text("ifsc", 20))
+        if not all(required) or not isinstance(data.get("workingDays"), list) or not data["workingDays"]:
+            self.send_json({"error": "Complete service area, pricing, availability, and bank details."}, HTTPStatus.BAD_REQUEST)
+            return
+        if not all((data.get("agreements") or {}).get(key) is True for key in ("partnerAgreement", "terms", "privacy", "conduct", "safety")):
+            self.send_json({"error": "Accept all required agreements and the safety declaration."}, HTTPStatus.BAD_REQUEST)
+            return
+        higher_safety = {"Water Tank Installation", "Drain Cleaning", "Bathroom Plumbing", "Kitchen Plumbing"}
+        if higher_safety.intersection(services) and not text("qualification", 300):
+            self.send_json({"error": "Add plumbing qualification or relevant experience details for the selected plumbing work."}, HTTPStatus.BAD_REQUEST)
+            return
+        now = int(time.time())
+        saved = {"services": services, "serviceDetails": details, "qualification": text("qualification", 300), "licence": text("licence", 300), "city": text("city", 80), "serviceAreas": text("serviceAreas"), "radius": text("radius", 40), "inspectionCharge": text("inspectionCharge", 40), "labourCharges": text("labourCharges", 100), "materialPolicy": text("materialPolicy"), "workingDays": data["workingDays"], "workingHours": text("workingHours", 160), "emergencyAvailable": data.get("emergencyAvailable") is True, "accountHolder": text("accountHolder", 120), "accountLast4": text("accountNumber", 24)[-4:], "ifsc": text("ifsc", 20).upper(), "upiId": text("upiId", 120), "agreements": data["agreements"], "backgroundConsent": data.get("backgroundConsent") is True}
+        with connection() as db:
+            db.execute("INSERT INTO plumbing_partner_onboarding (account_id, details_json, application_status, updated_at) VALUES (?, ?, 'Application Submitted', ?) ON CONFLICT(account_id) DO UPDATE SET details_json = excluded.details_json, application_status = excluded.application_status, updated_at = excluded.updated_at", (vendor["id"], json.dumps(saved), now))
+        self.send_json({"message": "Plumbing Service Partner application submitted for SHAKALPA verification.", "status": "Application Submitted"})
+
+    def vendor_upload_plumbing_certificates(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        documents, error = self.save_vendor_certificates(vendor["id"], data.get("documents"))
+        if error or not documents:
+            self.send_json({"error": error or "Choose at least one qualification document."}, HTTPStatus.BAD_REQUEST)
+            return
+        self.send_json({"message": f"{len(documents)} plumbing qualification document(s) uploaded."})
+
+    def vendor_furniture_onboarding(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            row = db.execute("SELECT details_json, application_status, updated_at FROM furniture_partner_onboarding WHERE account_id = ?", (vendor["id"],)).fetchone()
+        self.send_json({"onboarding": {"details": json.loads(row["details_json"]), "status": row["application_status"], "updatedAt": row["updated_at"]} if row else {"details": {}, "status": "Not started", "updatedAt": None}})
+
+    def vendor_save_furniture_onboarding(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        allowed = {"Furniture Repair", "Custom Furniture", "Door Repair", "Window Repair", "Wardrobe Installation", "Modular Furniture"}
+        services = data.get("services") if isinstance(data.get("services"), list) else []
+        if not services or not set(services).issubset(allowed):
+            self.send_json({"error": "Select at least one supported furniture service."}, HTTPStatus.BAD_REQUEST)
+            return
+        details = data.get("serviceDetails") if isinstance(data.get("serviceDetails"), dict) else {}
+        for service in services:
+            item = details.get(service) if isinstance(details.get(service), dict) else {}
+            try:
+                if not 0 <= int(item.get("years")) <= 60 or not 0 <= float(item.get("visitPrice")) <= 100000:
+                    raise ValueError
+            except (TypeError, ValueError):
+                self.send_json({"error": f"Enter valid experience and starting price for {service}."}, HTTPStatus.BAD_REQUEST)
+                return
+        text = lambda key, maximum=500: str(data.get(key, "")).strip()[:maximum]
+        required = (text("city", 80), text("serviceAreas"), text("workingHours", 160), text("materialPolicy"), text("accountHolder", 120), text("accountNumber", 24), text("ifsc", 20))
+        if not all(required) or not isinstance(data.get("workingDays"), list) or not data["workingDays"]:
+            self.send_json({"error": "Complete service area, pricing, availability, and bank details."}, HTTPStatus.BAD_REQUEST)
+            return
+        agreements = data.get("agreements") if isinstance(data.get("agreements"), dict) else {}
+        if not all(agreements.get(key) is True for key in ("partnerAgreement", "terms", "privacy", "conduct", "safety")):
+            self.send_json({"error": "Accept all required agreements and the safety declaration."}, HTTPStatus.BAD_REQUEST)
+            return
+        specialist = {"Custom Furniture", "Wardrobe Installation", "Modular Furniture"}
+        if specialist.intersection(services) and not text("qualification", 300):
+            self.send_json({"error": "Add carpentry qualification or relevant experience details for the selected furniture work."}, HTTPStatus.BAD_REQUEST)
+            return
+        saved = {"services": services, "serviceDetails": details, "qualification": text("qualification", 300), "licence": text("licence", 300), "city": text("city", 80), "serviceAreas": text("serviceAreas"), "radius": text("radius", 40), "inspectionCharge": text("inspectionCharge", 40), "labourCharges": text("labourCharges", 100), "materialPolicy": text("materialPolicy"), "workingDays": data["workingDays"], "workingHours": text("workingHours", 160), "emergencyAvailable": data.get("emergencyAvailable") is True, "accountHolder": text("accountHolder", 120), "accountLast4": text("accountNumber", 24)[-4:], "ifsc": text("ifsc", 20).upper(), "upiId": text("upiId", 120), "agreements": agreements, "backgroundConsent": data.get("backgroundConsent") is True}
+        now = int(time.time())
+        with connection() as db:
+            db.execute("INSERT INTO furniture_partner_onboarding (account_id, details_json, application_status, updated_at) VALUES (?, ?, 'Application Submitted', ?) ON CONFLICT(account_id) DO UPDATE SET details_json = excluded.details_json, application_status = excluded.application_status, updated_at = excluded.updated_at", (vendor["id"], json.dumps(saved), now))
+        self.send_json({"message": "Furniture Service Partner application submitted for SHAKALPA verification.", "status": "Application Submitted"})
+
+    def vendor_upload_furniture_certificates(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        documents, error = self.save_vendor_certificates(vendor["id"], (self.read_json() or {}).get("documents"))
+        if error or not documents:
+            self.send_json({"error": error or "Choose at least one qualification document."}, HTTPStatus.BAD_REQUEST)
+            return
+        self.send_json({"message": f"{len(documents)} furniture qualification document(s) uploaded."})
 
     def vendor_electrical_onboarding(self) -> None:
         vendor = self.require_vendor()

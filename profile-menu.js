@@ -6,9 +6,9 @@
     document.querySelectorAll('.header-actions, .admin-actions').forEach((target) => {
       if (target.querySelector('.account-profile')) return;
       const name = [account.firstName, account.lastName].filter(Boolean).join(' ') || 'My profile';
-      const initials = [account.firstName, account.lastName].filter(Boolean).map(p => p[0]).join('').slice(0, 2).toUpperCase() || 'U';
-      const item = document.createElement('div'); item.className = 'account-profile';
-      item.innerHTML = `<button type="button" class="account-profile-trigger" aria-expanded="false"><span class="account-profile-avatar">${account.profileImage ? `<img src="${esc(account.profileImage)}" alt=""/>` : initials}</span><span class="account-profile-name">${esc(name)}</span></button><div class="account-profile-popover" hidden><strong>${esc(name)}</strong><small>${esc(account.role)}</small><label class="account-photo-upload">Change profile photo<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label><p class="account-profile-status" aria-live="polite"></p></div>`;
+      const defaultAvatar = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.8-3.5 3.1-5.3 6.5-5.3s5.7 1.8 6.5 5.3"/></svg>';
+      const item = document.createElement('div'); item.className = 'account-profile'; item.dataset.preserveUserName = 'true';
+      item.innerHTML = `<button type="button" class="account-profile-trigger" aria-expanded="false"><span class="account-profile-avatar">${account.profileImage ? `<img src="${esc(account.profileImage)}" alt=""/>` : defaultAvatar}</span><span class="account-profile-name">${esc(name)}</span></button><div class="account-profile-popover" hidden><strong>${esc(name)}</strong><small>${esc(account.role)}</small><label class="account-photo-upload">Change profile photo<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label><p class="account-profile-status" aria-live="polite"></p></div>`;
       target.prepend(item);
       const trigger = item.querySelector('.account-profile-trigger'), popover = item.querySelector('.account-profile-popover');
       trigger.addEventListener('click', () => { const show = popover.hidden; document.querySelectorAll('.account-profile-popover').forEach(p => p.hidden = true); popover.hidden = !show; trigger.setAttribute('aria-expanded', String(show)); });

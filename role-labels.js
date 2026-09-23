@@ -5,7 +5,8 @@
   const ignoredTags = new Set(['SCRIPT', 'STYLE']);
 
   const relabelNode = (root) => {
-    if (!root || (root.nodeType === Node.ELEMENT_NODE && ignoredTags.has(root.tagName))) return;
+    const element = root?.nodeType === Node.ELEMENT_NODE ? root : root?.parentElement;
+    if (!root || (element && (ignoredTags.has(element.tagName) || element.closest('[data-preserve-user-name]')))) return;
     const textNodes = [];
     if (root.nodeType === Node.TEXT_NODE) textNodes.push(root);
     else {
@@ -13,7 +14,7 @@
       while (walker.nextNode()) textNodes.push(walker.currentNode);
     }
     textNodes.forEach((node) => {
-      if (ignoredTags.has(node.parentElement?.tagName)) return;
+      if (ignoredTags.has(node.parentElement?.tagName) || node.parentElement?.closest('[data-preserve-user-name]')) return;
       const label = replaceRoleLabel(node.nodeValue);
       if (label !== node.nodeValue) node.nodeValue = label;
     });

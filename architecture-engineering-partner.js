@@ -1,0 +1,36 @@
+(() => {
+  const form = document.querySelector('#vendorProfileForm');
+  if (!form || document.querySelector('.architecture-engineering-onboarding')) return;
+  const services = ['Architectural Design', 'Civil Engineering', 'Structural Engineering', 'Building Plan Approval', '3D Elevation Design'];
+  const registered = new Set(['Architectural Design', 'Civil Engineering', 'Structural Engineering', 'Building Plan Approval']);
+  const policies = [
+    ['I accept the SHAKALPA Service Partner Agreement', '/legal/vendor-agreement', true],
+    ['I accept Platform Terms & Conditions', '/legal/terms-and-conditions', true],
+    ['I accept the Privacy / Data Policy', '/legal/privacy-policy', true],
+    ['I accept the Code of Conduct', '/legal/code-of-conduct', true],
+    ['I make the required architectural & engineering compliance declaration', '/legal/architectural-engineering-compliance-declaration', true],
+    ['I consent to Background Verification', '/legal/background-verification-consent', false],
+  ];
+  const panel = document.createElement('section');
+  panel.className = 'plumbing-onboarding architecture-engineering-onboarding';
+  panel.hidden = true;
+  panel.innerHTML = `<div class="plumbing-head"><div><p class="eyebrow">ARCHITECTURAL & ENGINEERING SERVICE PARTNER</p><h2>Architectural & engineering onboarding</h2><p>Offer only services that your firm and registered professionals are authorised to provide.</p></div><b>Not started</b></div><p class="plumbing-flow">Business & KYC → Services → Professional credentials → Portfolio → Scope & pricing → Plan approval → Availability → Bank details → Agreements → Verification → Activation</p><section><h3>Services, experience & starting consultation price <i>*</i></h3><p>Select services above, then add experience and the starting consultation price for each service.</p><div id="designRows"></div></section><section><h3>Professional credentials & portfolio <i>*</i></h3><p>Professional registration is mandatory for architectural, structural, civil, and approval services where required by law or local authority.</p><div class="plumbing-grid"><label>Architect / engineer qualification <i>*</i><input placeholder="Degree, discipline, and relevant experience"></label><label>Professional registration number<input placeholder="COA or applicable engineering registration"></label><label>Firm registration and GST <i>*</i><input placeholder="Firm registration and GST number"></label><label>Professional-indemnity insurance <i>*</i><input placeholder="Insurer, policy number and expiry"></label><label>Portfolio / completed-project summary <i>*</i><input placeholder="Project types, drawings, approvals, or references"></label><label>Team size and discipline coverage<input placeholder="Architects, civil engineers, structural engineers"></label></div><label class="plumbing-document-upload">Upload registration, licence, insurance, portfolio or work proof <i>*</i><input type="file" accept="application/pdf,image/jpeg,image/png" multiple><small>PDF, JPEG, or PNG · up to 4 files · 1.5 MB each</small></label></section><section><h3>Project scope & service area</h3><div class="plumbing-grid"><label>City <i>*</i><input></label><label>PIN codes / service areas <i>*</i><input></label><label>Remote consultation available<input placeholder="For example: video consultation and digital drawings"></label><label>Project types and capacity <i>*</i><input placeholder="Residential, commercial, renovation, plot size"></label><label>Scope and deliverables <i>*</i><input placeholder="Plans, drawings, BOQ, structural design, 3D elevation"></label><label>Site-visit availability<input placeholder="Frequency and travel terms"></label></div></section><section><h3>Pricing, approvals & revision policy</h3><div class="plumbing-grid"><label>Starting consultation / site-visit charge<input placeholder="For example: ₹1,499"></label><label>Pricing model <i>*</i><input placeholder="Consultation, package, per sq ft, or project quote"></label><label>Drawing package and deliverables <i>*</i><input placeholder="Plans, elevations, structural drawings, BOQ"></label><label>Revision / rework policy <i>*</i><input placeholder="Included revisions and additional revision charges"></label><label>Building-plan approval process<input placeholder="Authority coordination, documents, and timeline"></label><label>Warranty / dispute-resolution policy <i>*</i><input placeholder="Correction support, exclusions, and dispute process"></label></div></section><section><h3>Availability</h3><label>Working days <i>*</i><span class="plumbing-days">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(day => `<label><input type="checkbox" value="${day}"> ${day}</label>`).join('')}</span></label><div class="plumbing-grid"><label>Working hours <i>*</i><input placeholder="For example: 9:00 AM – 6:00 PM"></label><label class="plumbing-check"><input type="checkbox"> Emergency design / site support available</label></div></section><section><h3>Bank details</h3><div class="plumbing-grid"><label>Account holder name <i>*</i><input></label><label>Account number <i>*</i><input inputmode="numeric"></label><label>IFSC <i>*</i><input></label><label>UPI ID<input></label></div></section><section><h3>Agreements & declarations</h3><div class="plumbing-agreements">${policies.map(([text, href, required]) => `<label><input type="checkbox"> <a href="${href}" target="_blank" rel="noopener">${text}</a>${required ? ' <i>*</i>' : ''}</label>`).join('')}</div></section><button class="button button-dark service-final-submit" type="button">Submit architectural & engineering partner application <span>→</span></button>`;
+  const actions = form.querySelector('.profile-actions');
+  actions?.before(panel);
+  let slot = actions?.querySelector('#serviceApprovalSlot');
+  if (!slot && actions) {
+    const defaultApproval = actions.querySelector('#submitForApproval');
+    if (defaultApproval) { slot = document.createElement('span'); slot.id = 'serviceApprovalSlot'; slot.className = 'service-approval-slot'; slot._defaultApproval = defaultApproval; defaultApproval.replaceWith(slot); slot.append(defaultApproval); }
+  }
+  const submit = panel.querySelector('button[type="button"]');
+  const rows = panel.querySelector('#designRows');
+  rows.innerHTML = services.map(service => `<label class="plumbing-row" data-service="${service}"><strong>${service}${registered.has(service) ? '<small> Registration check required</small>' : ''}</strong><input type="number" min="0" placeholder="Years"><input type="number" min="0" placeholder="Consult ₹"></label>`).join('');
+  const sync = () => {
+    const active = [...document.querySelectorAll('#vendorServicesProducts option:checked')].map(option => option.value).filter(service => services.includes(service));
+    panel.hidden = active.length === 0;
+    rows.querySelectorAll('.plumbing-row').forEach(row => { const visible = active.includes(row.dataset.service); row.hidden = !visible; row.style.display = visible ? 'grid' : 'none'; });
+    if (slot) { if (!panel.hidden) slot.replaceChildren(submit); else if (slot.contains(submit)) slot.replaceChildren(slot._defaultApproval); }
+  };
+  ['vendorMainCategory', 'vendorSubcategories', 'vendorServicesProducts'].forEach(id => document.querySelector(`#${id}`)?.addEventListener('change', sync));
+  sync();
+})();
