@@ -108,6 +108,9 @@ LEGAL_DOCUMENTS = {
     "/legal/accommodation-safety-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Accommodation_Safety_Guest_Compliance_Declaration_India_Draft.docx",
     "/legal/real-estate-services-compliance-declaration": ROOT / "legal-documents" / "SHAKALPA_Real_Estate_Services_Compliance_Declaration_India_Draft.docx",
     "/legal/marketplace-payments-cancellation-refund-policy": ROOT / "legal-documents" / "SHAKALPA_Marketplace_Payments_Cancellation_Refund_Policy_India_Draft.docx",
+    "/legal/bakery-food-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Bakery_Food_Safety_Quality_Declaration_India_Draft.docx",
+    "/legal/restaurant-food-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Restaurant_Food_Safety_Quality_Declaration_India_Draft.docx",
+    "/legal/cafe-food-safety-declaration": ROOT / "legal-documents" / "SHAKALPA_Cafe_Beverages_Food_Safety_Quality_Declaration_India_Draft.docx",
     "/legal/background-verification-consent": ROOT / "legal-documents" / "SHAKALPA_Background_Verification_Consent_India_Draft.docx",
 }
 RATE_LIMIT_LOCK = threading.Lock()
@@ -250,6 +253,13 @@ def init_database() -> None:
                 FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
             CREATE INDEX IF NOT EXISTS vendor_certificates_account_idx ON vendor_certificates(account_id, uploaded_at DESC);
+            CREATE TABLE IF NOT EXISTS removed_vendor_certificates (
+                id INTEGER PRIMARY KEY,
+                account_id INTEGER NOT NULL,
+                record_json TEXT NOT NULL,
+                removed_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
             CREATE TABLE IF NOT EXISTS account_identity_documents (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 account_id INTEGER NOT NULL,
@@ -300,6 +310,48 @@ def init_database() -> None:
                 account_id INTEGER PRIMARY KEY,
                 details_json TEXT NOT NULL,
                 application_status TEXT NOT NULL DEFAULT 'Application Submitted',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS catering_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Draft',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS meal_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Draft',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS grocery_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Draft',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS fresh_food_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Draft',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS household_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Draft',
+                updated_at INTEGER NOT NULL,
+                FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS retail_partner_onboarding (
+                account_id INTEGER PRIMARY KEY,
+                details_json TEXT NOT NULL,
+                application_status TEXT NOT NULL DEFAULT 'Draft',
                 updated_at INTEGER NOT NULL,
                 FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
             );
@@ -700,6 +752,24 @@ def init_database() -> None:
             real_estate_services_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Real Estate & Property", "Real Estate Services")).fetchone()
         for service in ("Real Estate Agent", "Property Management", "Property Valuation", "Property Legal Service", "Home Loan Assistance"):
             db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (real_estate_services_taxonomy["id"], service, "real estate agent management valuation legal home loan"))
+        bakery_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Food & Beverage", "Bakery & Sweets")).fetchone()
+        if not bakery_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Food & Beverage", "Bakery & Sweets", int(time.time())))
+            bakery_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Food & Beverage", "Bakery & Sweets")).fetchone()
+        for service in ("Bakery", "Cake Shop", "Sweet Shop", "Dessert Shop"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (bakery_taxonomy["id"], service, "bakery cake sweet dessert fssai"))
+        restaurant_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Food & Beverage", "Restaurant Services")).fetchone()
+        if not restaurant_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Food & Beverage", "Restaurant Services", int(time.time())))
+            restaurant_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Food & Beverage", "Restaurant Services")).fetchone()
+        for service in ("Vegetarian Restaurant", "Non-Vegetarian Restaurant", "Multi-Cuisine Restaurant", "South Indian Restaurant", "North Indian Restaurant", "Chinese Restaurant", "Fast Food"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (restaurant_taxonomy["id"], service, "restaurant food cuisine fssai"))
+        cafe_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Food & Beverage", "Café & Beverages")).fetchone()
+        if not cafe_taxonomy:
+            db.execute("INSERT INTO product_taxonomy (main_category, subcategory, created_at) VALUES (?, ?, ?)", ("Food & Beverage", "Café & Beverages", int(time.time())))
+            cafe_taxonomy = db.execute("SELECT id FROM product_taxonomy WHERE main_category = ? AND subcategory = ?", ("Food & Beverage", "Café & Beverages")).fetchone()
+        for service in ("Cafe", "Tea Shop", "Juice Shop", "Ice Cream Shop", "Snack Shop", "Street Food"):
+            db.execute("INSERT OR IGNORE INTO product_taxonomy_services (taxonomy_id, service_name, service_kind, search_keywords) VALUES (?, ?, 'Service', ?)", (cafe_taxonomy["id"], service, "cafe tea juice ice cream snack street food fssai"))
         legacy_accounts = db.execute("SELECT id, first_name, role, created_at FROM accounts WHERE account_code IS NULL OR account_code = ''").fetchall()
         for account in legacy_accounts:
             staff = db.execute("SELECT vendor_id FROM vendor_staff WHERE account_id = ?", (account["id"],)).fetchone()
@@ -842,6 +912,18 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.vendor_save_marketplace_setup()
         elif self.path == "/api/vendor/operating-setup":
             self.vendor_save_operating_setup()
+        elif self.path == "/api/vendor/catering-onboarding":
+            self.vendor_catering_onboarding(save=True)
+        elif self.path == "/api/vendor/meal-onboarding":
+            self.vendor_catering_onboarding(save=True, meal=True)
+        elif self.path == "/api/vendor/grocery-onboarding":
+            self.vendor_catering_onboarding(save=True, grocery=True)
+        elif self.path == "/api/vendor/fresh-food-onboarding":
+            self.vendor_catering_onboarding(save=True, fresh_food=True)
+        elif self.path == "/api/vendor/household-onboarding":
+            self.vendor_catering_onboarding(save=True, household=True)
+        elif self.path == "/api/vendor/retail-onboarding":
+            self.vendor_catering_onboarding(save=True, retail_store=True)
         elif self.path == "/api/vendor/electrical-onboarding":
             self.vendor_save_electrical_onboarding()
         elif self.path == "/api/vendor/plumbing-onboarding":
@@ -854,6 +936,10 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.vendor_upload_plumbing_certificates()
         elif self.path == "/api/vendor/electrical-certificates":
             self.vendor_upload_electrical_certificates()
+        elif self.path == "/api/vendor/service-documents":
+            self.vendor_upload_service_documents()
+        elif self.path == "/api/vendor/remove-document":
+            self.vendor_remove_document()
         elif self.path == "/api/reviews/vendor-approve":
             self.approve_vendor_profile()
         elif self.path == "/api/reviews/request-documents":
@@ -1001,6 +1087,27 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/vendor/operating-setup":
             self.vendor_operating_setup()
             return
+        if self.path == "/api/vendor/catering-onboarding":
+            self.vendor_catering_onboarding()
+            return
+        elif self.path == "/api/vendor/meal-onboarding":
+            self.vendor_catering_onboarding(meal=True)
+            return
+        elif self.path == "/api/vendor/grocery-onboarding":
+            self.vendor_catering_onboarding(grocery=True)
+            return
+        elif self.path == "/api/vendor/fresh-food-onboarding":
+            self.vendor_catering_onboarding(fresh_food=True)
+            return
+        elif self.path == "/api/vendor/household-onboarding":
+            self.vendor_catering_onboarding(household=True)
+            return
+        elif self.path == "/api/vendor/retail-onboarding":
+            self.vendor_catering_onboarding(retail_store=True)
+            return
+        if self.path == "/api/vendor/documents":
+            self.vendor_documents()
+            return
         if self.path == "/api/vendor/electrical-onboarding":
             self.vendor_electrical_onboarding()
             return
@@ -1071,6 +1178,10 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.reviewer_certificate_download(parsed)
             return
         path = urlparse(self.path).path
+        # Only this public form schema is exposed; other JSON files stay private.
+        if path in ("/catering-schema.json", "/meal-schema.json", "/grocery-schema.json", "/fresh-food-schema.json", "/household-schema.json", "/retail-schema.json"):
+            self.send_json(json.loads((ROOT / path.lstrip('/')).read_text(encoding="utf-8")))
+            return
         if path == "/":
             path = "/index.html"
         candidate = (ROOT / path.lstrip("/")).resolve()
@@ -1088,7 +1199,17 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         body = candidate.read_bytes()
         if candidate.suffix.lower() == ".html":
+            if candidate.name == "vendor.html":
+                body = body.replace(b"</body>", b'<script src="document-removal.js" defer></script></body>')
+                body = body.replace(b"</body>", b'<script src="catering-partner.js" defer></script></body>')
+                body = body.replace(b"</body>", b'<script src="meal-partner.js" defer></script></body>')
+                body = body.replace(b"</body>", b'<script src="grocery-partner.js" defer></script></body>')
+                body = body.replace(b"</body>", b'<script src="fresh-food-partner.js" defer></script></body>')
+                body = body.replace(b"</body>", b'<script src="household-partner.js" defer></script></body>')
+                body = body.replace(b"</body>", b'<script src="retail-partner.js" defer></script></body>')
+            body = body.replace(b"</body>", b'<script src="form-validation.js"></script></body>')
             body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="electrical-partner.js"></script><script src="plumbing-partner.js"></script><script src="furniture-partner.js"></script><script src="painting-partner.js"></script><script src="construction-partner.js"></script><script src="architecture-engineering-partner.js"></script><script src="interior-design-partner.js"></script><script src="flooring-cladding-partner.js"></script><script src="fabrication-metalwork-partner.js"></script><script src="building-materials-partner.js"></script><script src="real-estate-sales-partner.js"></script><script src="real-estate-rental-partner.js"></script><script src="accommodation-partner.js"></script><script src="real-estate-services-partner.js"></script><script src="onboarding-payment-details.js"></script><script src="onboarding-help.js"></script><script src="field-help.js"></script><script src="marketplace-policy-links.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script><script src="role-labels.js"></script><script src="profile-menu.js"></script></body>')
+            body = body.replace(b"</body>", b'<script src="bakery-partner.js"></script><script src="bakery-help.js"></script><script src="restaurant-partner.js"></script><script src="restaurant-help.js"></script><script src="cafe-partner.js"></script><script src="cafe-enhancements.js"></script><script src="cafe-validation.js"></script><script src="cafe-policy-correction.js"></script><script src="cafe-location.js"></script><script src="cafe-compliance-dedup.js"></script><script src="onboarding-placeholder-cleanup.js"></script><script src="service-row-labels.js"></script><script src="cafe-row-filter.js"></script><script src="cafe-help-fix.js"></script><script src="service-document-upload.js"></script><script src="unified-document-upload-button.js"></script><script src="certificate-upload-button.js"></script></body>')
         self.wfile.write(body)
 
     def train_tracking(self, parsed) -> None:
@@ -2328,6 +2449,89 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         message = "Business profile submitted for approval." if submit_for_approval else "Business profile saved as a draft."
         self.send_json({"message": message, "ownerImagePath": image_path, "approvalStatus": approval_status, "certificateCount": stored_certificate_count, "newCertificateCount": len(certificate_documents)})
 
+    def vendor_catering_onboarding(self, save=False, meal=False, grocery=False, fresh_food=False, household=False, retail_store=False) -> None:
+        kind = "retail" if retail_store else "household" if household else "fresh_food" if fresh_food else "grocery" if grocery else "meal" if meal else "catering"
+        retail = grocery or fresh_food or household or retail_store
+        table = f"{kind}_partner_onboarding"
+        if save and not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            if not save:
+                row = db.execute(f"SELECT details_json, application_status FROM {table} WHERE account_id = ?", (vendor["id"],)).fetchone()
+                self.send_json({"details": json.loads(row["details_json"]) if row else {}, "status": row["application_status"] if row else "Not started"})
+                return
+            data = self.read_json()
+            if not isinstance(data, dict):
+                self.send_json({"error": "Invalid onboarding details."}, HTTPStatus.BAD_REQUEST)
+                return
+            schema = json.loads((ROOT / f"{kind.replace('_', '-')}-schema.json").read_text(encoding="utf-8"))
+            services = data.get("services")
+            if not isinstance(services, list) or not services or any(not isinstance(s, str) or s not in schema["services"] for s in services):
+                self.send_json({"error": "Select at least one supported service."}, HTTPStatus.BAD_REQUEST)
+                return
+            fields = [f for section in schema["sections"] for f in section["fields"]] + [schema["specific"][s] for s in services]
+            policies = [p for p in schema["policies"] if len(p) < 4 or p[3] in services]
+            if retail_store:
+                centre = "Shopping Centre" in services
+                role = data.get("listingRole", "") if centre else "Individual shop"
+                if not isinstance(role, str) or (role and role not in ("Centre operator", "Individual shop")):
+                    self.send_json({"error": "Select a valid shopping-centre listing role."}, HTTPStatus.BAD_REQUEST)
+                    return
+                operator = centre and role == "Centre operator"
+                shop = not operator or any(s != "Shopping Centre" for s in services)
+                fields = [f for section in schema["sections"] if shop or not section.get("shopOnly") for f in section["fields"]] + [schema["specific"][s] for s in services]
+                if centre:
+                    fields.append(["listingRole", "Shopping-centre listing role", True, "text"])
+                policies = [p for p in schema["policies"] if len(p) < 4 or (p[3] == "shop" and shop) or (p[3] == "operator" and operator)]
+            if household and "Drinking Water Supplier" in services:
+                role = data.get("waterRole", "")
+                if not isinstance(role, str) or (role and role not in schema["waterRoles"]):
+                    self.send_json({"error": "Select a valid drinking-water supplier role."}, HTTPStatus.BAD_REQUEST)
+                    return
+                fields.append(["waterRole", "Drinking-water supplier role", True, "text"])
+                if role:
+                    fields.append(schema["waterFields"][role])
+            saved = {f[0]: str(data.get(f[0], "")).strip()[:2000] for f in fields}
+            saved["services"] = list(dict.fromkeys(services))
+            saved["agreements"] = {p[0]: (data.get("agreements") or {}).get(p[0]) is True for p in policies} if isinstance(data.get("agreements"), dict) else {}
+            submitted = data.get("submit") is True
+            if submitted:
+                error = next((f"{f[1]} is required." for f in fields if f[2] and not saved[f[0]]), None)
+                if meal and any(s in services for s in ("Meal Subscription", "Tiffin Service")) and not saved.get("subscriptionPolicy"):
+                    error = error or "Provide subscription pause, skip and renewal terms."
+                from datetime import date
+                try:
+                    if (not retail or saved["expiry"]) and date.fromisoformat(saved["expiry"]) < date.today():
+                        raise ValueError
+                except ValueError:
+                    error = error or "Enter a current registration / licence expiry date."
+                for f in fields:
+                    if f[3] == "number":
+                        try:
+                            value = float(saved[f[0]])
+                            if not 0 <= value <= 100000000 or (f[0] in ("minGuests", "maxGuests") and (value < 1 or not value.is_integer())):
+                                raise ValueError
+                        except (ValueError, TypeError):
+                            error = error or f"Enter a valid {f[1]}."
+                if not retail and not error and float(saved["maxGuests"]) < float(saved["minGuests"]):
+                    error = "Maximum meals must be at least the minimum meals." if meal else "Maximum guests must be at least the minimum guests."
+                if not all(saved["agreements"].get(p[0]) for p in policies):
+                    error = error or "Accept all agreements and declarations."
+                if not db.execute("SELECT 1 FROM vendor_certificates WHERE account_id = ? LIMIT 1", (vendor["id"],)).fetchone():
+                    error = error or "Upload your supporting documents before submitting."
+                if error:
+                    self.send_json({"error": error}, HTTPStatus.BAD_REQUEST)
+                    return
+            status = "Application Submitted" if submitted else "Draft"
+            saved["policyVersion"] = "2026-09-24"
+            db.execute(f"INSERT INTO {table} VALUES (?, ?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET details_json=excluded.details_json, application_status=excluded.application_status, updated_at=excluded.updated_at", (vendor["id"], json.dumps(saved), status, int(time.time())))
+        name = "Retail" if retail_store else "Household supply" if household else "Fresh food" if fresh_food else "Grocery" if grocery else "Meal service" if meal else "Catering"
+        self.send_json({"status": status, "message": f"{name} application submitted. Business profile approval remains separate." if submitted else f"{name} details saved."})
+
     def vendor_plumbing_onboarding(self) -> None:
         vendor = self.require_vendor()
         if not vendor:
@@ -2389,6 +2593,20 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.send_json({"error": error or "Choose at least one qualification document."}, HTTPStatus.BAD_REQUEST)
             return
         self.send_json({"message": f"{len(documents)} plumbing qualification document(s) uploaded."})
+
+    def vendor_upload_service_documents(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json() or {}
+        documents, error = self.save_vendor_certificates(vendor["id"], data.get("documents"))
+        if error or not documents:
+            self.send_json({"error": error or "Choose at least one document."}, HTTPStatus.BAD_REQUEST)
+            return
+        self.send_json({"message": f"{len(documents)} supporting document(s) uploaded."})
 
     def vendor_furniture_onboarding(self) -> None:
         vendor = self.require_vendor()
@@ -3702,6 +3920,58 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         with connection() as db:
             db.executemany("INSERT INTO vendor_certificates (account_id, original_name, storage_name, media_type, uploaded_at) VALUES (?, ?, ?, ?, ?)", [(account_id, document["originalName"], document["storageName"], document["mediaType"], now) for document in documents])
         return documents, None
+
+    def document_removal_locked(self, db, account_id: int) -> bool:
+        # Certificates are shared across service applications. Protect the whole
+        # set while any application relies on it, not merely the visible form.
+        for table, column in (("vendor_profiles", "approval_status"), ("vendor_profile_changes", "approval_status"),
+                              ("electrical_partner_onboarding", "application_status"),
+                              ("plumbing_partner_onboarding", "application_status"),
+                              ("furniture_partner_onboarding", "application_status"),
+                              ("catering_partner_onboarding", "application_status"),
+                              ("meal_partner_onboarding", "application_status"),
+                              ("grocery_partner_onboarding", "application_status"),
+                              ("fresh_food_partner_onboarding", "application_status"),
+                              ("household_partner_onboarding", "application_status"),
+                              ("retail_partner_onboarding", "application_status")):
+            if db.execute(f"SELECT 1 FROM {table} WHERE account_id = ? AND {column} IN ('Submitted', 'Application Submitted', 'Approved') LIMIT 1", (account_id,)).fetchone():
+                return True
+        return False
+
+    def vendor_documents(self) -> None:
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        with connection() as db:
+            locked = self.document_removal_locked(db, vendor["id"])
+            rows = db.execute("SELECT id, original_name FROM vendor_certificates WHERE account_id = ? ORDER BY uploaded_at DESC, id DESC", (vendor["id"],)).fetchall()
+        self.send_json({"locked": locked, "documents": [{"id": row["id"], "name": row["original_name"]} for row in rows]})
+
+    def vendor_remove_document(self) -> None:
+        if not self.origin_is_valid():
+            self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
+            return
+        vendor = self.require_vendor()
+        if not vendor:
+            return
+        data = self.read_json()
+        if not isinstance(data, dict) or type(data.get("id")) is not int or data["id"] < 1:
+            self.send_json({"error": "Choose a valid uploaded document."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            row = db.execute("SELECT * FROM vendor_certificates WHERE id = ? AND account_id = ?", (data["id"], vendor["id"])).fetchone()
+            if not row:
+                self.send_json({"error": "Document not found."}, HTTPStatus.NOT_FOUND)
+                return
+            if self.document_removal_locked(db, vendor["id"]):
+                self.send_json({"error": "Documents are locked while an application is under review or approved. Contact support for a replacement."}, HTTPStatus.CONFLICT)
+                return
+            # Retain the original file and metadata for recovery/audit. Removed
+            # records no longer count for submission or resolve via downloads.
+            db.execute("INSERT INTO removed_vendor_certificates VALUES (?, ?, ?, ?)", (row["id"], vendor["id"], json.dumps(dict(row)), int(time.time())))
+            db.execute("DELETE FROM vendor_certificates WHERE id = ? AND account_id = ?", (row["id"], vendor["id"]))
+        self.send_json({"message": "Document removed from your application. An archived copy is retained for recovery and audit."})
 
     def certificate_from_query(self, parsed, account_id: int | None = None) -> sqlite3.Row | None:
         try:

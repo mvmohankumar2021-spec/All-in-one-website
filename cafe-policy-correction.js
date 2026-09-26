@@ -1,0 +1,1 @@
+(() => {const link=document.querySelector('.cafe-onboarding .plumbing-agreements a[href="/legal/restaurant-food-safety-declaration"]');if(link){link.href='/legal/cafe-food-safety-declaration';link.textContent='I make the required Café & Beverages Food Safety & Quality Declaration';}})();

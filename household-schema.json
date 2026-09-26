@@ -1,0 +1,62 @@
+{
+ "services":["Cleaning Products","Personal Care Products","Drinking Water Supplier","Household Supplies"],
+ "sections":[
+  {"title":"Business & location","fields":[
+   ["businessType","Business type",true,"text","Individual, proprietorship, partnership or company. Business name, owner/contact, phone and email are reused from your partner profile."],
+   ["businessRole","Business role",true,"text","Retailer, wholesaler, manufacturer or distributor; list all applicable roles."],
+   ["experience","Years in operation",true,"number","Completed years; zero is allowed for a new business."],
+   ["address","Store / warehouse address",true,"textarea","Include street, city, state and PIN code. Refer to your profile address if unchanged."],
+   ["map","Map link",false,"url","Link to the store or warehouse, not a customer's location."],
+   ["hours","Working days and opening hours",true,"text","Include weekly holidays and collection hours."],
+   ["fulfilment","Shopping, pickup and delivery options",true,"textarea","State available options, collection instructions and own/third-party delivery arrangements."]]},
+  {"title":"Delivery & order limits","fields":[
+   ["areas","Delivery localities and PIN codes",true,"textarea","List delivery areas or enter Pickup/in-store only."],
+   ["radius","Maximum delivery radius (km)",true,"number","Enter zero for pickup/in-store only."],
+   ["minimumOrder","Minimum order value (₹)",true,"number","Enter zero if there is no minimum value."],
+   ["minimumQuantity","Minimum order quantity",true,"text","State the quantity and unit, or No minimum."],
+   ["slots","Order cutoff and fulfilment times",true,"text","State order cutoff, delivery slots and estimated fulfilment time; enter Not applicable for delivery if unavailable."],
+   ["deliveryCharges","Delivery charges and free-delivery conditions",true,"textarea","State charges, free-delivery thresholds and any exceptions."]]},
+  {"title":"Products & pricing","fields":[
+   ["range","Product categories and brands",true,"textarea","Describe categories and brands. Maintain individual product names, descriptions, photos, prices and stock quantities in the catalogue."],
+   ["units","Pack sizes and selling units",true,"text","Examples: bottle, can, packet, litre, piece, carton; include available sizes."],
+   ["bulk","Retail, bulk pricing and additional charges",true,"textarea","Describe retail/wholesale availability, quantity discounts, packaging charges and tax treatment."],
+   ["stock","Stock updates and substitutions",true,"textarea","Explain stock-update frequency and how customers approve substitutions and price changes."]]},
+  {"title":"Quality, storage & safety","fields":[
+   ["sourcing","Supplier sourcing and traceability",true,"textarea","Describe supplier checks, purchase records and manufacturer/distributor traceability."],
+   ["checks","Batch, expiry and damaged-stock checks",true,"textarea","Explain checks where relevant and isolation of damaged, expired or recalled products."],
+   ["storage","Storage and incompatible-product separation",true,"textarea","Describe suitable storage, separation of incompatible products and precautions against contamination."],
+   ["incidents","Leaks, spills, contamination and recalls",true,"textarea","Describe containment, sale prevention, reporting, customer notification and appropriate disposal/return arrangements."],
+   ["transport","Packaging and transport precautions",true,"textarea","Explain leak prevention, secure packaging and relevant handling precautions."],
+   ["instructions","Customer safety information",true,"textarea","Describe how customers receive directions, warnings and appropriate product safety information."]]},
+  {"title":"Registration & evidence","fields":[
+   ["registration","Applicable registration / permission references",true,"textarea","List business/trade and relevant product permissions for your role and location. State Not applicable with reasons where appropriate; retailers should not provide a manufacturing licence merely for selling packaged products."],
+   ["expiry","Registration valid until",false,"date","Provide an expiry date where applicable. List other validity dates in the evidence summary."],
+   ["evidence","Supporting evidence summary",true,"textarea","Identify relevant labels, catalogue, storage photographs, brand/distributor authorisation or safety data sheets. Water suppliers should include applicable food registration, reports and certification evidence. Reuse profile documents and tax details."]]},
+  {"title":"Orders & customer policies","fields":[
+   ["acceptance","Order acceptance and availability",true,"textarea","Explain confirmation, out-of-stock handling and customer-approved substitutions."],
+   ["returns","Cancellation, delivery, returns and refunds",true,"textarea","Describe cancellation cutoffs, failed delivery, return eligibility and refund timelines without excluding applicable customer rights."],
+   ["complaints","Product and safety complaints",true,"textarea","Explain wrong, damaged, leaking, expired or missing-product complaints, safety escalation, reasonable evidence and replacement/refund remedies."],
+   ["warranty","Warranty for eligible products",true,"textarea","State manufacturer warranty coverage, exclusions and claim steps only for eligible products; otherwise enter Not applicable."]]}
+ ],
+ "specific":{
+  "Cleaning Products":["cleaning","Cleaning-product range and hazards",true,"textarea","Describe types and intended uses, household/professional ranges, chemical/refill products, dilution/use instructions, hazard warnings and applicable safety data sheets."],
+  "Personal Care Products":["personal","Personal-care sourcing, labels and returns",true,"textarea","Describe categories/brands, manufacturer/importer details, sealed-pack practices, ingredients, directions, warnings, batch/expiry checks, evidence for special claims and opened/sealed return conditions."],
+  "Drinking Water Supplier":["water","Water products and delivery plans",true,"textarea","List brands, bottles/cans/jars or bulk supply, container sizes, daily capacity, recurring plans, pause/skip/cancellation terms and container deposit/return/refund/cleaning arrangements."],
+  "Household Supplies":["supplies","Household supply range and services",true,"textarea","Describe brands, categories, materials, sizes, disposable/reusable options, bulk supply and installation/assembly if offered."]
+ },
+ "waterRoles":["Manufacturer","Packaged-water distributor","Bulk / tanker supplier"],
+ "waterFields":{
+  "Manufacturer":["waterManufacturing","Water manufacturing and quality controls",true,"textarea","Describe source, treatment, production capacity, relevant permissions, quality-testing arrangements, report dates and applicable certification evidence."],
+  "Packaged-water distributor":["waterDistribution","Packaged-water sourcing and storage",true,"textarea","Identify brands/manufacturers, applicable distributor permissions, supplier invoices, batch/expiry checks, storage and supplier quality/certification evidence. Do not provide a manufacturing licence solely for distribution."],
+  "Bulk / tanker supplier":["waterBulk","Bulk-water source and tanker hygiene",true,"textarea","Describe source, relevant permissions, water-quality testing/report dates, tanker capacity, cleaning/disinfection and hygienic transport controls."]
+ },
+ "policies":[
+  ["partner","SHAKALPA Partner Agreement","/legal/vendor-agreement"],
+  ["terms","Terms & Conditions","/legal/terms-and-conditions"],
+  ["privacy","Privacy / Data Policy","/legal/privacy-policy"],
+  ["conduct","Code of Conduct","/legal/code-of-conduct"],
+  ["safety","Product Authenticity, Quality & Safety Declaration","/household-policy.html#safety"],
+  ["servicePolicy","Delivery, cancellation, returns and refunds policy","/household-policy.html#orders"],
+  ["waterSafety","Drinking Water Quality & Hygiene Declaration","/household-policy.html#water","Drinking Water Supplier"]
+ ]
+}

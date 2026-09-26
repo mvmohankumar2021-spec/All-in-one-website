@@ -1,0 +1,60 @@
+{
+ "services":["Fruit Shop","Vegetable Shop","Dairy Shop","Meat Shop","Seafood Shop"],
+ "sections":[
+  {"title":"Store & availability","fields":[
+   ["businessType","Business type",true,"text","Individual, proprietorship, partnership or company. Store name, owner/contact name, phone and email are reused from your partner profile."],
+   ["experience","Years in operation",true,"number","Enter completed years; zero is allowed for a new store."],
+   ["address","Store address",true,"textarea","Include street, city, state and PIN code. Refer to the profile address if it is the same."],
+   ["map","Store map link",false,"url","Provide the store's map link, not a customer's location."],
+   ["hours","Working days and opening hours",true,"text","Include weekly holidays and pickup hours."],
+   ["fulfilment","Shopping, pickup and delivery",true,"textarea","State in-store shopping, pickup and/or delivery, including collection instructions."]]},
+  {"title":"Products & pricing","fields":[
+   ["range","Product categories and varieties",true,"textarea","Describe your range and fresh, chilled, frozen or packaged options. Maintain individual names, photos, prices, pack sizes and stock in the catalogue."],
+   ["units","Selling units",true,"text","Piece, bunch, dozen, kilogram, litre or pack. Explain pack sizes where relevant."],
+   ["minimumQuantity","Minimum order quantity",true,"text","State the quantity and unit, or No minimum."],
+   ["minimumOrder","Minimum order value (₹)",true,"number","Enter zero if there is no minimum value."],
+   ["bulk","Wholesale and bulk orders",true,"textarea","Describe availability, limits and notice required, or Not offered."],
+   ["charges","Packaging and processing charges",true,"textarea","Disclose packaging, cutting, cleaning, mincing or other processing charges and tax treatment; enter None where appropriate."],
+   ["substitutions","Unavailable products and substitutions",true,"textarea","Explain how you contact customers for approval before substituting products or changing prices."]]},
+  {"title":"Delivery & recurring orders","fields":[
+   ["radius","Maximum delivery radius (km)",true,"number","Enter zero for pickup/in-store only."],
+   ["slots","Delivery slots and order cutoff",true,"text","State slots and cutoff times, or Delivery not offered."],
+   ["areas","Delivery localities and PIN codes",true,"textarea","List areas served or enter Pickup/in-store only."],
+   ["delivery","Delivery charges and arrangements",true,"textarea","Explain own/third-party delivery, charges, free-delivery conditions and failed-delivery arrangements."],
+   ["transport","Packaging and transport temperature control",true,"textarea","Explain suitable packaging and temperature control for the products supplied; state where refrigeration is not required."],
+   ["recurring","Recurring-order plans and terms",true,"textarea","If offered, describe prices, schedule, renewal consent, pause/skip notice, cancellation and refund terms. Otherwise enter Not offered."]]},
+  {"title":"Hygiene, freshness & traceability","fields":[
+   ["sourcing","Supplier checks and purchase records",true,"textarea","Describe approved sources, purchase records and batch/lot traceability where relevant."],
+   ["receiving","Receiving and freshness checks",true,"textarea","Describe inspection for freshness, damage, dates and suitable temperature at receipt."],
+   ["storage","Storage and temperature monitoring",true,"textarea","Explain storage conditions, temperature checks and corrective action where applicable."],
+   ["hygiene","Cleaning, pest control and handler hygiene",true,"textarea","Describe cleaning routines, pest control and safe food-handler practices."],
+   ["water","Water and ice sources",true,"text","Identify safe water/ice sources where used, or Not used."],
+   ["separation","Raw-food separation and allergens",true,"textarea","Describe separation of raw and ready-to-eat foods, cleaning between tasks and relevant allergen/cross-contact information."],
+   ["waste","Expiry, spoilage, waste and recalls",true,"textarea","Explain stock rotation, isolation of unsafe stock, sale prevention, disposal and customer notification for recalls."],
+   ["weighing","Weighing-equipment checks",true,"textarea","Explain quantity checks and applicable equipment verification, or Packaged goods only."]]},
+  {"title":"Registration & supporting evidence","fields":[
+   ["registration","Food-business registration / licence",true,"text","Enter applicable reference/category. If not applicable, explain why for review."],
+   ["expiry","Registration / licence valid until",false,"date","Enter the validity date where your registration has one."],
+   ["permits","Other applicable permissions",false,"textarea","Provide business/trade registration, relevant local permissions or weighing verification. Reuse tax details already supplied."],
+   ["evidence","Supporting evidence summary",true,"textarea","Identify uploaded registration, supplier evidence and store/preparation/storage photographs. Include organic or other certification evidence only when making those claims; reuse profile documents."]]},
+  {"title":"Customer policies","fields":[
+   ["returns","Delivery, cancellation, returns and refunds",true,"textarea","Explain cancellation deadlines, perishable-return conditions, delivery exceptions and refund timelines without excluding applicable customer rights."],
+   ["complaints","Freshness, quality and quantity complaints",true,"textarea","Explain reporting spoiled, damaged, incorrect, missing or short-weight goods, reasonable evidence, review times and replacement/refund remedies. This is not a general warranty."],
+   ["weightPolicy","Cleaning, cutting and final weight terms",true,"textarea","For products cleaned/cut to order, disclose before/after-cleaning weighing, processing charges and customer-approved price adjustments. Otherwise enter Not applicable."]]}
+ ],
+ "specific":{
+  "Fruit Shop":["fruit","Fruit range and preparation",true,"textarea","Describe seasonal/imported ranges, sourcing, ripeness options, baskets, cut-fruit availability and preparation/storage practices."],
+  "Vegetable Shop":["vegetable","Vegetable range and preparation",true,"textarea","Describe seasonal/leafy ranges, sourcing, grading, cleaned/cut options, baskets and recurring household supply."],
+  "Dairy Shop":["dairy","Dairy sourcing and cold storage",true,"textarea","List milk/dairy products, brands/suppliers, loose/packaged options, relevant pasteurisation information, refrigeration, expiry checks and recurring delivery."],
+  "Meat Shop":["meat","Meat sourcing, cuts and handling",true,"textarea","List meat types, authorised sourcing details, fresh/chilled/frozen options, cuts, cleaning/mincing, weighing basis and separation/storage practices."],
+  "Seafood Shop":["seafood","Seafood sourcing and preparation",true,"textarea","List fish/shellfish varieties and sources, fresh/chilled/frozen options, whole/cleaned/filleted products, cleaning charges, weighing basis and ice/cold storage."]
+ },
+ "policies":[
+  ["partner","SHAKALPA Partner Agreement","/legal/vendor-agreement"],
+  ["terms","Terms & Conditions","/legal/terms-and-conditions"],
+  ["privacy","Privacy / Data Policy","/legal/privacy-policy"],
+  ["conduct","Code of Conduct","/legal/code-of-conduct"],
+  ["safety","Fresh Food Safety, Hygiene & Quality Declaration","/fresh-food-policy.html#safety"],
+  ["servicePolicy","Fresh food delivery, processing and refund policy","/fresh-food-policy.html#orders"]
+ ]
+}

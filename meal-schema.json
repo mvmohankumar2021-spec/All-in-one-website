@@ -1,0 +1,54 @@
+{
+  "services":["Cloud Kitchen","Home Food Service","Meal Subscription","Tiffin Service"],
+  "sections":[
+    {"title":"Kitchen & delivery coverage","fields":[
+      ["businessType","Business type",true,"text","Individual, proprietorship, partnership or company. Name and contact details are reused from your partner profile."],
+      ["experience","Years of operation",true,"number","Completed years; enter zero for a new kitchen."],
+      ["kitchen","Kitchen address",true,"textarea","Enter street address, city, state and PIN code. This is the preparation location, not a customer delivery address."],
+      ["map","Kitchen map link",false,"url","Provide a map link for the kitchen; do not enter a customer's address."],
+      ["areas","Delivery localities and PIN codes",true,"textarea","List the localities and PIN codes you deliver to."],
+      ["radius","Maximum delivery radius (km)",true,"number","Maximum distance from the kitchen. Enter zero for pickup only."],
+      ["fulfilment","Delivery and pickup arrangements",true,"textarea","State own delivery, third-party delivery, pickup or a combination. Include pickup instructions and any access restrictions."]]},
+    {"title":"Menu & meal preferences","fields":[
+      ["diet","Dietary options",true,"text","Vegetarian, non-vegetarian, vegan or other supported options."],
+      ["meals","Available meals",true,"text","Breakfast, lunch, dinner and/or snacks."],
+      ["cuisines","Cuisines, menu and portions",true,"textarea","List items, portion sizes and prices. Explain any daily or weekly rotating menu. Upload menu and meal photos below."],
+      ["customMenu","Dietary customisation",true,"textarea","Describe available changes and notice required, or enter Not offered."],
+      ["allergens","Allergens and cross-contact limitations",true,"textarea","Disclose relevant ingredients, shared preparation equipment and requests you cannot safely accommodate."]]},
+    {"title":"Capacity, availability & pricing","fields":[
+      ["minGuests","Minimum meals per order",true,"number","Smallest number of meals accepted per order; at least one."],
+      ["maxGuests","Maximum meals per day",true,"number","Daily capacity that your kitchen can safely prepare and deliver."],
+      ["minimumOrder","Minimum order value (₹)",true,"number","Enter zero if there is no minimum value."],
+      ["price","Starting meal price (₹)",true,"number","Base price per meal. Explain inclusions and extra charges below."],
+      ["availability","Operating days and hours",true,"text","List working days and opening/closing times."],
+      ["cutoff","Order cutoff and advance notice",true,"text","Give the last order time and required advance notice."],
+      ["timing","Preparation and delivery slots",true,"textarea","State preparation time, delivery windows and capacity per slot."],
+      ["charges","Delivery, packaging and taxes",true,"textarea","List charges, free-delivery conditions and applicable taxes. State what the meal price includes."],
+      ["bulk","Bulk and corporate orders",true,"textarea","State availability, limits and notice required, or enter Not offered."]]},
+    {"title":"Food safety & registration","fields":[
+      ["registration","Food-business registration / licence",true,"text","Enter your applicable registration/licence reference and category. Reuse existing profile documents where available."],
+      ["expiry","Registration / licence valid until",true,"date","Enter the validity date shown on your document."],
+      ["otherPermits","Other applicable business permits",false,"textarea","Provide relevant business registration or permit references only where applicable; do not repeat bank or tax details already supplied."],
+      ["foodSafety","Hygiene, storage and temperature control",true,"textarea","Describe kitchen cleaning, food-handler hygiene, storage and safe transport controls."],
+      ["water","Drinking-water source",true,"text","State your water source and any filtration/testing arrangements."],
+      ["packaging","Packaging and consumption instructions",true,"textarea","Describe food-safe packaging, storage, reheating and safe-consumption guidance."]]},
+    {"title":"Ordering & complaint policies","fields":[
+      ["cancellation","Cancellation and refunds",true,"textarea","Explain order changes, cancellation cutoffs, deductions and refund timelines."],
+      ["quality","Missing, incorrect or damaged meal complaints",true,"textarea","Explain how to report missing items, incorrect food, spills or quality concerns; include contact process, reasonable evidence and available replacement/refund remedies."],
+      ["subscriptionPolicy","Subscription pause, skip and renewal terms",false,"textarea","Required for Meal Subscription or Tiffin Service: explain notice, credits, renewal consent and unused-meal refunds. For daily-only tiffin, state that subscriptions are not offered."],
+      ["containerPolicy","Container deposit and return terms",false,"textarea","If reusable containers are offered, state the deposit, returns, cleaning responsibilities and refund process. Otherwise enter Not applicable."]]}],
+  "specific":{
+    "Cloud Kitchen":["cloud","Cloud kitchen arrangements",true,"textarea","List kitchen/brand names, delivery-platform availability, takeaway options and order capacity."],
+    "Home Food Service":["homeFood","Home food arrangements",true,"textarea","Describe the home-kitchen setup, daily menu, advance ordering and collection/delivery times."],
+    "Meal Subscription":["subscription","Subscription plans",true,"textarea","Describe weekly/monthly prices, meals included, delivery days, start-date choices and how customers pause, skip, renew or cancel."],
+    "Tiffin Service":["tiffin","Tiffin plans and containers",true,"textarea","Describe meal contents, portions, lunch/dinner timings, daily/monthly pricing, disposable/reusable containers and any refundable deposit."]
+  },
+  "policies":[
+    ["partner","SHAKALPA Partner Agreement","/legal/vendor-agreement"],
+    ["terms","Terms & Conditions","/legal/terms-and-conditions"],
+    ["privacy","Privacy / Data Policy","/legal/privacy-policy"],
+    ["conduct","Code of Conduct","/legal/code-of-conduct"],
+    ["safety","Food Safety & Hygiene Declaration","/meal-policy.html#safety"],
+    ["servicePolicy","Meal ordering, delivery and complaint policy","/meal-policy.html#ordering"]
+  ]
+}

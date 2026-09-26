@@ -1,0 +1,51 @@
+{
+  "services": ["Wedding Catering", "Party Catering", "Corporate Catering", "Home Catering", "Outdoor Catering"],
+  "sections": [
+    {"title":"Menu & experience","fields":[
+      ["experience","Catering experience (years)",true,"number","Enter completed years; zero is allowed for a new business."],
+      ["cuisines","Cuisines and sample menu",true,"textarea","Describe cuisines, signature dishes and package menus. Upload your brochure below."],
+      ["diet","Dietary options",true,"text","List vegetarian, non-vegetarian, vegan and other supported options."],
+      ["allergens","Allergy handling and food separation",true,"textarea","Explain ingredient disclosure, cross-contact controls and any requests you cannot safely accommodate."],
+      ["customMenu","Custom menus and tasting",true,"textarea","State availability, tasting charges and notice required; enter Not offered if unavailable."]]},
+    {"title":"Capacity & pricing","fields":[
+      ["minGuests","Minimum guests",true,"number","Smallest event or order you accept."],
+      ["maxGuests","Maximum guests",true,"number","Largest event your kitchen and team can safely handle."],
+      ["price","Starting price (₹)",true,"number","Starting price per plate or package; explain the basis in Price inclusions."],
+      ["minimumOrder","Minimum order value (₹)",true,"number","Enter zero if there is no minimum order value."],
+      ["styles","Serving styles",true,"text","Buffet, plated service, live counters or packed meals."],
+      ["inclusions","Price inclusions and additional charges",true,"textarea","Specify per-plate/package basis, staff, transport, equipment, packaging and taxes."],
+      ["notice","Minimum booking notice",true,"text","State the days or hours needed before the event."]]},
+    {"title":"Delivery, location & arrangements","fields":[
+      ["kitchen","Kitchen / preparation address",true,"textarea","Use the business address already entered if it is also your kitchen; otherwise provide the preparation address."],
+      ["areas","Service cities, PIN codes and travel limit",true,"textarea","Include delivery areas, maximum distance and travel charges."],
+      ["fulfilment","Delivery / on-site cooking arrangements",true,"textarea","Specify delivery, on-site cooking or both, delivery schedule and venue access requirements."],
+      ["equipment","Staff, equipment, setup and cleanup",true,"textarea","Describe supervisors, servers, crockery, cutlery, tables, linen and who handles setup and cleanup."],
+      ["foodSafety","Food storage, transport and hygiene",true,"textarea","Describe temperature control, storage, staff hygiene, cleaning and safe food transport."],
+      ["waste","Waste and leftover-food handling",true,"textarea","Explain safe disposal, packaging and responsibility for leftovers."],
+      ["availability","Working days and contact hours",true,"text","List available days, booking hours and event support hours."]]},
+    {"title":"Registration & supporting documents","fields":[
+      ["registration","Food-business registration / licence",true,"text","Enter the relevant registration or licence number and category; reuse your profile details if already supplied."],
+      ["expiry","Registration / licence valid until",true,"date","Enter the expiry date shown on the current document."],
+      ["otherPermits","Other applicable permits and insurance",false,"textarea","Provide relevant business registration, tax details or insurance only where applicable. Do not repeat details already supplied in your profile."]]},
+    {"title":"Booking & service policies","fields":[
+      ["payment","Advance and balance payment schedule",true,"textarea","Specify deposit, balance due date and accepted payment arrangements; do not enter bank account numbers here."],
+      ["guestDeadline","Final guest-count deadline and extra charges",true,"textarea","State the final confirmation deadline, extra-guest charges and overtime charges."],
+      ["cancellation","Cancellation, rescheduling and refunds",true,"textarea","Explain notice periods, deductions, refund timelines and rescheduling terms."],
+      ["quality","Service-quality and complaint resolution",true,"textarea","Give the complaint contact/process, reporting period and available remedies. This is not a repair warranty."],
+      ["damage","Equipment / property damage claims",true,"textarea","Explain reporting, evidence, review, responsibility and dispute handling; avoid automatic deductions without review."]]}],
+  "specific": {
+    "Wedding Catering":["wedding","Wedding packages and multi-event arrangements",true,"textarea","Describe guest capacity, tasting, live counters and serving staff for each function."],
+    "Party Catering":["party","Party packages",true,"textarea","Describe party types, small-event packages, children's menus, snacks and beverages."],
+    "Corporate Catering":["corporate","Corporate meal arrangements",true,"textarea","Describe meeting meals, packed lunches, recurring contracts, delivery schedules and invoicing."],
+    "Home Catering":["home","Home catering arrangements",true,"textarea","Describe minimum portions, delivery or home cooking and customer kitchen requirements."],
+    "Outdoor Catering":["outdoor","Outdoor catering and contingency plan",true,"textarea","Describe travel limits, mobile cooking, power/water requirements, venue access and weather backup."]
+  },
+  "policies":[
+    ["partner","SHAKALPA Partner Agreement","/legal/vendor-agreement"],
+    ["terms","Terms & Conditions","/legal/terms-and-conditions"],
+    ["privacy","Privacy / Data Policy","/legal/privacy-policy"],
+    ["conduct","Code of Conduct","/legal/code-of-conduct"],
+    ["safety","Catering Food Safety & Hygiene Declaration","/catering-policy.html#safety"],
+    ["servicePolicy","Catering booking, quality and damage-claim policy","/catering-policy.html#booking"]
+  ]
+}

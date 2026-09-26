@@ -1,0 +1,56 @@
+{
+ "services":["Supermarket","Provision Store","Organic Store","Wholesale Grocery","Rice & Grain Shop"],
+ "sections":[
+  {"title":"Store & availability","fields":[
+   ["businessType","Business type",true,"text","Individual, proprietorship, partnership or company. Business name and contact details are reused from your partner profile."],
+   ["experience","Years in operation",true,"number","Completed years; zero is allowed for a new store."],
+   ["address","Store address",true,"textarea","Include street, city, state and PIN code. Reuse the profile address if it is the same."],
+   ["map","Store map link",false,"url","Provide a map link to the store, not a customer's location."],
+   ["hours","Working days and opening hours",true,"text","Include closing times, weekly holidays and pickup hours."],
+   ["fulfilment","Shopping, pickup and delivery options",true,"textarea","State in-store shopping, pickup, delivery or a combination. Explain pickup instructions and own/third-party delivery arrangements."]]},
+  {"title":"Delivery & order limits","fields":[
+   ["areas","Delivery areas and PIN codes",true,"textarea","List areas served or enter Pickup/in-store only if delivery is unavailable."],
+   ["radius","Maximum delivery radius (km)",true,"number","Enter zero for pickup/in-store only."],
+   ["minimumOrder","Minimum order value (₹)",true,"number","Enter zero if there is no minimum."],
+   ["timings","Delivery slots and order cutoff",true,"text","Give available slots, preparation time and order cutoff; enter Not applicable if delivery is unavailable."],
+   ["deliveryCharges","Delivery charges and free-delivery conditions",true,"textarea","State charges and any free-delivery threshold; enter Not applicable for pickup/in-store only."]]},
+  {"title":"Products & pricing arrangements","fields":[
+   ["categories","Product categories and brands",true,"textarea","List the main categories and brands you stock. Product names, descriptions, photos and current availability belong in the catalogue."],
+   ["units","Pack sizes and selling units",true,"text","Examples: piece, packet, kilogram, litre, bag or carton; include loose versus packaged options."],
+   ["pricing","Pricing, minimum quantities and bulk discounts",true,"textarea","Describe minimum quantities, quantity discounts, packaging charges and tax treatment. Maintain item selling prices and applicable MRP in the catalogue."],
+   ["stock","Stock updates and substitutions",true,"textarea","Explain stock-update frequency and how customers approve substitutions. Do not substitute without their consent."]]},
+  {"title":"Storage, quality & food safety","fields":[
+   ["sourcing","Supplier sourcing and traceability",true,"textarea","Explain supplier checks, purchase records and how affected batches can be identified."],
+   ["expiryChecks","Expiry checks and stock rotation",true,"textarea","Describe date checks, stock rotation and removal of expired or damaged products."],
+   ["storage","Storage, cleaning and pest control",true,"textarea","Describe storage conditions, cleaning routines and pest-control arrangements."],
+   ["temperature","Temperature-controlled products",true,"textarea","Describe chilled/frozen storage and delivery controls, or enter Not sold."],
+   ["handling","Loose-food packaging and allergen information",true,"textarea","Describe hygienic handling, food-safe packaging, labels and allergen/cross-contact information where relevant."],
+   ["weighing","Weighing and measurement practices",true,"textarea","Explain quantity checks and applicable equipment verification; enter Packaged goods only if relevant."],
+   ["recalls","Damaged, expired and recalled products",true,"textarea","Explain isolation, sale prevention, customer contact and return/disposal arrangements."]]},
+  {"title":"Registration & evidence","fields":[
+   ["registration","Food-business registration / licence",true,"text","Provide the applicable reference and category. If not applicable, state why; applicability is subject to review."],
+   ["expiry","Registration / licence valid until",false,"date","Enter the expiry date where the registration has one."],
+   ["permits","Other applicable registrations and authorisations",false,"textarea","List trade/business registration, weighing verification, or brand/distributor authorisation as applicable. Reuse tax registration already supplied in your profile."],
+   ["evidence","Supporting evidence summary",true,"textarea","Identify the documents uploaded: applicable food/trade registration, store photos, catalogue, supplier evidence and relevant organic certification. Reuse existing profile documents."]]},
+  {"title":"Orders, returns & complaints","fields":[
+   ["acceptance","Order acceptance and out-of-stock handling",true,"textarea","Explain confirmation, unavailable items, customer-approved substitutions and price changes."],
+   ["deliveryPolicy","Pickup and failed-delivery policy",true,"textarea","Describe collection windows, failed deliveries, redelivery charges and who to contact."],
+   ["returns","Cancellation, returns and refunds",true,"textarea","State cancellation deadlines, perishable-item conditions and refund timelines without excluding applicable customer rights."],
+   ["complaints","Missing, incorrect, damaged or expired goods",true,"textarea","Provide the reporting process, reasonable evidence, review times and replacement/refund remedies. Include bulk shortages and damage claims where applicable."]]}
+ ],
+ "specific":{
+  "Supermarket":["supermarket","Supermarket departments and facilities",true,"textarea","List departments, fresh/chilled/frozen ranges, cold storage and home-delivery facilities."],
+  "Provision Store":["provision","Provision store arrangements",true,"textarea","Describe daily essentials, loose/packaged goods, local delivery and recurring household orders."],
+  "Organic Store":["organic","Organic claims and certification evidence",true,"textarea","Identify products sold as organic, supporting certification or supplier evidence, traceability and separation from conventional goods. Upload relevant evidence."],
+  "Wholesale Grocery":["wholesale","Wholesale supply arrangements",true,"textarea","Describe categories, minimum quantities, carton sizes, price tiers, business-customer requirements, dispatch capacity and payment/credit terms if offered."],
+  "Rice & Grain Shop":["grain","Rice and grain range",true,"textarea","List varieties, grades, origin where known, loose/bagged options, bag sizes, cleaning/milling availability and bulk capacity."]
+ },
+ "policies":[
+  ["partner","SHAKALPA Partner Agreement","/legal/vendor-agreement"],
+  ["terms","Terms & Conditions","/legal/terms-and-conditions"],
+  ["privacy","Privacy / Data Policy","/legal/privacy-policy"],
+  ["conduct","Code of Conduct","/legal/code-of-conduct"],
+  ["safety","Grocery Food Safety & Product Quality Declaration","/grocery-policy.html#safety"],
+  ["servicePolicy","Grocery delivery, cancellation, returns and refunds policy","/grocery-policy.html#orders"]
+ ]
+}

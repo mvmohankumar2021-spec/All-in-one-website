@@ -1,0 +1,116 @@
+/* Scoped to household: does not change other onboarding forms. */
+.household-onboarding .household-field select { box-sizing: border-box; width: 100%; min-width: 0; min-height: 36px; padding: 7px 9px; border: 1px solid #cbdbe9; border-radius: 7px; background: #fff; color: #243c52; font: inherit; font-size: 13px; }
+.household-onboarding label[hidden] { display: none !important; }
+@media (pointer: coarse) { .household-onboarding .household-field select { min-height: 44px; font-size: 16px; } }
+.household-help-tooltip {
+  position: fixed;
+  z-index: 10000;
+  box-sizing: border-box;
+  width: min(260px, calc(100vw - 24px));
+  max-height: min(240px, calc(100dvh - 24px));
+  overflow-y: auto;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #cbdfea;
+  border-radius: 8px;
+  background: #f0f7ff;
+  color: #203d56;
+  box-shadow: 0 4px 16px #203d5624;
+  font: 400 14px/1.6 'DM Sans', sans-serif;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.household-help-tooltip[hidden] { display: none !important; }
+.household-help-tooltip { white-space: pre-line; }
+.household-onboarding .household-documents legend { display: inline-flex; align-items: center; gap: 2px; }
+.household-onboarding .household-file-status:empty { display: none; }
+.household-onboarding {
+  container-type: inline-size;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+  background: #fff;
+  border-color: #d6e2ee;
+}
+.household-onboarding > h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.25; }
+.household-onboarding > p { font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
+.household-onboarding > .household-status:empty { display: none; }
+.household-onboarding fieldset { padding: 6px 0 12px; margin: 0; }
+.household-onboarding fieldset:last-child { padding-bottom: 0; }
+.household-onboarding legend { max-width: 100%; font-size: 19px; line-height: 1.4; padding: 8px 0; }
+.household-onboarding .household-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; }
+.household-field { display: grid; gap: 4px; margin-bottom: 0; }
+.household-field-wide { grid-column: auto; }
+.household-field-pair { display: grid; grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0; }
+.household-field-pair > .household-field { grid-template-rows: 1fr auto; }
+.household-field-pair > .household-field:only-child { grid-column: 1 / -1; }
+.household-onboarding fieldset > div:not(.household-grid) + div { margin-top: 10px; }
+.household-onboarding .household-field-heading { display: flex; align-items: flex-start; justify-content: flex-start; gap: 4px; min-height: 28px; }
+.household-onboarding .household-field-heading label { min-width: 0; margin: 0; padding-top: 5px; font-size: 12px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.household-onboarding .household-field input,
+.household-onboarding .household-field textarea { margin: 0; padding: 7px 9px; border: 1px solid #cbdbe9; border-radius: 7px; background: #fff; color: #243c52; font: inherit; font-size: 13px; line-height: 1.5; min-height: 36px; }
+.household-onboarding .household-field textarea { height: 72px; min-height: 72px; resize: vertical; }
+.household-onboarding .household-help-button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #527590; cursor: pointer; transition: background-color .15s ease, color .15s ease; }
+.household-onboarding .household-help-button svg { display: block; width: 22px; height: 22px; pointer-events: none; }
+.household-onboarding .household-field-heading .household-help-button { flex-basis: 28px; width: 28px; height: 28px; min-height: 28px; }
+.household-onboarding .household-help-button:hover,
+.household-onboarding .household-help-button[aria-expanded="true"] { background: #edf5fb; color: #215b86; }
+.household-onboarding .household-help-button:focus-visible,
+.household-onboarding .household-field input:focus-visible,
+.household-onboarding .household-field textarea:focus-visible { outline: 3px solid #447da8; outline-offset: 2px; box-shadow: none; }
+.household-onboarding .household-help-text { margin: 0; padding: 16px 18px; border: 1px solid #cbdfea; border-left: 3px solid #5485a7; border-radius: 12px; background: #f0f7ff; color: #203d56; font-size: 15px; line-height: 1.65; text-align: left; white-space: pre-line; overflow-wrap: anywhere; }
+.household-onboarding .household-agreement { gap: 12px; padding: 10px 0; margin: 0; font-size: 14px; line-height: 1.6; }
+.household-onboarding .household-agreement input { flex: 0 0 20px; margin: 2px 0 0; padding: 0; accent-color: #315c7b; }
+.household-onboarding .household-agreement a { min-width: 0; overflow-wrap: anywhere; }
+.household-onboarding .household-file-status { font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.household-onboarding .household-documents > p {
+  font: 400 13px/1.55 'DM Sans', sans-serif;
+  color: #536b80;
+  margin: 0 0 8px;
+}
+.household-onboarding .household-documents { padding-top: 2px; padding-bottom: 6px; }
+.household-onboarding .household-documents legend { padding-bottom: 4px; }
+.household-onboarding .household-documents legend .household-help-button { width: 28px; height: 28px; min-height: 28px; flex-basis: 28px; }
+.household-onboarding .household-documents > .button { margin-bottom: 4px; }
+.household-onboarding .household-documents > p a { font-size: 13px; font-weight: 500; }
+.household-onboarding .household-documents .document-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font: 400 13px/1.55 'DM Sans', sans-serif;
+}
+.household-onboarding .household-documents .document-list li { padding: 4px 0; }
+.household-onboarding .household-agreement {
+  min-height: 24px;
+  box-sizing: border-box;
+  align-items: center !important;
+  padding: 2px 0;
+  gap: 7px;
+  font: 700 11px/1.4 'DM Sans', sans-serif;
+}
+.household-onboarding .household-agreements-section legend { font-size: 16px; line-height: 1.3; padding: 6px 0; }
+.household-onboarding .household-agreement a { font: inherit; text-underline-offset: 3px; }
+.household-onboarding .household-agreement input[type="checkbox"] {
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  min-height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+  padding: 0;
+}
+@media (pointer: coarse) {
+  .household-onboarding .household-agreement { min-height: 44px; padding: 6px 0; }
+  .household-onboarding .household-field-heading .household-help-button { flex-basis: 44px; width: 44px; height: 44px; min-height: 44px; }
+  .household-onboarding .household-field input,
+  .household-onboarding .household-field textarea { min-height: 44px; font-size: 16px; }
+}
+@container (min-width: 560px) {
+  .household-onboarding .household-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .household-field-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .household-onboarding { padding: 16px; }
+  .household-onboarding > h2 { font-size: 24px; }
+  .household-onboarding legend { font-size: 18px; }
+}

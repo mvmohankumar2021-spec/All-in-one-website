@@ -13,6 +13,17 @@
 .profile-actions{display:flex;gap:10px}.profile-actions .button{flex:1;white-space:nowrap}@media(max-width:460px){.profile-actions{flex-direction:column}}
 .approval-queue{background:#fff;padding:26px;margin:0 0 19px}.approval-queue .table-heading{margin-bottom:14px}.approve-button{border:0;background:var(--lime);color:var(--ink);font:inherit;font-size:10px;font-weight:700;padding:8px 11px;white-space:nowrap}.approve-button:disabled{opacity:.6;cursor:not-allowed}
 .certificate-list{margin:0;padding:0;list-style:none;display:grid;gap:6px}.certificate-list li{font-size:11px;color:var(--muted)}.certificate-list a,.certificate-link{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+/* Keep the shared certificate upload compact, including its empty states. */
+#vendorProfileForm > [hidden]{display:none!important}
+#vendorProfileForm .document-removal-status:empty,
+#vendorProfileForm .service-upload-status:empty,
+#vendorProfileForm > .form-error:empty{display:none}
+#vendorProfileForm label:has(#certificateDocuments){margin:0;row-gap:4px}
+#vendorProfileForm label:has(#certificateDocuments) .service-upload-button{margin-top:4px;margin-bottom:0}
+#vendorProfileForm label:has(#certificateDocuments) .upload-note{display:block;margin:4px 0 0;line-height:1.5}
+#vendorProfileForm #certificateList{margin:0;padding:0;gap:4px}
+#vendorProfileForm #certificateList li{padding:2px 0}
+#vendorProfileForm .document-removal-status{margin:0;line-height:1.5}
 .document-request-panel{border-left:3px solid var(--orange);background:#fff3e7;padding:16px}.document-request-panel .eyebrow{margin:0 0 6px;color:#965022}.document-request-panel h3{font-family:Fraunces,serif;font-size:20px;margin:0 0 8px}.document-request-panel p{font-size:11px;line-height:1.5;margin:7px 0}
 .review-actions{display:flex;gap:6px;align-items:center}.request-button{border:1px solid var(--ink);background:#fff;color:var(--ink);font:inherit;font-size:10px;font-weight:700;padding:7px 9px;white-space:nowrap}
 .certificate-configuration{display:grid;gap:12px}.certificate-configuration label{display:grid;gap:5px;font-size:11px}
@@ -43,4 +54,6 @@
 .operating-setup-panel form:not([hidden]) .button{min-height:50px;margin-top:4px;border-radius:9px;background:linear-gradient(90deg,#3c7145,#275744);font-size:12px;box-shadow:none}
 .operating-setup-panel form:not([hidden]) .button:hover{filter:brightness(1.12);transform:translateY(-1px)}
 .marketplace-setup-panel .agreement-confirmation[hidden]{display:none!important}.marketplace-policy-links a{color:#356a40;font-weight:800;text-decoration:underline;text-underline-offset:3px}.marketplace-policy-links{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 2px;padding:11px 12px;border-left:3px solid #6f9a64;background:#f2f8ee;color:var(--muted);font-size:10px;line-height:1.55}.marketplace-policy-links span{color:#93a78f}
+.bakery-help-tooltip{position:fixed;z-index:120;width:min(270px,calc(100vw - 24px));padding:10px 12px;border:1px solid #8bb082;border-left:4px solid #4e8146;background:#eef7e9;color:#25432a;box-shadow:0 10px 24px rgba(34,72,40,.18);font:600 11px/1.45 'DM Sans',sans-serif}.bakery-help-tooltip[hidden]{display:none}
+.service-upload-button{width:max-content;margin-top:8px;border:1px solid #356a40;background:#fff;color:#356a40;padding:7px 10px;font:700 10px 'DM Sans',sans-serif;cursor:pointer}.service-upload-status{display:block;margin-top:6px;color:var(--muted);font-size:10px}
 @media(max-width:620px){.operating-setup-panel{border-radius:11px}.operating-setup-panel>.eyebrow{padding:17px 16px 0}.operating-setup-panel>h3{padding:5px 16px 15px;font-size:24px!important}.operating-setup-panel form:not([hidden]),.operating-setup-panel form:not([hidden])>.name-grid{grid-template-columns:1fr;gap:13px;padding:16px}.operating-setup-panel form:not([hidden])>label{grid-column:1/-1}}

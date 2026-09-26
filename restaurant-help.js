@@ -1,0 +1,6 @@
+(() => {
+  const panel=document.querySelector('.restaurant-onboarding');if(!panel)return;
+  const tip=document.createElement('div');tip.className='bakery-help-tooltip';tip.hidden=true;document.body.append(tip);
+  panel.querySelectorAll('label').forEach(label=>{const field=label.querySelector('input,select,textarea');if(!field||field.type==='checkbox'||label.querySelector('.plumbing-help-button'))return;const placeholder=field.getAttribute('placeholder');const message=placeholder||`Enter accurate ${label.childNodes[0]?.textContent?.trim().toLowerCase()||'details'} for this restaurant service.`;if(placeholder)field.removeAttribute('placeholder');label.classList.add('plumbing-help-label');const button=document.createElement('button');button.type='button';button.className='plumbing-help-button';button.textContent='ⓘ';button.title=message;button.setAttribute('aria-label',message);button.addEventListener('click',()=>{const rect=button.getBoundingClientRect();tip.textContent=message;tip.style.left=`${Math.max(12,Math.min(window.innerWidth-282,rect.right-270))}px`;tip.style.top=`${Math.min(window.innerHeight-72,rect.bottom+8)}px`;tip.hidden=!tip.hidden});label.append(button)});
+  document.addEventListener('click',event=>{if(!event.target.closest('.plumbing-help-button,.bakery-help-tooltip'))tip.hidden=true});
+})();

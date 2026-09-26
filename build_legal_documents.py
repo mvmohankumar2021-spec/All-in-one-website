@@ -306,3 +306,35 @@ make_document(
     "I confirm that I have reviewed this Marketplace Payments, Cancellation & Refund Policy and will follow it when using SHAKALPA marketplace payment collection and settlement.",
     "SHAKALPA_Marketplace_Payments_Cancellation_Refund_Policy_India_Draft.docx",
 )
+
+make_document(
+    "SHAKALPA Bakery Food Safety & Quality Declaration",
+    "This declaration applies to Service Partners offering bakery, cake shop, sweet shop, or dessert shop services through SHAKALPA.",
+    [
+        ("Food business compliance", "Partners must maintain applicable FSSAI, business, GST, facility, and local registration records and accurately describe products, ingredients, prices, and availability.", []),
+        ("Food safety and allergens", "Partners must maintain safe preparation, storage, hygiene, packaging, temperature, labelling, expiry, allergen, cross-contamination, pest-control, and waste-handling practices.", []),
+        ("Orders, delivery, and customer protection", "Partners must clearly disclose order lead time, customisation, delivery, cancellation, refund, replacement, damage-claim, and complaint processes and promptly escalate material food-quality or safety incidents.", []),
+    ],
+    "I confirm that I will provide safe, accurately described, and professionally handled bakery and sweets services.",
+    "SHAKALPA_Bakery_Food_Safety_Quality_Declaration_India_Draft.docx",
+)
+
+make_document(
+    "SHAKALPA Restaurant Food Safety & Quality Declaration",
+    "This declaration applies to restaurant partners offering vegetarian, non-vegetarian, multi-cuisine, regional, Chinese, or fast-food services through SHAKALPA.",
+    [
+        ("Food business compliance", "Partners must maintain applicable FSSAI, business, GST, facility, and local registration records and accurately describe menu items, ingredients, prices, availability, and dietary claims.", []),
+        ("Food safety and allergens", "Partners must maintain safe preparation, storage, hygiene, temperature, labelling, allergen, vegetarian/non-vegetarian separation, pest-control, and waste-handling practices.", []),
+        ("Orders and customer protection", "Partners must clearly disclose fulfilment, delivery, cancellation, refund, replacement, complaint, and food-quality incident processes and promptly escalate material safety concerns.", []),
+    ],
+    "I confirm that I will provide safe, accurately described, and professionally handled restaurant services.",
+    "SHAKALPA_Restaurant_Food_Safety_Quality_Declaration_India_Draft.docx",
+)
+
+make_document(
+    "SHAKALPA Café & Beverages Food Safety & Quality Declaration",
+    "This declaration applies to café, tea shop, juice shop, ice cream shop, snack shop, and street-food partners through SHAKALPA.",
+    [("Food safety and quality", "Partners must maintain applicable FSSAI and business records; safe water, ice, ingredient, allergen, storage, refrigeration, hygiene, packaging, delivery, pest-control, and waste practices; and clear customer refund and complaint processes.", [])],
+    "I confirm that I will provide safe, accurately described, and professionally handled café and beverages services.",
+    "SHAKALPA_Cafe_Beverages_Food_Safety_Quality_Declaration_India_Draft.docx",
+)

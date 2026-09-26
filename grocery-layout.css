@@ -1,0 +1,113 @@
+/* Scoped to grocery: does not change other onboarding forms. */
+.grocery-help-tooltip {
+  position: fixed;
+  z-index: 10000;
+  box-sizing: border-box;
+  width: min(260px, calc(100vw - 24px));
+  max-height: min(240px, calc(100dvh - 24px));
+  overflow-y: auto;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #cbdfea;
+  border-radius: 8px;
+  background: #f0f7ff;
+  color: #203d56;
+  box-shadow: 0 4px 16px #203d5624;
+  font: 400 14px/1.6 'DM Sans', sans-serif;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.grocery-help-tooltip[hidden] { display: none !important; }
+.grocery-help-tooltip { white-space: pre-line; }
+.grocery-onboarding .grocery-documents legend { display: inline-flex; align-items: center; gap: 2px; }
+.grocery-onboarding .grocery-file-status:empty { display: none; }
+.grocery-onboarding {
+  container-type: inline-size;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+  background: #fff;
+  border-color: #d6e2ee;
+}
+.grocery-onboarding > h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.25; }
+.grocery-onboarding > p { font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
+.grocery-onboarding > .grocery-status:empty { display: none; }
+.grocery-onboarding fieldset { padding: 6px 0 12px; margin: 0; }
+.grocery-onboarding fieldset:last-child { padding-bottom: 0; }
+.grocery-onboarding legend { max-width: 100%; font-size: 19px; line-height: 1.4; padding: 8px 0; }
+.grocery-onboarding .grocery-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; }
+.grocery-field { display: grid; gap: 4px; margin-bottom: 0; }
+.grocery-field-wide { grid-column: auto; }
+.grocery-field-pair { display: grid; grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0; }
+.grocery-field-pair > .grocery-field { grid-template-rows: 1fr auto; }
+.grocery-field-pair > .grocery-field:only-child { grid-column: 1 / -1; }
+.grocery-onboarding fieldset > div:not(.grocery-grid) + div { margin-top: 10px; }
+.grocery-onboarding .grocery-field-heading { display: flex; align-items: flex-start; justify-content: flex-start; gap: 4px; min-height: 28px; }
+.grocery-onboarding .grocery-field-heading label { min-width: 0; margin: 0; padding-top: 5px; font-size: 12px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.grocery-onboarding .grocery-field input,
+.grocery-onboarding .grocery-field textarea { margin: 0; padding: 7px 9px; border: 1px solid #cbdbe9; border-radius: 7px; background: #fff; color: #243c52; font: inherit; font-size: 13px; line-height: 1.5; min-height: 36px; }
+.grocery-onboarding .grocery-field textarea { height: 72px; min-height: 72px; resize: vertical; }
+.grocery-onboarding .grocery-help-button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #527590; cursor: pointer; transition: background-color .15s ease, color .15s ease; }
+.grocery-onboarding .grocery-help-button svg { display: block; width: 22px; height: 22px; pointer-events: none; }
+.grocery-onboarding .grocery-field-heading .grocery-help-button { flex-basis: 28px; width: 28px; height: 28px; min-height: 28px; }
+.grocery-onboarding .grocery-help-button:hover,
+.grocery-onboarding .grocery-help-button[aria-expanded="true"] { background: #edf5fb; color: #215b86; }
+.grocery-onboarding .grocery-help-button:focus-visible,
+.grocery-onboarding .grocery-field input:focus-visible,
+.grocery-onboarding .grocery-field textarea:focus-visible { outline: 3px solid #447da8; outline-offset: 2px; box-shadow: none; }
+.grocery-onboarding .grocery-help-text { margin: 0; padding: 16px 18px; border: 1px solid #cbdfea; border-left: 3px solid #5485a7; border-radius: 12px; background: #f0f7ff; color: #203d56; font-size: 15px; line-height: 1.65; text-align: left; white-space: pre-line; overflow-wrap: anywhere; }
+.grocery-onboarding .grocery-agreement { gap: 12px; padding: 10px 0; margin: 0; font-size: 14px; line-height: 1.6; }
+.grocery-onboarding .grocery-agreement input { flex: 0 0 20px; margin: 2px 0 0; padding: 0; accent-color: #315c7b; }
+.grocery-onboarding .grocery-agreement a { min-width: 0; overflow-wrap: anywhere; }
+.grocery-onboarding .grocery-file-status { font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.grocery-onboarding .grocery-documents > p {
+  font: 400 13px/1.55 'DM Sans', sans-serif;
+  color: #536b80;
+  margin: 0 0 8px;
+}
+.grocery-onboarding .grocery-documents { padding-top: 2px; padding-bottom: 6px; }
+.grocery-onboarding .grocery-documents legend { padding-bottom: 4px; }
+.grocery-onboarding .grocery-documents legend .grocery-help-button { width: 28px; height: 28px; min-height: 28px; flex-basis: 28px; }
+.grocery-onboarding .grocery-documents > .button { margin-bottom: 4px; }
+.grocery-onboarding .grocery-documents > p a { font-size: 13px; font-weight: 500; }
+.grocery-onboarding .grocery-documents .document-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font: 400 13px/1.55 'DM Sans', sans-serif;
+}
+.grocery-onboarding .grocery-documents .document-list li { padding: 4px 0; }
+.grocery-onboarding .grocery-agreement {
+  min-height: 24px;
+  box-sizing: border-box;
+  align-items: center !important;
+  padding: 2px 0;
+  gap: 7px;
+  font: 700 11px/1.4 'DM Sans', sans-serif;
+}
+.grocery-onboarding .grocery-agreements-section legend { font-size: 16px; line-height: 1.3; padding: 6px 0; }
+.grocery-onboarding .grocery-agreement a { font: inherit; text-underline-offset: 3px; }
+.grocery-onboarding .grocery-agreement input[type="checkbox"] {
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  min-height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+  padding: 0;
+}
+@media (pointer: coarse) {
+  .grocery-onboarding .grocery-agreement { min-height: 44px; padding: 6px 0; }
+  .grocery-onboarding .grocery-field-heading .grocery-help-button { flex-basis: 44px; width: 44px; height: 44px; min-height: 44px; }
+  .grocery-onboarding .grocery-field input,
+  .grocery-onboarding .grocery-field textarea { min-height: 44px; font-size: 16px; }
+}
+@container (min-width: 560px) {
+  .grocery-onboarding .grocery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grocery-field-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .grocery-onboarding { padding: 16px; }
+  .grocery-onboarding > h2 { font-size: 24px; }
+  .grocery-onboarding legend { font-size: 18px; }
+}

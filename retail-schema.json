@@ -1,0 +1,58 @@
+{
+ "services":["Department Store","Shopping Centre","Gift Shop","Toy Shop","Book Store","Stationery Store"],
+ "sections":[
+  {"title":"Business & location","fields":[
+   ["businessType","Business type and trading role",true,"text","State individual/proprietorship/partnership/company and retailer, wholesaler or distributor. Name, owner/contact, phone and email are reused from your partner profile."],
+   ["experience","Years in operation",true,"number","Completed years; enter zero for a new business."],
+   ["address","Store / centre address",true,"textarea","Include street, city, state and PIN code. Refer to your profile address if unchanged."],
+   ["unit","Floor / unit number",false,"text","Include the centre name for a shop inside a shopping centre."],
+   ["map","Map link",false,"url","Provide a map link for the store or centre."],
+   ["hours","Working days, hours and holidays",true,"text","Include opening/closing times and regular holidays."],
+   ["facilities","Parking and accessibility",true,"textarea","Describe parking, step-free access, lifts and other facilities accurately; state unavailable facilities where relevant."]]},
+  {"title":"Products & ordering","shopOnly":true,"fields":[
+   ["categories","Product categories and brands",true,"textarea","Describe the range. Maintain individual descriptions, photos, prices, sizes/variants and stock in the catalogue."],
+   ["minimumQuantity","Minimum order quantity",true,"text","State units and quantity, or No minimum."],
+   ["minimumOrder","Minimum order value (₹)",true,"number","Enter zero if none."],
+   ["bulk","Retail, wholesale and bulk arrangements",true,"textarea","Describe quantity discounts, institutional supply and order limits, or Not offered."],
+   ["extras","Gift wrapping, personalisation and charges",true,"textarea","Describe services, preparation times, packaging and extra charges, or Not offered."],
+   ["stock","Stock, pre-orders and substitutions",true,"textarea","Explain availability updates, special orders, pre-orders and customer approval before substitutions or price changes."]]},
+  {"title":"Pickup & delivery","shopOnly":true,"fields":[
+   ["fulfilment","Shopping, pickup and delivery options",true,"text","State in-store shopping, pickup, delivery or a combination."],
+   ["radius","Maximum delivery radius (km)",true,"number","Zero for in-store/pickup only."],
+   ["areas","Delivery localities and PIN codes",true,"textarea","List areas served or enter Delivery not offered."],
+   ["timing","Order cutoff and fulfilment times",true,"text","Include bulk/custom-order lead times and delivery estimates, where applicable."],
+   ["delivery","Delivery charges and collection arrangements",true,"textarea","Describe own/third-party delivery, free-delivery conditions, failed deliveries and pickup instructions; state Not applicable where necessary."],
+   ["packing","Fragile-product packaging",true,"textarea","Explain protective packaging and transport handling, or Not applicable."]]},
+  {"title":"Quality & product safety","shopOnly":true,"fields":[
+   ["sourcing","Sourcing and authenticity checks",true,"textarea","Describe supplier checks, traceability and relevant brand/distributor authorisation."],
+   ["quality","Storage, damaged stock and recalls",true,"textarea","Explain storage, damage checks, withdrawal from sale, recalls and customer notification."],
+   ["safety","Customer instructions and safety warnings",true,"textarea","Describe how relevant usage instructions and warnings are supplied. For toys, include age suitability and relevant safety evidence."],
+   ["warranty","Warranty for eligible products",true,"textarea","Describe manufacturer warranty coverage, exclusions and claim process; otherwise Not applicable."]]},
+  {"title":"Registration & supporting evidence","fields":[
+   ["registration","Applicable business / trade registration",true,"text","Enter applicable references or state why not applicable for review. Reuse tax registration already supplied."],
+   ["expiry","Registration valid until",false,"date","Enter the expiry date where applicable."],
+   ["evidence","Supporting evidence summary",true,"textarea","Identify store photos, catalogue and relevant registrations, brand authorisation or product compliance evidence. Centre operators should provide management authority and applicable building/occupancy/fire-safety documents. Individual shops need only their own applicable evidence; reuse uploaded profile documents."]]},
+  {"title":"Customer policies","shopOnly":true,"fields":[
+   ["returns","Cancellation, returns, exchanges and refunds",true,"textarea","Describe eligibility, timelines and fees without excluding applicable customer rights."],
+   ["complaints","Wrong, missing or damaged goods",true,"textarea","Explain reporting, reasonable evidence, review and remedies; include bulk shortages and damage claims."],
+   ["customPolicy","Custom, personalised and special orders",true,"textarea","Describe design approval, preparation, pre-order timing and cancellation/refund terms, or Not offered."],
+   ["filePrivacy","Customer-file privacy and retention",true,"textarea","For printing/personalisation, explain permitted use, access, retention and deletion of customer files. Otherwise enter No customer files collected."]]}
+ ],
+ "specific":{
+  "Department Store":["department","Departments and customer facilities",true,"textarea","List departments, brands, floor-wise directory, customer-service facilities and collection arrangements."],
+  "Shopping Centre":["centre","Shopping centre / tenant details",true,"textarea","Operators: identify management, representation authority, shop directory, facilities, accessibility, parking, security/help desk and emergency arrangements. Individual shops: identify your centre/unit and your own facilities; do not claim operator authority."],
+  "Gift Shop":["gift","Gift range and customisation",true,"textarea","Describe occasion-based collections, wrapping, hampers, personalisation, preparation times, corporate gifting and custom-order approval."],
+  "Toy Shop":["toy","Toy range and safety",true,"textarea","List categories, brands, age suitability, small-parts warnings, battery requirements and relevant safety/compliance evidence."],
+  "Book Store":["book","Book range and special orders",true,"textarea","Describe genres, languages, new/used books, school/college texts, special orders, pre-orders and institutional supply. Keep ISBN, edition, condition and missing/damaged-page disclosures in the catalogue."],
+  "Stationery Store":["stationery","Stationery and supporting services",true,"textarea","Describe school/office/art/craft ranges, brands, pack sizes, institutional/bulk supply and printing/binding/customisation if offered."]
+ },
+ "policies":[
+  ["partner","SHAKALPA Partner Agreement","/legal/vendor-agreement"],
+  ["terms","Terms & Conditions","/legal/terms-and-conditions"],
+  ["privacy","Privacy / Data Policy","/legal/privacy-policy"],
+  ["conduct","Code of Conduct","/legal/code-of-conduct"],
+  ["safety","Product Authenticity, Quality & Safety Declaration","/retail-policy.html#safety","shop"],
+  ["servicePolicy","Retail delivery, cancellation, returns and refunds policy","/retail-policy.html#orders","shop"],
+  ["operator","Shopping-centre Operator Declaration","/retail-policy.html#centre","operator"]
+ ]
+}

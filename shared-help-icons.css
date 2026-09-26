@@ -1,0 +1,60 @@
+/* Preserve form-specific positioning and tooltip behaviour. */
+button[data-shared-help-icon] {
+  display: inline-grid !important;
+  place-items: center;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: #527590 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  vertical-align: middle;
+  isolation: isolate;
+}
+button[data-shared-help-icon] svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+button[data-shared-help-icon]:hover,
+button[data-shared-help-icon][aria-expanded="true"] {
+  color: #215b86 !important;
+  background: #edf5fb !important;
+}
+button[data-shared-help-icon]:focus-visible {
+  outline: 2px solid #447da8 !important;
+  outline-offset: 3px;
+}
+.universal-help-popover,
+.plumbing-help-popover,
+.bakery-help-tooltip {
+  box-sizing: border-box;
+  background: #f0f7ff !important;
+  color: #203d56 !important;
+  border: 1px solid #cbdfea !important;
+  border-left: 3px solid #5485a7 !important;
+  border-radius: 12px;
+  padding: 10px 12px !important;
+  font: 400 14px/1.6 'DM Sans', sans-serif !important;
+  letter-spacing: normal;
+  text-align: left;
+  white-space: pre-line;
+  width: min(260px, calc(100vw - 24px)) !important;
+  max-width: calc(100vw - 24px);
+  max-height: min(360px, calc(100dvh - 24px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 8px 28px rgba(32, 61, 86, .16) !important;
+  overflow-wrap: anywhere;
+}
+.catering-onboarding .catering-help-text {
+  padding: 16px 18px;
+  font: 400 15px/1.65 'DM Sans', sans-serif;
+  background: #f0f7ff;
+  color: #203d56;
+  border-radius: 12px;
+  text-align: left;
+  white-space: pre-line;
+}

@@ -1,0 +1,113 @@
+/* Scoped to meal: does not change other onboarding forms. */
+.meal-help-tooltip {
+  position: fixed;
+  z-index: 10000;
+  box-sizing: border-box;
+  width: min(260px, calc(100vw - 24px));
+  max-height: min(240px, calc(100dvh - 24px));
+  overflow-y: auto;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #cbdfea;
+  border-radius: 8px;
+  background: #f0f7ff;
+  color: #203d56;
+  box-shadow: 0 4px 16px #203d5624;
+  font: 400 14px/1.6 'DM Sans', sans-serif;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.meal-help-tooltip[hidden] { display: none !important; }
+.meal-help-tooltip { white-space: pre-line; }
+.meal-onboarding .meal-documents legend { display: inline-flex; align-items: center; gap: 2px; }
+.meal-onboarding .meal-file-status:empty { display: none; }
+.meal-onboarding {
+  container-type: inline-size;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+  background: #fff;
+  border-color: #d6e2ee;
+}
+.meal-onboarding > h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.25; }
+.meal-onboarding > p { font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
+.meal-onboarding > .meal-status:empty { display: none; }
+.meal-onboarding fieldset { padding: 6px 0 12px; margin: 0; }
+.meal-onboarding fieldset:last-child { padding-bottom: 0; }
+.meal-onboarding legend { max-width: 100%; font-size: 19px; line-height: 1.4; padding: 8px 0; }
+.meal-onboarding .meal-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; }
+.meal-field { display: grid; gap: 4px; margin-bottom: 0; }
+.meal-field-wide { grid-column: auto; }
+.meal-field-pair { display: grid; grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0; }
+.meal-field-pair > .meal-field { grid-template-rows: 1fr auto; }
+.meal-onboarding fieldset > div:not(.meal-grid) + div { margin-top: 10px; }
+.meal-onboarding .meal-field-heading { display: flex; align-items: center; justify-content: flex-start; gap: 2px; min-height: 28px; }
+.meal-onboarding .meal-field-heading label { margin: 0; font-size: 12px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.meal-onboarding .meal-field input,
+.meal-onboarding .meal-field textarea { margin: 0; padding: 7px 9px; border: 1px solid #cbdbe9; border-radius: 7px; background: #fff; color: #243c52; font: inherit; font-size: 13px; line-height: 1.5; min-height: 36px; }
+.meal-onboarding .meal-field textarea { height: 72px; min-height: 72px; resize: vertical; }
+.meal-onboarding .meal-help-button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #527590; cursor: pointer; transition: background-color .15s ease, color .15s ease; }
+.meal-onboarding .meal-help-button svg { display: block; width: 22px; height: 22px; pointer-events: none; }
+.meal-onboarding .meal-field-heading .meal-help-button { flex-basis: 28px; width: 28px; height: 28px; min-height: 28px; }
+.meal-onboarding .meal-help-button:hover,
+.meal-onboarding .meal-help-button[aria-expanded="true"] { background: #edf5fb; color: #215b86; }
+.meal-onboarding .meal-help-button:focus-visible,
+.meal-onboarding .meal-field input:focus-visible,
+.meal-onboarding .meal-field textarea:focus-visible { outline: 3px solid #447da8; outline-offset: 2px; box-shadow: none; }
+.meal-onboarding .meal-help-text { margin: 0; padding: 16px 18px; border: 1px solid #cbdfea; border-left: 3px solid #5485a7; border-radius: 12px; background: #f0f7ff; color: #203d56; font-size: 15px; line-height: 1.65; text-align: left; white-space: pre-line; overflow-wrap: anywhere; }
+.meal-onboarding .meal-agreement { gap: 12px; padding: 10px 0; margin: 0; font-size: 14px; line-height: 1.6; }
+.meal-onboarding .meal-agreement input { flex: 0 0 20px; margin: 2px 0 0; padding: 0; accent-color: #315c7b; }
+.meal-onboarding .meal-agreement a { min-width: 0; overflow-wrap: anywhere; }
+.meal-onboarding .meal-file-status { font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.meal-onboarding .meal-documents > p {
+  font: 400 13px/1.55 'DM Sans', sans-serif;
+  color: #536b80;
+  margin: 0 0 8px;
+}
+.meal-onboarding .meal-documents { padding-top: 2px; padding-bottom: 6px; }
+.meal-onboarding .meal-documents legend { padding-bottom: 4px; }
+.meal-onboarding .meal-documents legend .meal-help-button { width: 28px; height: 28px; min-height: 28px; flex-basis: 28px; }
+.meal-onboarding .meal-documents > .button { margin-bottom: 4px; }
+.meal-onboarding .meal-documents > p a { font-size: 13px; font-weight: 500; }
+.meal-onboarding .meal-documents .document-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font: 400 13px/1.55 'DM Sans', sans-serif;
+}
+.meal-onboarding .meal-documents .document-list li { padding: 4px 0; }
+.meal-onboarding .meal-agreement {
+  min-height: 24px;
+  box-sizing: border-box;
+  align-items: center !important;
+  padding: 2px 0;
+  gap: 7px;
+  font: 700 11px/1.4 'DM Sans', sans-serif;
+}
+.meal-onboarding .meal-agreements-section legend { font-size: 16px; line-height: 1.3; padding: 6px 0; }
+.meal-onboarding .meal-agreement a { font: inherit; text-underline-offset: 3px; }
+.meal-onboarding .meal-agreement input[type="checkbox"] {
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  min-height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+  padding: 0;
+}
+@media (pointer: coarse) {
+  .meal-onboarding .meal-agreement { min-height: 44px; padding: 6px 0; }
+  .meal-onboarding .meal-field-heading .meal-help-button { flex-basis: 44px; width: 44px; height: 44px; min-height: 44px; }
+  .meal-onboarding .meal-field input,
+  .meal-onboarding .meal-field textarea { min-height: 44px; font-size: 16px; }
+}
+@container (min-width: 560px) {
+  .meal-onboarding .meal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .meal-field-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .meal-onboarding { padding: 16px; }
+  .meal-onboarding > h2 { font-size: 24px; }
+  .meal-onboarding legend { font-size: 18px; }
+}
+

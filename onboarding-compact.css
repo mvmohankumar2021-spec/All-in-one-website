@@ -1,0 +1,101 @@
+/* Shared presentation only. Do not change field visibility, order or handlers. */
+#vendorProfileForm .service-row-help { position: static; transform: none; width: 28px; height: 28px; justify-self: end; }
+#vendorProfileForm .plumbing-row:has(.service-row-help) { grid-template-columns: minmax(0,1fr) 76px 90px 28px; }
+@media(max-width:620px) {
+  #vendorProfileForm .plumbing-row:has(.service-row-help) { grid-template-columns: minmax(0,1fr) 60px 72px 28px; }
+}
+@media(max-width:420px) {
+  #vendorProfileForm .plumbing-row:has(.service-row-help) { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 28px; }
+  #vendorProfileForm .plumbing-row:has(.service-row-help) > strong { grid-column: 1/-1; }
+}
+#vendorProfileForm .shared-uploaded-documents h3 { display: flex; align-items: center; gap: 4px; }
+#vendorProfileForm .shared-uploaded-documents h3 > button { position: static !important; transform: none !important; width: 28px; height: 28px; }
+#vendorProfileForm .shared-uploaded-documents .shared-document-choose { width: max-content; max-width: 100%; margin: 0; }
+#vendorProfileForm .shared-uploaded-documents > a,
+#vendorProfileForm .shared-uploaded-documents .document-list { font-size: 13px; margin: 0; padding: 0; }
+#vendorProfileForm .shared-document-status { margin: 0; font-size: 12px; line-height: 1.5; }
+#vendorProfileForm .shared-document-status:empty { display: none; }
+#vendorProfileForm label.compact-help-field {
+  display: grid !important;
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(34px, auto);
+  align-content: start;
+  padding-right: 36px !important;
+  column-gap: 0;
+  row-gap: 4px;
+}
+#vendorProfileForm label.compact-help-field > i {
+  position: absolute;
+  top: 0;
+  right: 30px;
+}
+#vendorProfileForm label.compact-help-field > button[data-shared-help-icon] {
+  position: absolute !important;
+  top: -5px !important;
+  right: 0 !important;
+  transform: none !important;
+  width: 28px;
+  height: 28px;
+  margin: 0 0 0 3px;
+  vertical-align: middle;
+}
+#vendorProfileForm label.compact-help-field > :is(input,textarea,select) { grid-column: 1; display: block; width: calc(100% + 36px) !important; margin-top: 0; }
+#vendorProfileForm label.compact-help-field > .service-upload-button:not([hidden]) { display: block; margin-top: 4px; }
+#vendorProfileForm label.compact-help-field > [hidden] { display: none !important; }
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) {
+  padding: 16px;
+  margin: 16px 0;
+  min-width: 0;
+  border-radius: 12px;
+}
+#vendorProfileForm .plumbing-onboarding > section,
+#vendorProfileForm .electrical-onboarding .electrical-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  gap: 8px;
+}
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) h3 {
+  font: 700 16px/1.3 'DM Sans', sans-serif;
+  letter-spacing: normal;
+  margin: 0 0 6px;
+}
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) :is(.plumbing-grid, .name-grid) { gap: 10px; }
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) :is(.plumbing-grid, .name-grid) > label {
+  font-size: 12px;
+  line-height: 1.4;
+}
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) :is(input:not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea) {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 36px;
+  padding: 7px 9px;
+  font: 400 13px/1.5 'DM Sans', sans-serif;
+  border-radius: 7px;
+}
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) textarea { min-height: 72px; resize: vertical; }
+#vendorProfileForm :is(.plumbing-agreements, .electrical-agreements) { gap: 0; }
+#vendorProfileForm :is(.plumbing-agreements, .electrical-agreements) label {
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 0;
+  margin: 0;
+  gap: 7px;
+  font: 700 11px/1.4 'DM Sans', sans-serif;
+}
+#vendorProfileForm :is(.plumbing-agreements, .electrical-agreements) a { font: inherit; text-underline-offset: 3px; }
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) input[type=checkbox] {
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 16px;
+}
+#vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) :is(.form-error, .service-upload-status):empty { display: none; }
+@media (pointer: coarse) {
+  #vendorProfileForm :is(.plumbing-agreements, .electrical-agreements) label { min-height: 44px; }
+  #vendorProfileForm :is(.plumbing-onboarding, .electrical-onboarding) :is(input:not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea) { min-height: 44px; font-size: 16px; }
+}
