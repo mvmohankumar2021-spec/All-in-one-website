@@ -78,6 +78,16 @@ TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER", "")
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 STATIC_EXTENSIONS = {".html", ".css", ".js", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".ico"}
+LOCALIZATION_MODULES = ("languages", "languages-workspaces", "languages-public", "languages-operations", "languages-forms", "languages-policies", "languages-navigation", "languages-legal", "languages-guidance", "languages-legacy", "languages-messages", "localization")
+
+
+def localized_html(body: bytes) -> bytes:
+    assets = ('<link rel="stylesheet" href="/localization.css">' + ''.join(
+        f'<script src="/{name}.js"></script>' for name in LOCALIZATION_MODULES
+    )).encode("utf-8")
+    return body.replace(b"</body>", assets + b"</body>") if b"</body>" in body else body + assets
+
+
 CURRENCY_CODES = {"INR", "USD", "EUR", "GBP", "AED", "SGD", "JPY"}
 FX_RATE_CACHE: tuple[float, dict] | None = None
 FX_RATE_CACHE_LOCK = threading.Lock()
@@ -1210,6 +1220,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             body = body.replace(b"</body>", b'<script src="form-validation.js"></script></body>')
             body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="electrical-partner.js"></script><script src="plumbing-partner.js"></script><script src="furniture-partner.js"></script><script src="painting-partner.js"></script><script src="construction-partner.js"></script><script src="architecture-engineering-partner.js"></script><script src="interior-design-partner.js"></script><script src="flooring-cladding-partner.js"></script><script src="fabrication-metalwork-partner.js"></script><script src="building-materials-partner.js"></script><script src="real-estate-sales-partner.js"></script><script src="real-estate-rental-partner.js"></script><script src="accommodation-partner.js"></script><script src="real-estate-services-partner.js"></script><script src="onboarding-payment-details.js"></script><script src="onboarding-help.js"></script><script src="field-help.js"></script><script src="marketplace-policy-links.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script><script src="role-labels.js"></script><script src="profile-menu.js"></script></body>')
             body = body.replace(b"</body>", b'<script src="bakery-partner.js"></script><script src="bakery-help.js"></script><script src="restaurant-partner.js"></script><script src="restaurant-help.js"></script><script src="cafe-partner.js"></script><script src="cafe-enhancements.js"></script><script src="cafe-validation.js"></script><script src="cafe-policy-correction.js"></script><script src="cafe-location.js"></script><script src="cafe-compliance-dedup.js"></script><script src="onboarding-placeholder-cleanup.js"></script><script src="service-row-labels.js"></script><script src="cafe-row-filter.js"></script><script src="cafe-help-fix.js"></script><script src="service-document-upload.js"></script><script src="unified-document-upload-button.js"></script><script src="certificate-upload-button.js"></script></body>')
+            body = localized_html(body)
         self.wfile.write(body)
 
     def train_tracking(self, parsed) -> None:
@@ -1235,7 +1246,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 return
             download_url = f"{parsed.path}?download=1"
             page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{escape(document.stem.replace('_', ' '))} | SHAKALPA</title><style>body{{margin:0;background:#eef1eb;color:#18201e;font:16px/1.6 Arial,sans-serif}}main{{max-width:850px;margin:0 auto;background:#fff;min-height:100vh;padding:36px clamp(22px,6vw,68px);box-sizing:border-box}}.bar{{display:flex;justify-content:space-between;gap:16px;align-items:center;padding-bottom:24px;border-bottom:1px solid #d9e1d7;margin-bottom:30px}}.brand{{font-weight:800;letter-spacing:.08em;font-size:13px}}.download{{display:inline-block;background:#18201e;color:#fff;padding:10px 14px;text-decoration:none;font-weight:700;font-size:13px;border-radius:4px}}h1{{font-family:Georgia,serif;font-size:34px;line-height:1.15;margin:0 0 22px}}h2{{font-family:Georgia,serif;font-size:22px;line-height:1.25;margin:30px 0 10px}}p{{margin:0 0 14px}}table{{width:100%;border-collapse:collapse;margin:18px 0 22px;font-size:14px}}td{{border:1px solid #d9e1d7;padding:9px;vertical-align:top}}tr:first-child td{{font-weight:700;background:#f4f7f2}}.notice{{font-size:13px;color:#536059;margin:0}}@media(max-width:560px){{main{{padding:25px 20px}}.bar{{align-items:flex-start;flex-direction:column}}h1{{font-size:28px}}}}</style></head><body><main><div class="bar"><span class="brand">SHAKALPA · POLICY DOCUMENT</span><a class="download" href="{download_url}">Download document</a></div><p class="notice">Read this document here. Download it only if you need a copy.</p>{preview_html}</main></body></html>'''
-            body = page.encode("utf-8")
+            body = localized_html(page.encode("utf-8"))
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Cache-Control", "no-store")
@@ -4077,5 +4088,5 @@ if __name__ == "__main__":
             parser.error("--create-user requires --role, --first-name, --last-name, --phone, and --email.")
         create_staff_account(arguments.role, arguments.first_name, arguments.last_name, arguments.phone, arguments.email)
         raise SystemExit(0)
-    print(f"SHAKALPA is running at {'https' if HTTPS_ENABLED else 'http'}://{HOST}:{PORT}")
+    print(f"SHAKALPA is running at {'https' if HTTPS_ENABLED else 'http'}://{HOST}:{PORT} ({len(LOCALIZATION_MODULES)} language assets)")
     ThreadingHTTPServer((HOST, PORT), SHAKALPAHandler).serve_forever()

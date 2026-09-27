@@ -1,0 +1,77 @@
+#language-control { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:6px 12px; padding:8px 16px; background:#f1f6fa; color:#243c52; border-bottom:1px solid #d6e2ee; font:13px/1.6 system-ui,sans-serif; }
+#language-control label { margin:0; font:inherit; }
+#language-control select { width:auto; max-width:100%; min-height:36px; padding:4px 12px; background:white; color:#243c52; border:1px solid #b7cada; border-radius:6px; font:inherit; }
+#language-control small { flex-basis:100%; text-align:right; font:12px/1.6 system-ui,sans-serif; }
+#language-control [hidden] { display:none; }
+html:lang(ta) body,html:lang(hi) body { font-family:system-ui,"Nirmala UI","Latha","Mangal",sans-serif; }
+html:lang(ta) label,html:lang(hi) label { line-height:1.7; }
+html:lang(ta) button,html:lang(hi) button { white-space:normal; overflow-wrap:anywhere; height:auto; }
+body[data-policy-translation] main { min-width:0; overflow-wrap:anywhere; }
+body[data-policy-translation] table { display:block; max-width:100%; overflow-x:auto; }
+body[data-policy-translation] h1,body[data-policy-translation] h2 { font-family:inherit; }
+@media(max-width:480px) { #language-control { justify-content:flex-start; padding:8px 12px; } #language-control small { text-align:left; } }
+
+/* Tamil and Devanagari need more vertical space than the Latin display face.
+   Do not hide overflow: long labels must wrap without concealing controls. */
+html:is(:lang(ta),:lang(hi)) { --localized-font: "Nirmala UI", "Latha", "Mangal", system-ui, sans-serif; }
+html:is(:lang(ta),:lang(hi)) body { font-family: var(--localized-font); }
+html:is(:lang(ta),:lang(hi)) :is(h1,h2,h3,h4,legend,label,button,input,select,textarea,.button) {
+  font-family: var(--localized-font);
+  letter-spacing: normal;
+}
+html:is(:lang(ta),:lang(hi)) :is(h1,h2,h3,h4,legend) { line-height: 1.5; overflow-wrap: anywhere; }
+html:is(:lang(ta),:lang(hi)) :is(.hero h1,.signup-intro h1) { font-size: clamp(30px,3.5vw,50px); line-height: 1.5; }
+html:is(:lang(ta),:lang(hi)) :is(.signup-form-wrap h2,.section-heading h2,.join-banner h2) { font-size: clamp(24px,2.6vw,36px); line-height: 1.5; }
+html:is(:lang(ta),:lang(hi)) :is(p,small,li) { line-height: 1.7; }
+html:is(:lang(ta),:lang(hi)) :is(.button,.role-login,.google-login) {
+  min-width: 0; max-width: 100%; min-height: 44px; height: auto;
+  line-height: 1.6; white-space: normal; gap: 8px; text-align: center;
+}
+html:is(:lang(ta),:lang(hi)) .button > span { flex-shrink: 0; }
+html:is(:lang(ta),:lang(hi)) .name-grid { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; }
+html:is(:lang(ta),:lang(hi)) :is(.name-grid,.plumbing-grid) > label { min-width: 0; }
+html:is(:lang(ta),:lang(hi)) :is(input,select,textarea) { box-sizing: border-box; max-width: 100%; }
+html:is(:lang(ta),:lang(hi)) :is(.preview-line,.preview-top,.plumbing-head) { gap: 10px; }
+html:is(:lang(ta),:lang(hi)) .preview-line > * { min-width: 0; }
+html:is(:lang(ta),:lang(hi)) .signup-intro { gap: 26px; }
+
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.catering-grid,.meal-grid,.grocery-grid,.fresh-food-grid,.household-grid,.retail-grid) { align-items: stretch; }
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.catering-field,.meal-field,.grocery-field,.fresh-food-field,.household-field,.retail-field) {
+  min-width: 0; grid-template-rows: 1fr auto; align-self: stretch;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.catering-field-heading,.meal-field-heading,.grocery-field-heading,.fresh-food-field-heading,.household-field-heading,.retail-field-heading) {
+  align-items: flex-start; gap: 6px; min-height: 32px;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.catering-field-heading,.meal-field-heading,.grocery-field-heading,.fresh-food-field-heading,.household-field-heading,.retail-field-heading) label {
+  font: 600 14px/1.7 var(--localized-font); padding-top: 2px; min-width: 0; margin: 0;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.catering-field-heading,.meal-field-heading,.grocery-field-heading,.fresh-food-field-heading,.household-field-heading,.retail-field-heading) button {
+  flex-shrink: 0; align-self: flex-start; margin: 0;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm label.compact-help-field {
+  min-width: 0; grid-template-rows: minmax(2.2em,1fr) auto; align-self: stretch;
+  font: 600 14px/1.7 var(--localized-font); padding-right: 36px !important;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm label.compact-help-field > :is(input,textarea,select) {
+  max-width: none; font: 400 15px/1.65 var(--localized-font); min-height: 44px;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(h2,h3,legend) {
+  font-family: var(--localized-font); line-height: 1.55; letter-spacing: normal; flex-wrap: wrap;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.plumbing-agreements,.electrical-agreements) label,
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.catering-agreement,.meal-agreement,.grocery-agreement,.fresh-food-agreement,.household-agreement,.retail-agreement) {
+  font: 500 13px/1.7 var(--localized-font); align-items: flex-start !important; padding-block: 5px;
+}
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.plumbing-agreements,.electrical-agreements) input,
+html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.catering-agreement,.meal-agreement,.grocery-agreement,.fresh-food-agreement,.household-agreement,.retail-agreement) input { margin-top: 4px; flex-shrink: 0; }
+html:is(:lang(ta),:lang(hi)) :is(.universal-help-popover,.plumbing-help-popover,[class$="-help-tooltip"]) {
+  font: 400 14px/1.75 var(--localized-font); max-width: calc(100vw - 24px);
+  max-height: min(300px,50dvh); overflow-y: auto; overflow-wrap: anywhere;
+}
+@media(max-width:760px) {
+  html:is(:lang(ta),:lang(hi)) .name-grid { grid-template-columns: minmax(0,1fr); }
+  html:is(:lang(ta),:lang(hi)) :is(.signup-intro,.signup-form-panel) { padding: 28px 20px; }
+  html:is(:lang(ta),:lang(hi)) :is(.signup-form-wrap h2,body[data-policy-translation] h1) { font-size: 25px; }
+  html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(.plumbing-grid,.name-grid) { grid-template-columns: minmax(0,1fr); }
+  html:is(:lang(ta),:lang(hi)) #vendorProfileForm :is(input:not([type=checkbox]):not([type=radio]),select,textarea) { font-size: 16px; }
+}

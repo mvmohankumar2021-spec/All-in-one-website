@@ -33,7 +33,12 @@
   popover.className = 'universal-help-popover'; popover.hidden = true;
   popover.setAttribute('role', 'tooltip'); document.body.append(popover);
   const helpSelector = '.global-help-button, .field-help-button, .electrical-section-help';
-  const helpText = (button) => button.parentElement?.querySelector('.global-help-detail, .field-help-detail, .electrical-section-help-detail')?.textContent.trim() || button.getAttribute('aria-label') || 'More information is available for this field.';
+  const helpText = (button) => {
+    const detail = button.parentElement?.querySelector('.global-help-detail, .field-help-detail, .electrical-section-help-detail');
+    return (window.AppI18n?.originalText(detail) ?? detail?.textContent)?.trim()
+      || (window.AppI18n?.originalAttribute(button,'aria-label') ?? button.getAttribute('aria-label'))
+      || 'More information is available for this field.';
+  };
   document.querySelectorAll(helpSelector).forEach((button) => { button.title = helpText(button); });
   const hidePopover = () => { popover.hidden = true; document.querySelectorAll(helpSelector).forEach((button) => button.setAttribute('aria-expanded', 'false')); closeAll(); };
   document.addEventListener('click', (event) => {

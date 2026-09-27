@@ -21,7 +21,21 @@
       (!['checkbox','radio','file'].includes(field.type) && !field.value.trim()))) {
       return `${labelFor(field)} is required.`;
     }
-    return field.validity && !field.validity.valid ? `${labelFor(field)}: ${field.validationMessage}` : '';
+    if (!field.validity || field.validity.valid) return '';
+    // Browser-native validation text follows the browser language, not the app.
+    const validity = field.validity;
+    if (validity.customError) return `${labelFor(field)}: ${window.AppI18n?.t(field.validationMessage) || field.validationMessage}`;
+    let message = 'Enter a valid value.';
+    if (validity.typeMismatch) message = field.type === 'email' ? 'Enter a valid email address.' : 'Enter a valid URL.';
+    else if (validity.badInput) message = 'Enter a valid number.';
+    else if (validity.rangeUnderflow) message = 'The value is below the allowed minimum.';
+    else if (validity.rangeOverflow) message = 'The value exceeds the allowed maximum.';
+    else if (validity.stepMismatch) message = 'Use a value matching the allowed increments.';
+    else if (validity.tooShort) message = 'The entry is too short.';
+    else if (validity.tooLong) message = 'The entry is too long.';
+    else if (validity.patternMismatch) message = 'Use the required format shown in the field help.';
+    const translated = window.AppI18n && window.AppI18n.language !== 'en';
+    return `${labelFor(field)}: ${translated ? window.AppI18n.t(message) : field.validationMessage}`;
   };
   function show(scope, field, message) {
     let summary = scope.querySelector(':scope > .validation-summary');
