@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const dictionary = Object.assign({},require('./languages.js'),require('./languages-workspaces.js'));
+const dictionary = Object.assign({},require('./languages.js'),require('./languages-workspaces.js'),require('./languages-navigation.js'));
 class Element {
   constructor(tag, text='') { this.tagName=tag.toUpperCase(); this.attrs={}; this.nodes=[]; this.children=[]; this.dataset={}; this.hidden=false; if(text)this.nodes.push({nodeValue:text,parentElement:this}); }
   closest() { return this.excluded ? this : null; }
@@ -53,6 +53,8 @@ assert.equal(option.nodes[0].nodeValue,'Customer');
 assert.equal(label.nodes[0].nodeValue,'First name');
 assert.equal(status.nodes[0].nodeValue,'First name is required.');
 assert.equal(app.t('Unrecognised app copy','ta'),'Unrecognised app copy');
+assert.equal(app.t('SHAKALPA Partner login','ta'),app.t('Vendor login','ta'));
+assert.notEqual(app.t('SHAKALPA Partner login','ta'),'SHAKALPA Partner login');
 assert.equal(app.t(' First name * ','hi'),` ${dictionary['First name'].hi} * `);
 assert.equal(app.t('Help for First name','ta'),`${dictionary['First name'].ta} — உதவி`);
 assert.match(app.t('Enter accurate first name for this bakery service.','ta'), /துல்லியமான/);

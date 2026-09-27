@@ -69,6 +69,8 @@ html:is(:lang(ta),:lang(hi)) :is(.universal-help-popover,.plumbing-help-popover,
   max-height: min(300px,50dvh); overflow-y: auto; overflow-wrap: anywhere;
 }
 @media(max-width:760px) {
+  html:is(:lang(ta),:lang(hi)) .category-strip { display: grid; grid-template-columns: minmax(0,1fr); gap: 18px; }
+  html:is(:lang(ta),:lang(hi)) .category-strip > div { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
   html:is(:lang(ta),:lang(hi)) .name-grid { grid-template-columns: minmax(0,1fr); }
   html:is(:lang(ta),:lang(hi)) :is(.signup-intro,.signup-form-panel) { padding: 28px 20px; }
   html:is(:lang(ta),:lang(hi)) :is(.signup-form-wrap h2,body[data-policy-translation] h1) { font-size: 25px; }

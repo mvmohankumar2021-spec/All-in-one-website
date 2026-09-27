@@ -2498,6 +2498,52 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 if centre:
                     fields.append(["listingRole", "Shopping-centre listing role", True, "text"])
                 policies = [p for p in schema["policies"] if len(p) < 4 or (p[3] == "shop" and shop) or (p[3] == "operator" and operator)]
+                hardware_services = schema.get("electronicsServices", []) + schema.get("homeServices", [])
+                hardware = any(s in hardware_services for s in services)
+                clothing = any(s in schema.get("clothingServices", []) for s in services)
+                enhanced_services = hardware_services + schema.get("clothingServices", [])
+                electronics = any(s in enhanced_services for s in services)
+                electronics_only = electronics and all(s in enhanced_services for s in services)
+                home = any(s in schema.get("homeServices", []) for s in services)
+                inactive = set()
+                studio = any(s in schema.get("studioServices", []) for s in services)
+                studio_only = studio and all(s in schema["studioServices"] for s in services)
+                if not studio:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("studioOnly") for f in section["fields"])
+                if studio_only:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("shopOnly") for f in section["fields"])
+                    policies = [p for p in policies if len(p) < 4]
+                if data.get("collectionOffered") != "Yes":
+                    inactive.add("collectionDetails")
+                if data.get("studioVisitOffered") != "Yes":
+                    inactive.add("studioVisitDetails")
+                if not clothing:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("clothingOnly") for f in section["fields"])
+                if clothing and all(s in schema["clothingServices"] for s in services):
+                    inactive.add("filePrivacy")
+                if data.get("tailoringOffered") != "Yes":
+                    inactive.add("tailoringDetails")
+                if "Bridal Wear" not in services:
+                    inactive.update(("bridalRentalOffered", "bridalRentalTerms"))
+                elif data.get("bridalRentalOffered") != "Yes":
+                    inactive.add("bridalRentalTerms")
+                if not hardware:
+                    inactive.update(("installationOffered", "installationDetails", "warrantyDetails"))
+                if not home:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("homeOnly") for f in section["fields"])
+                if data.get("customOffered") != "Yes":
+                    inactive.add("customDetails")
+                if data.get("deliveryOffered") != "Yes":
+                    inactive.add("largeDelivery")
+                if not electronics:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("electronicsOnly") for f in section["fields"])
+                if data.get("installationOffered") != "Yes":
+                    inactive.add("installationDetails")
+                if electronics_only:
+                    inactive.update(("extras", "customPolicy", "warranty"))
+                    if data.get("deliveryOffered") != "Yes":
+                        inactive.update(("radius", "areas", "delivery"))
+                fields = [f for f in fields if f[0] not in inactive]
             if household and "Drinking Water Supplier" in services:
                 role = data.get("waterRole", "")
                 if not isinstance(role, str) or (role and role not in schema["waterRoles"]):
@@ -2512,6 +2558,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             submitted = data.get("submit") is True
             if submitted:
                 error = next((f"{f[1]} is required." for f in fields if f[2] and not saved[f[0]]), None)
+                error = error or next((f"{f[1]} is required." for f in fields if f[3] == "select" and saved[f[0]] not in f[5]), None)
                 if meal and any(s in services for s in ("Meal Subscription", "Tiffin Service")) and not saved.get("subscriptionPolicy"):
                     error = error or "Provide subscription pause, skip and renewal terms."
                 from datetime import date

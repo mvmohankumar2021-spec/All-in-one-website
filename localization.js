@@ -1,6 +1,13 @@
 /* Local, exact-match UI translations. No user data is sent to a translation service. */
 (() => {
   const dictionary = window.SHAKALPA_TRANSLATIONS || {};
+  // role-labels.js changes display copy before localization runs. Build exact
+  // aliases using that same mapping, without changing role IDs or user values.
+  const displayRoles = {Customer:'SHAKALPA Member',Vendor:'SHAKALPA Partner',Agent:'SHAKALPA Associate'};
+  Object.keys(dictionary).forEach(key => {
+    const alias = key.replace(/\b(Customer|Vendor|Agent)(s)?\b/g, (_, role, plural) => displayRoles[role] + (plural || ''));
+    if (alias !== key && !dictionary[alias]) dictionary[alias] = dictionary[key];
+  });
   const supported = ['en','ta','hi'];
   let language = 'en';
   try { const saved = localStorage.getItem('shakalpa-language'); if (supported.includes(saved)) language = saved; } catch {}
@@ -12,6 +19,10 @@
     if (lang === 'en') return text;
     const source = text.trim().replace(/\s+/g,' ');
     let translated = dictionary[source]?.[lang];
+    if (!translated && /\n\s*\n/.test(text.trim())) {
+      const paragraphs = text.trim().split(/\n\s*\n/).map(part=>part.trim().replace(/\s+/g,' '));
+      if (paragraphs.every(part=>dictionary[part]?.[lang])) translated = paragraphs.map(part=>dictionary[part][lang]).join('\n\n');
+    }
     if (!translated && source.includes(' → ')) {
       const steps = source.split(' → ');
       if (steps.every(step=>dictionary[step]?.[lang])) translated = steps.map(step=>dictionary[step][lang]).join(' → ');
@@ -35,7 +46,8 @@
     }
     if (!translated && source.startsWith('Help for ')) {
       const key = source.slice(9).replace(/\s*\*$/, '');
-      const label = dictionary[key]?.[lang];
+      const matchedKey = dictionary[key] ? key : Object.keys(dictionary).find(item=>item.toLowerCase() === key.toLowerCase());
+      const label = dictionary[matchedKey]?.[lang];
       if (label) translated = lang === 'ta' ? `${label} — உதவி` : `${label} — सहायता`;
     }
     if (!translated && source.startsWith('Provide ') && source.endsWith('.')) {
@@ -67,21 +79,28 @@
   }
   const selector = 'title,header a,header button,nav a,nav button,footer,.button,.eyebrow,.announcement,.hero-copy,.category-strip,.section-heading,.service-intro,.about-content,.contact-hero,.contact-options,.contact-note,.contact-form-section>div,.signup-copy,.signup-intro,.signup-form-wrap,.auth-copy,.home-button,.legal-links,.auth-divider,.google-login,main h1,main h2,main h3,form label,form legend,form button,form option,form small,form p,form h2,form h3,[role="status"],[role="alert"],.validation-summary,[class$="-help-tooltip"],.global-help-detail,.field-help-detail,.universal-help-popover,.plumbing-help-popover,[class$="-section-help-detail"],[id$="Status"],[data-i18n],body[data-policy-translation] h1,body[data-policy-translation] h2,body[data-policy-translation] p,body[data-policy-translation] td,body[data-policy-translation] .download';
   const excluded = 'script,style,textarea,input,[contenteditable],#language-control,[translate="no"],.document-list,#certificateList,#chatMessages,#homeShagramPosts,#productGrid,#postsFeed,#savedPosts,.user-content';
+  const productControls = '.product-card-actions,.review-toggle,.review-composer';
+  function skipTranslation(element, attribute = false) {
+    const base = excluded.replace('#productGrid,','');
+    if (element.closest(attribute ? base.replace('textarea,input,','') : base)) return true;
+    // Only fixed controls inside product cards; never names, prices or reviews.
+    return !!element.closest('#productGrid') && !element.closest(productControls);
+  }
   function apply() {
     observer.disconnect();
     document.documentElement.lang = language;
     // Pin every option before a parent label's text walker can translate it.
     document.querySelectorAll('option').forEach(element => {
-      if (!element.closest(excluded) && !element.hasAttribute('value')) element.setAttribute('value',element.value);
+      if (!skipTranslation(element) && !element.hasAttribute('value')) element.setAttribute('value',element.value);
     });
-    document.querySelectorAll(selector + ',.header-home-symbol,.policy-centre-link,.hero-art,.booking-card,.security-points,.tracking-copy,.tracking-map,.join-banner,.cart-header,.cart-footer,.empty-cart,body[data-policy-translation] .brand').forEach(element => {
-      if (element.closest(excluded)) return;
+    document.querySelectorAll(selector + ',' + productControls + ',.header-home-symbol,.policy-centre-link,.hero-art,.booking-card,.role-card,.security-points,.tracking-copy,.tracking-map,.join-banner,.cart-header,.cart-footer,.empty-cart,body[data-policy-translation] .brand').forEach(element => {
+      if (skipTranslation(element)) return;
       // Options without explicit values otherwise submit their translated labels.
       if (element.tagName === 'OPTION' && !element.hasAttribute('value')) element.setAttribute('value',element.value);
       const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
       let node;
       while ((node = walker.nextNode())) {
-        if (node.parentElement.closest(excluded)) continue;
+        if (skipTranslation(node.parentElement)) continue;
         const prior = originals.get(node);
         const source = prior && node.nodeValue === prior.rendered ? prior.source : node.nodeValue;
         const rendered = translate(source);
@@ -90,7 +109,7 @@
       }
     });
     document.querySelectorAll('button[aria-label],button[title],a[aria-label],a[title],nav[aria-label],img[alt],input[placeholder],textarea[placeholder]').forEach(element => {
-      if (element.closest(excluded.replace('textarea,input,',''))) return;
+      if (skipTranslation(element,true)) return;
       const prior = attributes.get(element) || {};
       for (const key of ['aria-label','placeholder','title','alt']) {
         if (!element.hasAttribute(key)) continue;

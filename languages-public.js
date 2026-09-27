@@ -194,6 +194,19 @@ rows.push(['SHAKALPA · POLICY DOCUMENT','SHAKALPA · கொள்கை ஆவ�
 rows.push(['Upload clear supporting files in the accepted format. Your documents are reviewed before the service profile is activated.','ஏற்றுக்கொள்ளப்படும் வடிவத்தில் தெளிவான ஆதாரக் கோப்புகளைப் பதிவேற்றவும். சேவைச் சுயவிவரம் செயல்படுத்தப்படும்முன் உங்கள் ஆவணங்கள் ஆய்வு செய்யப்படும்.','स्वीकृत प्रारूप में स्पष्ट सहायक फ़ाइलें अपलोड करें। सेवा प्रोफ़ाइल सक्रिय करने से पहले आपके दस्तावेज़ों की समीक्षा होती है।']);
 rows.push(['Enter the requested details accurately.','கோரப்பட்ட விவரங்களைத் துல்லியமாக உள்ளிடவும்.','माँगे गए विवरण सही दर्ज करें।']);
 rows.push(['Choose a','தேர்ந்தெடுக்கவும்','चुनें'],['The','அந்த','वह'],['₹30 + ₹12/km','₹30 + ₹12/கி.மீ.','₹30 + ₹12/किमी'],['₹40 + ₹16/km','₹40 + ₹16/கி.மீ.','₹40 + ₹16/किमी']);
+rows.push(
+  ['View details','விவரங்களைக் காணவும்','विवरण देखें'],
+  ['Ratings and reviews','மதிப்பீடுகள் மற்றும் கருத்துகள்','रेटिंग और समीक्षाएँ'],
+  ['★ Ratings','★ மதிப்பீடுகள்','★ रेटिंग'],
+  ['Open navigation menu','வழிசெலுத்தல் பட்டியைத் திறக்கவும்','नेविगेशन मेनू खोलें'],
+  ['Open converters','மாற்றிகளைத் திறக்கவும்','कन्वर्टर खोलें'],
+  ['Open recharge and bills','ரீசார்ஜ் மற்றும் பில்களைத் திறக்கவும்','रिचार्ज और बिल खोलें'],
+  ['Open live train tracking','நேரடி ரயில் கண்காணிப்பைத் திறக்கவும்','लाइव ट्रेन ट्रैकिंग खोलें'],
+  ['Open basic calculator','எளிய கணிப்பானைத் திறக்கவும்','साधारण कैलकुलेटर खोलें'],
+  ['Basic calculator','எளிய கணிப்பான்','साधारण कैलकुलेटर'],
+  ['community.','சமூகத்திலிருந்து.','समुदाय से।'],
+  ['Open Shagram','Shagram-ஐத் திறக்கவும்','Shagram खोलें']
+);
 const entries = Object.fromEntries(rows.map(([en,ta,hi])=>[en,{ta,hi}]));
 if(typeof module !== 'undefined') module.exports=entries; else Object.assign(window.SHAKALPA_TRANSLATIONS,entries);
 })();

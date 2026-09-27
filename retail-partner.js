@@ -29,7 +29,7 @@
     const wrap = document.createElement('div'); wrap.className = 'retail-field';
     const label = document.createElement('label'); label.htmlFor = `retail-${key}`; label.textContent = title + (required ? ' *' : ' (optional)');
     const input = document.createElement(type === 'textarea' ? 'textarea' : type === 'select' ? 'select' : 'input');
-    if (type === 'select') { input.add(new Option('Select listing role', '')); def[5].forEach(value => input.add(new Option(value, value))); } else if (type !== 'textarea') input.type = type; else input.rows = 3;
+    if (type === 'select') { input.add(new Option(key === 'listingRole' ? 'Select listing role' : 'Choose an option', '')); def[5].forEach(value => input.add(new Option(value, value))); } else if (type !== 'textarea') input.type = type; else input.rows = 3;
     input.id = label.htmlFor; input.dataset.key = key; input.dataset.required = String(required);
     if (type === 'number') { input.min = ['minGuests','maxGuests'].includes(key) ? '1' : '0'; input.max = '100000000'; input.step = ['minGuests','maxGuests','experience'].includes(key) ? '1' : '0.01'; }
     if (['text','textarea'].includes(type)) input.maxLength = 2000;
@@ -80,6 +80,11 @@
   for (const section of schema.sections) {
     const group = document.createElement('fieldset'); const legend = document.createElement('legend'); legend.textContent = section.title;
     if (section.shopOnly) group.dataset.shopOnly = 'true';
+    if (section.electronicsOnly) group.dataset.electronicsOnly = 'true';
+    if (section.electronicsOnly) legend.textContent = 'Store sales & support';
+    if (section.homeOnly) group.dataset.homeOnly = 'true';
+    if (section.clothingOnly) group.dataset.clothingOnly = 'true';
+    if (section.studioOnly) group.dataset.studioOnly = 'true';
     const grid = document.createElement('div'); grid.className = 'retail-grid';
     // Pair controls of the same height, preserving their order within each group.
     // DOM order also remains the keyboard order on desktop and mobile.
@@ -136,6 +141,11 @@
   actions.append(save,submit);
   const selected = () => [...document.querySelectorAll('#vendorServicesProducts option:checked')].map(o=>o.value).filter(s=>schema.services.includes(s));
   let activeBefore = false; const hiddenActions = new Map();
+  const retailIntro = intro.textContent;
+  const retailDocumentHelp = documentHint.textContent;
+  const evidenceHint = document.getElementById('retail-help-evidence');
+  const retailEvidenceHelp = evidenceHint.textContent;
+  const studioEvidenceHelp = 'Reuse profile documents. Add applicable registration, portfolio or sample-work photographs and relevant qualification or experience evidence. Include permission for customer photos and evidence for any uniform safety claims.';
   function sync() {
     const services = selected(); const active = services.length > 0; panel.hidden = !active; save.hidden = submit.hidden = !active;
     panel.querySelectorAll('input,textarea,select,button').forEach(input=>input.disabled = !active);
@@ -144,10 +154,48 @@
     roleGroup.hidden = !centre; listingRole.disabled = !active || !centre;
     const operator = centre && listingRole.value === 'Centre operator';
     const shop = !operator || services.some(service => service !== 'Shopping Centre');
-    panel.querySelectorAll('[data-shop-only]').forEach(group => { group.hidden = !shop; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !shop); });
+    const studio = services.some(service => schema.studioServices.includes(service));
+    const studioOnly = studio && services.every(service => schema.studioServices.includes(service));
+    heading.textContent = studioOnly ? 'Fashion service partner onboarding' : 'Retail partner onboarding';
+    intro.textContent = studioOnly ? 'Profile contact details are reused. Complete only your selected fashion services. * Required for submission.' : retailIntro;
+    save.textContent = studioOnly ? 'Save service details' : 'Save retail details';
+    submit.textContent = studioOnly ? 'Submit fashion service application →' : 'Submit retail partner application →';
+    evidenceHint.textContent = studio ? studioEvidenceHelp : retailEvidenceHelp;
+    documentHint.textContent = studioOnly ? `${studioEvidenceHelp}\n\nPDF, JPEG or PNG; up to 4 files per upload, maximum 1.5 MB each.` : retailDocumentHelp;
+    panel.querySelectorAll('[data-studio-only]').forEach(group => { group.hidden = !studio; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !studio); });
+    panel.querySelectorAll('[data-shop-only]').forEach(group => { group.hidden = !shop || studioOnly; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !shop || studioOnly); });
+    const hardware = services.some(service => [...schema.electronicsServices, ...schema.homeServices].includes(service));
+    const clothing = services.some(service => schema.clothingServices.includes(service));
+    const clothingOnly = clothing && services.every(service => schema.clothingServices.includes(service));
+    const enhancedServices = [...schema.electronicsServices, ...schema.homeServices, ...schema.clothingServices];
+    const electronics = services.some(service => enhancedServices.includes(service));
+    const electronicsOnly = electronics && services.every(service => enhancedServices.includes(service));
+    const home = services.some(service => schema.homeServices.includes(service));
+    panel.querySelectorAll('[data-home-only]').forEach(group => { group.hidden = !home; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !home); });
+    panel.querySelectorAll('[data-clothing-only]').forEach(group => { group.hidden = !clothing; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !clothing); });
+    panel.querySelectorAll('[data-electronics-only]').forEach(group => { group.hidden = !electronics; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !electronics); });
+    const delivery = panel.querySelector('[data-key="deliveryOffered"]').value === 'Yes';
+    const installation = panel.querySelector('[data-key="installationOffered"]').value === 'Yes';
+    const bridal = services.includes('Bridal Wear');
+    const conditional = {
+      installationOffered: hardware, warrantyDetails: hardware, installationDetails: hardware && installation,
+      customDetails: home && panel.querySelector('[data-key="customOffered"]').value === 'Yes', largeDelivery: home && delivery,
+      tailoringDetails: clothing && panel.querySelector('[data-key="tailoringOffered"]').value === 'Yes',
+      bridalRentalOffered: bridal, bridalRentalTerms: bridal && panel.querySelector('[data-key="bridalRentalOffered"]').value === 'Yes',
+      filePrivacy: shop && !clothingOnly && !studioOnly,
+      collectionDetails: studio && panel.querySelector('[data-key="collectionOffered"]').value === 'Yes',
+      studioVisitDetails: studio && panel.querySelector('[data-key="studioVisitOffered"]').value === 'Yes'
+    };
+    ['radius','areas','delivery'].forEach(key => conditional[key] = shop && !studioOnly && (!electronicsOnly || delivery));
+    ['extras','customPolicy','warranty'].forEach(key => conditional[key] = shop && !studioOnly && !electronicsOnly);
+    Object.entries(conditional).forEach(([key,relevant]) => {
+      const input = panel.querySelector(`[data-key="${key}"]`);
+      input.closest('.retail-field').hidden = !relevant; input.disabled = !active || !relevant;
+    });
+    panel.querySelectorAll('.retail-field-pair').forEach(row => { row.hidden = [...row.children].every(field => field.hidden); });
     schema.policies.forEach(([key,,,scope]) => {
       const input = agreements.querySelector(`[data-agreement="${key}"]`);
-      const relevant = scope === 'shop' ? shop : scope === 'operator' ? operator : true;
+      const relevant = scope === 'shop' ? shop && !studioOnly : scope === 'operator' ? operator : true;
       input.disabled = !active || !relevant; input.closest('label').hidden = !relevant;
     });
     if (active) {
@@ -157,12 +205,13 @@
     activeBefore = active;
   }
   ['vendorMainCategory','vendorSubcategories','vendorServicesProducts'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>setTimeout(sync,0)));
+  panel.addEventListener('change', event => { if (['deliveryOffered','installationOffered','customOffered','tailoringOffered','bridalRentalOffered','collectionOffered','studioVisitOffered'].includes(event.target.dataset.key)) sync(); });
   async function persist(submitted) {
     status.classList.remove('error'); const fields = [...panel.querySelectorAll('[data-key]')].filter(f=>!f.disabled);
     panel.querySelectorAll('[aria-invalid]').forEach(f=>f.removeAttribute('aria-invalid'));
     if (submitted) {
       const invalid = fields.find(f=>(f.dataset.required==='true' && !f.value.trim()) || !f.validity.valid) || [...agreements.querySelectorAll('input')].find(f=>!f.disabled && !f.checked);
-      if (invalid) { status.textContent = invalid.dataset.key ? `${invalid.labels[0].textContent.replace(' *','')} is required or invalid.` : 'Accept all agreements and declarations.'; status.classList.add('error'); invalid.setAttribute('aria-invalid','true'); invalid.focus(); invalid.scrollIntoView({block:'center'}); return; }
+      if (invalid) { status.textContent = invalid.dataset.key ? `${invalid.labels[0].textContent.replace(' *','')}: ${window.AppI18n?.t('Enter a valid value.') || 'Enter a valid value.'}` : 'Accept all agreements and declarations.'; status.classList.add('error'); invalid.setAttribute('aria-invalid','true'); invalid.focus(); invalid.scrollIntoView({block:'center'}); return; }
       if (fileInput.files.length) { status.textContent='Upload the selected documents before submitting.'; status.classList.add('error'); upload.focus(); return; }
     }
     save.disabled = submit.disabled = true;
@@ -175,5 +224,5 @@
   // Route keyboard submission to retail without invoking unrelated profile handlers.
   window.addEventListener('submit',event=>{if(event.target===form && !panel.hidden){event.preventDefault();event.stopImmediatePropagation();persist(true);}},true);
   sync();
-  try { const result=await fetch('/api/vendor/retail-onboarding'); if (!result.ok) return; const data=await result.json(); panel.querySelectorAll('[data-key]').forEach(f=>f.value=data.details[f.dataset.key]||''); agreements.querySelectorAll('input').forEach(f=>f.checked=data.details.agreements?.[f.dataset.agreement]===true); status.textContent=`Retail status: ${data.status}. Reselect your retail services above to continue a saved application.`; sync(); } catch { status.textContent='Could not load saved retail details. Reload before editing.'; }
+  try { const result=await fetch('/api/vendor/retail-onboarding'); if (!result.ok) return; const data=await result.json(); panel.querySelectorAll('[data-key]').forEach(f=>f.value=data.details[f.dataset.key]||''); agreements.querySelectorAll('input').forEach(f=>f.checked=data.details.agreements?.[f.dataset.agreement]===true); status.textContent=data.status || 'Not started'; sync(); } catch { status.textContent='Could not load saved retail details. Reload before editing.'; }
 })();
