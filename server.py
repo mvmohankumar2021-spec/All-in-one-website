@@ -1115,6 +1115,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         elif self.path == "/api/vendor/retail-onboarding":
             self.vendor_catering_onboarding(retail_store=True)
             return
+        if self.path.startswith("/api/reviews/healthcare-onboarding?"):
+            self.healthcare_review_details()
+            return
         if self.path == "/api/vendor/documents":
             self.vendor_documents()
             return
@@ -1220,6 +1223,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             body = body.replace(b"</body>", b'<script src="form-validation.js"></script></body>')
             body = body.replace(b"</body>", b'<link rel="stylesheet" href="theme.css"><script src="theme-catalogue.js"></script><script src="vendor-identity.js"></script><script src="vendor-taxonomy.js"></script><script src="electrical-partner.js"></script><script src="plumbing-partner.js"></script><script src="furniture-partner.js"></script><script src="painting-partner.js"></script><script src="construction-partner.js"></script><script src="architecture-engineering-partner.js"></script><script src="interior-design-partner.js"></script><script src="flooring-cladding-partner.js"></script><script src="fabrication-metalwork-partner.js"></script><script src="building-materials-partner.js"></script><script src="real-estate-sales-partner.js"></script><script src="real-estate-rental-partner.js"></script><script src="accommodation-partner.js"></script><script src="real-estate-services-partner.js"></script><script src="onboarding-payment-details.js"></script><script src="onboarding-help.js"></script><script src="field-help.js"></script><script src="marketplace-policy-links.js"></script><script src="legal-links.js"></script><script src="home-button.js"></script><script src="signout-button.js"></script><script src="mobile-menu.js"></script><script src="role-labels.js"></script><script src="profile-menu.js"></script></body>')
             body = body.replace(b"</body>", b'<script src="bakery-partner.js"></script><script src="bakery-help.js"></script><script src="restaurant-partner.js"></script><script src="restaurant-help.js"></script><script src="cafe-partner.js"></script><script src="cafe-enhancements.js"></script><script src="cafe-validation.js"></script><script src="cafe-policy-correction.js"></script><script src="cafe-location.js"></script><script src="cafe-compliance-dedup.js"></script><script src="onboarding-placeholder-cleanup.js"></script><script src="service-row-labels.js"></script><script src="cafe-row-filter.js"></script><script src="cafe-help-fix.js"></script><script src="service-document-upload.js"></script><script src="unified-document-upload-button.js"></script><script src="certificate-upload-button.js"></script></body>')
+            if path in ("/admin.html", "/employee.html"):
+                body = body.replace(b"</body>", b'<script src="healthcare-review.js" defer></script></body>')
             body = localized_html(body)
         self.wfile.write(body)
 
@@ -2501,13 +2506,55 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 hardware_services = schema.get("electronicsServices", []) + schema.get("homeServices", [])
                 hardware = any(s in hardware_services for s in services)
                 clothing = any(s in schema.get("clothingServices", []) for s in services)
-                enhanced_services = hardware_services + schema.get("clothingServices", [])
+                accessories = any(s in schema.get("accessoryServices", []) for s in services)
+                enhanced_services = hardware_services + schema.get("clothingServices", []) + schema.get("accessoryServices", []) + schema.get("medicalSupplyServices", [])
                 electronics = any(s in enhanced_services for s in services)
                 electronics_only = electronics and all(s in enhanced_services for s in services)
                 home = any(s in schema.get("homeServices", []) for s in services)
                 inactive = set()
+                if not any(s in schema.get("medicalSupplyServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("medicalSupplyOnly") for f in section["fields"])
+                if "Medical Equipment" not in services:
+                    inactive.update(("equipmentRentalOffered", "equipmentRentalTerms"))
+                elif data.get("equipmentRentalOffered") != "Yes":
+                    inactive.add("equipmentRentalTerms")
+                health = any(s in schema.get("healthServices", []) for s in services)
+                if not any(s in schema.get("careServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("careOnly") for f in section["fields"])
+                if all(s == "Elder Care" for s in services):
+                    inactive.add("clinicians")
+                    inactive.update(("healthFacilities", "healthAppointments", "healthFees", "emergencyOffered", "emergencyDetails", "teleOffered", "teleDetails", "healthVisitOffered", "healthVisitDetails"))
+                if not any(s in schema.get("diagnosticServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("diagnosticOnly") for f in section["fields"])
+                if data.get("sampleCollectionOffered") != "Yes":
+                    inactive.add("sampleCollectionDetails")
+                if not any(s in ("Optical Store", "Hearing Aid Centre") for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("visionProductOnly") for f in section["fields"])
+                if data.get("visionDeliveryOffered") != "Yes":
+                    inactive.add("visionDelivery")
+                if all(s == "Optical Store" or s in schema["healthServices"] for s in services):
+                    inactive.update(("radius", "areas", "delivery"))
+                if not any(s in schema.get("dentalServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("dentalOnly") for f in section["fields"])
+                health_only = health and all(s in schema["healthServices"] for s in services)
+                if not health:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("healthOnly") for f in section["fields"])
+                if health_only:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("shopOnly") for f in section["fields"])
+                    inactive.update(("registration", "expiry", "evidence", "businessType"))
+                    policies = [p for p in policies if len(p) < 4]
+                for choice, detail in (("emergencyOffered", "emergencyDetails"), ("teleOffered", "teleDetails"), ("healthVisitOffered", "healthVisitDetails")):
+                    if data.get(choice) != "Yes":
+                        inactive.add(detail)
+                if not accessories:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("accessoryOnly") for f in section["fields"])
                 studio = any(s in schema.get("studioServices", []) for s in services)
-                studio_only = studio and all(s in schema["studioServices"] for s in services)
+                salon = any(s in schema.get("salonServices", []) for s in services)
+                studio_only = (studio or salon) and all(s in schema["studioServices"] + schema.get("salonServices", []) for s in services)
+                if not salon:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("salonOnly") for f in section["fields"])
+                if data.get("salonHomeOffered") != "Yes":
+                    inactive.add("salonHomeDetails")
                 if not studio:
                     inactive.update(f[0] for section in schema["sections"] if section.get("studioOnly") for f in section["fields"])
                 if studio_only:
@@ -2528,7 +2575,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 elif data.get("bridalRentalOffered") != "Yes":
                     inactive.add("bridalRentalTerms")
                 if not hardware:
-                    inactive.update(("installationOffered", "installationDetails", "warrantyDetails"))
+                    inactive.update(("installationOffered", "installationDetails"))
+                    if not accessories:
+                        inactive.add("warrantyDetails")
                 if not home:
                     inactive.update(f[0] for section in schema["sections"] if section.get("homeOnly") for f in section["fields"])
                 if data.get("customOffered") != "Yes":
@@ -2540,7 +2589,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 if data.get("installationOffered") != "Yes":
                     inactive.add("installationDetails")
                 if electronics_only:
-                    inactive.update(("extras", "customPolicy", "warranty"))
+                    inactive.add("warranty")
+                    if not accessories:
+                        inactive.update(("extras", "customPolicy"))
                     if data.get("deliveryOffered") != "Yes":
                         inactive.update(("radius", "areas", "delivery"))
                 fields = [f for f in fields if f[0] not in inactive]
@@ -2558,12 +2609,14 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             submitted = data.get("submit") is True
             if submitted:
                 error = next((f"{f[1]} is required." for f in fields if f[2] and not saved[f[0]]), None)
+                if retail_store and health and saved.get("healthDeclaration") != "Yes":
+                    error = error or "Confirm credential accuracy and publication consent."
                 error = error or next((f"{f[1]} is required." for f in fields if f[3] == "select" and saved[f[0]] not in f[5]), None)
                 if meal and any(s in services for s in ("Meal Subscription", "Tiffin Service")) and not saved.get("subscriptionPolicy"):
                     error = error or "Provide subscription pause, skip and renewal terms."
                 from datetime import date
                 try:
-                    if (not retail or saved["expiry"]) and date.fromisoformat(saved["expiry"]) < date.today():
+                    if (not retail or saved.get("expiry")) and date.fromisoformat(saved["expiry"]) < date.today():
                         raise ValueError
                 except ValueError:
                     error = error or "Enter a current registration / licence expiry date."
@@ -2586,8 +2639,11 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                     return
             status = "Application Submitted" if submitted else "Draft"
             saved["policyVersion"] = "2026-09-24"
+            if retail_store and health:
+                # Editing credentials invalidates any prior publication approval.
+                db.execute("UPDATE vendor_profiles SET approval_status = 'Submitted' WHERE account_id = ? AND approval_status = 'Approved'", (vendor["id"],))
             db.execute(f"INSERT INTO {table} VALUES (?, ?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET details_json=excluded.details_json, application_status=excluded.application_status, updated_at=excluded.updated_at", (vendor["id"], json.dumps(saved), status, int(time.time())))
-        name = "Retail" if retail_store else "Household supply" if household else "Fresh food" if fresh_food else "Grocery" if grocery else "Meal service" if meal else "Catering"
+        name = "Healthcare" if retail_store and health else "Retail" if retail_store else "Household supply" if household else "Fresh food" if fresh_food else "Grocery" if grocery else "Meal service" if meal else "Catering"
         self.send_json({"status": status, "message": f"{name} application submitted. Business profile approval remains separate." if submitted else f"{name} details saved."})
 
     def vendor_plumbing_onboarding(self) -> None:
@@ -2931,6 +2987,48 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             certificates = {row["account_id"]: db.execute("SELECT id, original_name FROM vendor_certificates WHERE account_id = ? ORDER BY uploaded_at DESC, id DESC", (row["account_id"],)).fetchall() for row in profiles}
         self.send_json({"profiles": [{"accountId": row["account_id"], "changeId": row["change_id"], "reviewType": row["review_type"], "businessName": row["business_name"], "businessType": row["business_type"], "serviceType": row["service_type"], "city": row["city"], "country": row["country"], "gstNumber": row["gst_number"], "fssaiCertificate": row["fssai_certificate"], "vehicleRegistration": row["vehicle_registration"], "insuranceDetails": row["insurance_details"], "otherCertificates": row["other_certificates"], "currentBusinessName": row["current_business_name"], "currentBusinessType": row["current_business_type"], "currentServiceType": row["current_service_type"], "currentCity": row["current_city"], "currentCountry": row["current_country"], "currentGstNumber": row["current_gst_number"], "currentFssaiCertificate": row["current_fssai_certificate"], "currentVehicleRegistration": row["current_vehicle_registration"], "currentInsuranceDetails": row["current_insurance_details"], "currentOtherCertificates": row["current_other_certificates"], "submittedAt": row["submitted_at"], "ownerName": f"{row['first_name']} {row['last_name']}", "email": row["email"], "certificates": [{"id": certificate["id"], "name": certificate["original_name"]} for certificate in certificates[row["account_id"]]]} for row in profiles]})
 
+    def healthcare_review_details(self) -> None:
+        if not self.require_approver():
+            return
+        try:
+            account_id = int(parse_qs(urlparse(self.path).query).get("accountId", [""])[0])
+        except ValueError:
+            self.send_json({"error": "A valid Vendor account is required."}, HTTPStatus.BAD_REQUEST)
+            return
+        with connection() as db:
+            row = db.execute("SELECT details_json, application_status FROM retail_partner_onboarding WHERE account_id = ?", (account_id,)).fetchone()
+            details = json.loads(row["details_json"]) if row else {}
+            health_services = json.loads((ROOT / 'retail-schema.json').read_text(encoding='utf-8'))['healthServices']
+            required = any(s in health_services for s in details.get('services', []))
+            profile = db.execute("SELECT service_type FROM vendor_profiles WHERE account_id = ?", (account_id,)).fetchone()
+            required = required or bool(profile and profile['service_type'] in health_services)
+            changes = db.execute("SELECT service_type FROM vendor_profile_changes WHERE account_id = ? AND approval_status = 'Submitted'", (account_id,)).fetchall()
+            required = required or any(change['service_type'] in health_services for change in changes)
+        self.send_json({"required": required, "details": details if required else {}, "status": row['application_status'] if row else 'Not started', "token": hashlib.sha256(row['details_json'].encode()).hexdigest() if row else ''})
+
+    def verify_healthcare_review(self, db, account_id, service_type, data, approver_id) -> bool:
+        row = db.execute("SELECT details_json, application_status FROM retail_partner_onboarding WHERE account_id = ?", (account_id,)).fetchone()
+        details = json.loads(row['details_json']) if row else {}
+        services = json.loads((ROOT / 'retail-schema.json').read_text(encoding='utf-8'))['healthServices']
+        if service_type not in services and not any(s in services for s in details.get('services', [])):
+            return True
+        if not row or row['application_status'] != 'Application Submitted' or details.get('healthDeclaration') != 'Yes':
+            self.send_json({"error": "Submit complete healthcare credentials before profile approval."}, HTTPStatus.CONFLICT)
+            return False
+        token = hashlib.sha256(row['details_json'].encode()).hexdigest()
+        if data.get('healthcareCredentialsVerified') is not True or data.get('healthcareReviewToken') != token:
+            self.send_json({"error": "Review the current healthcare credentials and confirm verification before approval."}, HTTPStatus.CONFLICT)
+            return False
+        if not db.execute('SELECT 1 FROM vendor_certificates WHERE account_id = ? LIMIT 1', (account_id,)).fetchone():
+            self.send_json({"error": "Upload your supporting documents before submitting."}, HTTPStatus.CONFLICT)
+            return False
+        details['healthcareReview'] = {'reviewedBy': approver_id, 'reviewedAt': int(time.time())}
+        updated = db.execute("UPDATE retail_partner_onboarding SET details_json = ? WHERE account_id = ? AND details_json = ? AND application_status = 'Application Submitted'", (json.dumps(details), account_id, row['details_json']))
+        if updated.rowcount != 1:
+            self.send_json({"error": "Review the current healthcare credentials and confirm verification before approval."}, HTTPStatus.CONFLICT)
+            return False
+        return True
+
     def approve_vendor_profile(self) -> None:
         if not self.origin_is_valid():
             self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN)
@@ -2957,11 +3055,16 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 if not change:
                     self.send_json({"error": "This profile change is not awaiting approval."}, HTTPStatus.CONFLICT)
                     return
+                if not self.verify_healthcare_review(db, data['accountId'], change['service_type'], data, approver['id']):
+                    return
                 db.execute("UPDATE vendor_profiles SET business_name = ?, business_type = ?, service_type = ?, other_type = ?, owner_image_path = ?, address_line1 = ?, address_line2 = ?, city = ?, state = ?, postal_code = ?, country = ?, gst_number = ?, fssai_certificate = ?, vehicle_registration = ?, insurance_details = ?, other_certificates = ?, approval_status = 'Approved', reviewed_by = ?, reviewed_at = ?, updated_at = ? WHERE account_id = ?", (*tuple(change), approver["id"], now, now, data["accountId"]))
                 db.execute("UPDATE vendor_profile_changes SET approval_status = 'Approved', reviewed_by = ?, reviewed_at = ?, updated_at = ? WHERE id = ?", (approver["id"], now, now, change_id))
             self.send_json({"message": "Vendor profile changes approved and published."})
             return
         with connection() as db:
+            profile = db.execute("SELECT service_type FROM vendor_profiles WHERE account_id = ? AND approval_status = 'Submitted'", (data['accountId'],)).fetchone()
+            if profile and not self.verify_healthcare_review(db, data['accountId'], profile['service_type'], data, approver['id']):
+                return
             result = db.execute("UPDATE vendor_profiles SET approval_status = 'Approved', reviewed_by = ?, reviewed_at = ?, updated_at = ? WHERE account_id = ? AND approval_status = 'Submitted'", (approver["id"], int(time.time()), int(time.time()), data["accountId"]))
         if result.rowcount != 1:
             self.send_json({"error": "This profile is not awaiting approval."}, HTTPStatus.CONFLICT)

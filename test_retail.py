@@ -7,6 +7,7 @@ class RetailTests(BaseTests):
     def setUp(self):
         super().setUp()
         self.db.execute('CREATE TABLE retail_partner_onboarding(account_id INTEGER PRIMARY KEY,details_json TEXT,application_status TEXT,updated_at INTEGER)')
+        self.db.execute('CREATE TABLE vendor_profiles(account_id INTEGER PRIMARY KEY,approval_status TEXT,service_type TEXT)')
         self.schema = json.loads((server.ROOT / 'retail-schema.json').read_text())
 
     def save(self, payload):
@@ -17,12 +18,110 @@ class RetailTests(BaseTests):
     def valid(self):
         data = {f[0]: ('2' if f[3] == 'number' else 'No' if f[3] == 'select' else 'Test details') for s in self.schema['sections'] for f in s['fields']}
         data.update(services=['Department Store'], department='Departments', expiry='', submit=True, agreements={p[0]: True for p in self.schema['policies']})
+        data['healthDeclaration'] = 'Yes'
         return data
 
     def test_draft_round_trip(self):
         self.assertEqual(self.save({'services':['Gift Shop'], 'gift':'Daily essentials'})[1], 200)
         self.handler.vendor_catering_onboarding(retail_store=True)
         self.assertEqual(self.result[0]['details']['gift'], 'Daily essentials')
+
+    def test_salon_home_service_validation(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['salonServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Selected salon service details'
+            data['salonHomeDetails'] = ''
+            self.assertEqual(self.save(data)[1], 200)
+            data['salonHomeOffered'] = 'Yes'
+            self.assertEqual(self.save(data)[1], 400)
+            data['salonHomeDetails'] = 'Coverage, charges, equipment and cleanup'
+            self.assertEqual(self.save(data)[1], 200)
+            data['salonSafety'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+
+    def test_medical_supply_rental_requirements(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        data = self.valid()
+        data.update(services=['Medical Equipment'], medicalEquipment='Equipment details', equipmentRentalOffered='Yes', equipmentRentalTerms='')
+        self.assertEqual(self.save(data)[1], 400)
+        data['equipmentRentalTerms'] = 'Deposit and maintenance terms'
+        self.assertEqual(self.save(data)[1], 200)
+        data.update(services=['Pharmacy'], pharmacy='Pharmacist and prescription controls', equipmentRentalTerms='')
+        self.assertEqual(self.save(data)[1], 200)
+        data['medicalSupplySafety'] = ''
+        self.assertEqual(self.save(data)[1], 400)
+
+    def test_care_services_and_nonclinical_elder_scope(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['careServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Service details'
+            self.assertEqual(self.save(data)[1], 200)
+            data['careSafeguards'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+        data = self.valid()
+        data.update(services=['Elder Care'], elderCare='Non-clinical daily support', clinicians='')
+        for key in ['emergencyOffered', 'teleOffered', 'healthVisitOffered', 'healthFacilities', 'healthAppointments', 'healthFees']:
+            data[key] = ''
+        self.assertEqual(self.save(data)[1], 200)
+        data['services'].append('Home Nursing')
+        data['homeNursing'] = 'Nursing visits'
+        self.assertEqual(self.save(data)[1], 400)
+
+    def test_diagnostic_collection_validation(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['diagnosticServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Service details'
+            data['sampleCollectionDetails'] = ''
+            self.assertEqual(self.save(data)[1], 200)
+            data['sampleCollectionOffered'] = 'Yes'
+            self.assertEqual(self.save(data)[1], 400)
+            data['sampleCollectionDetails'] = 'Areas, charges and safe collection arrangements'
+            self.assertEqual(self.save(data)[1], 200)
+            data['diagnosticQuality'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+
+    def test_vision_and_hearing_requirements(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in ['Eye Hospital', 'Optical Store', 'Eye Checkup', 'ENT Clinic', 'Hearing Aid Centre']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Service information'
+            self.assertEqual(self.save(data)[1], 200)
+            if service == 'Optical Store':
+                self.assertNotIn('clinicians', self.result[0].get('details', {}))
+                data['healthDeclaration'] = 'No'
+                self.assertEqual(self.save(data)[1], 200)
+            else:
+                data['healthDeclaration'] = 'No'
+                self.assertEqual(self.save(data)[1], 400)
+                data['healthDeclaration'] = 'Yes'
+            if service in ['Optical Store', 'Hearing Aid Centre']:
+                data['visionDeliveryOffered'] = 'Yes'
+                data['visionDelivery'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data['visionDelivery'] = 'Local delivery, fees and times'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_dental_safety_and_selected_service_validation(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['dentalServices']:
+            self.assertIn(service, self.schema['healthServices'])
+            data = self.valid()
+            data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Provider service information'
+            data['dentalSafety'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data['dentalSafety'] = 'Sterilisation, consent and aftercare arrangements'
+            self.assertEqual(self.save(data)[1], 200)
+            data[key] = ''
+            self.assertEqual(self.save(data)[1], 400)
 
     def test_public_schema_route(self):
         self.handler.path = '/retail-schema.json'
@@ -204,3 +303,61 @@ class RetailTests(BaseTests):
         self.assertEqual(details['embroideryService'], 'Hand and machine work')
         for key in ('collectionDetails','tailoringService','warranty','installationOffered'):
             self.assertNotIn(key, details)
+
+    def test_accessory_delivery_and_warranty(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        data = self.valid()
+        data.update(services=['Watches'], watchStore='Analogue and digital watches')
+        for key in ('installationOffered','installationDetails','radius','areas','delivery'):
+            data.pop(key, None)
+        self.assertEqual(self.save(data)[1], 200)
+        data['deliveryOffered'] = 'Yes'
+        self.assertEqual(self.save(data)[1], 400)
+        data.update(radius='10', areas='PIN codes', delivery='Charges and timelines')
+        self.assertEqual(self.save(data)[1], 200)
+        data.pop('warrantyDetails')
+        self.assertEqual(self.save(data)[1], 400)
+
+    def test_accessory_draft_excludes_unselected_and_installation(self):
+        self.assertEqual(self.save({'services':['Footwear'], 'footwearStore':'Sizes and fitting', 'watchStore':'Unselected', 'installationOffered':'Yes'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['footwearStore'], 'Sizes and fitting')
+        self.assertNotIn('watchStore', details)
+        self.assertNotIn('installationOffered', details)
+
+    def test_healthcare_conditions_and_consent(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        data = self.valid()
+        data.update(services=['General Physician'], physician='Scope and referrals')
+        for key in ('emergencyDetails','teleDetails','healthVisitDetails','expiry','registration','evidence'):
+            data.pop(key, None)
+        self.assertEqual(self.save(data)[1], 200)
+        for choice, detail in [('emergencyOffered','emergencyDetails'),('teleOffered','teleDetails'),('healthVisitOffered','healthVisitDetails')]:
+            data[choice] = 'Yes'
+            self.assertEqual(self.save(data)[1], 400)
+            data[detail] = 'Verified scope, hours, fees and arrangements'
+            self.assertEqual(self.save(data)[1], 200)
+        data['healthDeclaration'] = 'No'
+        self.assertEqual(self.save(data)[1], 400)
+
+    def test_healthcare_review_gate_and_invalidation(self):
+        import hashlib
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        self.db.execute("INSERT INTO vendor_profiles VALUES (1,'Approved','General Physician')")
+        data = self.valid(); data.update(services=['General Physician'], physician='Scope')
+        self.assertEqual(self.save(data)[1], 200)
+        self.assertEqual(self.db.execute('SELECT approval_status FROM vendor_profiles').fetchone()[0], 'Submitted')
+        self.assertFalse(self.handler.verify_healthcare_review(self.db, 1, 'General Physician', {}, 9))
+        raw = self.db.execute('SELECT details_json FROM retail_partner_onboarding').fetchone()[0]
+        token = hashlib.sha256(raw.encode()).hexdigest()
+        self.assertFalse(self.handler.verify_healthcare_review(self.db, 1, 'General Physician', {'healthcareCredentialsVerified':True, 'healthcareReviewToken':'stale'}, 9))
+        self.assertTrue(self.handler.verify_healthcare_review(self.db, 1, 'General Physician', {'healthcareCredentialsVerified':True, 'healthcareReviewToken':token}, 9))
+        self.assertEqual(json.loads(self.db.execute('SELECT details_json FROM retail_partner_onboarding').fetchone()[0])['healthcareReview']['reviewedBy'], 9)
+        self.assertEqual(self.save({'services':['General Physician'], 'physician':'Changed credentials'})[1], 200)
+        self.assertFalse(self.handler.verify_healthcare_review(self.db, 1, 'General Physician', {'healthcareCredentialsVerified':True, 'healthcareReviewToken':token}, 9))
+
+    def test_healthcare_review_requires_approver(self):
+        self.handler.require_approver = lambda: None
+        self.handler.healthcare_review_details()
+        self.assertFalse(hasattr(self, 'result'))

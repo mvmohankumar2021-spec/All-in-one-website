@@ -85,6 +85,14 @@
     if (section.homeOnly) group.dataset.homeOnly = 'true';
     if (section.clothingOnly) group.dataset.clothingOnly = 'true';
     if (section.studioOnly) group.dataset.studioOnly = 'true';
+    if (section.accessoryOnly) group.dataset.accessoryOnly = 'true';
+    if (section.healthOnly) group.dataset.healthOnly = 'true';
+    if (section.salonOnly) group.dataset.salonOnly = 'true';
+    if (section.medicalSupplyOnly) group.dataset.medicalSupplyOnly = 'true';
+    if (section.careOnly) group.dataset.careOnly = 'true';
+    if (section.diagnosticOnly) group.dataset.diagnosticOnly = 'true';
+    if (section.visionProductOnly) group.dataset.visionProductOnly = 'true';
+    if (section.dentalOnly) group.dataset.dentalOnly = 'true';
     const grid = document.createElement('div'); grid.className = 'retail-grid';
     // Pair controls of the same height, preserving their order within each group.
     // DOM order also remains the keyboard order on desktop and mobile.
@@ -155,19 +163,52 @@
     const operator = centre && listingRole.value === 'Centre operator';
     const shop = !operator || services.some(service => service !== 'Shopping Centre');
     const studio = services.some(service => schema.studioServices.includes(service));
-    const studioOnly = studio && services.every(service => schema.studioServices.includes(service));
-    heading.textContent = studioOnly ? 'Fashion service partner onboarding' : 'Retail partner onboarding';
-    intro.textContent = studioOnly ? 'Profile contact details are reused. Complete only your selected fashion services. * Required for submission.' : retailIntro;
-    save.textContent = studioOnly ? 'Save service details' : 'Save retail details';
-    submit.textContent = studioOnly ? 'Submit fashion service application →' : 'Submit retail partner application →';
+    const salon = services.some(service => schema.salonServices.includes(service));
+    const salonOnly = salon && services.every(service => schema.salonServices.includes(service));
+    const studioOnly = (studio || salon) && services.every(service => [...schema.studioServices,...schema.salonServices].includes(service));
+    panel.querySelectorAll('[data-salon-only]').forEach(group => { group.hidden = !salon; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !salon); });
+    const health = services.some(service => schema.healthServices.includes(service));
+    const medicalSupply = services.some(service => schema.medicalSupplyServices.includes(service));
+    panel.querySelectorAll('[data-medical-supply-only]').forEach(group => { group.hidden = !medicalSupply; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !medicalSupply); });
+    const care = services.some(service => schema.careServices.includes(service));
+    const elderOnly = services.length > 0 && services.every(service => service === 'Elder Care');
+    panel.querySelectorAll('[data-care-only]').forEach(group => { group.hidden = !care; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !care); });
+    const diagnostic = services.some(service => schema.diagnosticServices.includes(service));
+    panel.querySelectorAll('[data-diagnostic-only]').forEach(group => { group.hidden = !diagnostic; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !diagnostic); });
+    const visionProduct = services.some(service => ['Optical Store','Hearing Aid Centre'].includes(service));
+    panel.querySelectorAll('[data-vision-product-only]').forEach(group => { group.hidden = !visionProduct; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !visionProduct); });
+    const dental = services.some(service => schema.dentalServices.includes(service));
+    panel.querySelectorAll('[data-dental-only]').forEach(group => { group.hidden = !dental; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !dental); });
+    const healthOnly = health && services.every(service => schema.healthServices.includes(service));
+    heading.textContent = healthOnly ? 'Healthcare provider onboarding' : studioOnly ? 'Fashion service partner onboarding' : 'Retail partner onboarding';
+    intro.textContent = health ? 'Provider information only. Do not upload patient records. Credentials and service claims require review before publication.' : studioOnly ? 'Profile contact details are reused. Complete only your selected fashion services. * Required for submission.' : retailIntro;
+    save.textContent = healthOnly ? 'Save healthcare details' : studioOnly ? 'Save service details' : 'Save retail details';
+    submit.textContent = healthOnly ? 'Submit healthcare application →' : studioOnly ? 'Submit fashion service application →' : 'Submit retail partner application →';
     evidenceHint.textContent = studio ? studioEvidenceHelp : retailEvidenceHelp;
     documentHint.textContent = studioOnly ? `${studioEvidenceHelp}\n\nPDF, JPEG or PNG; up to 4 files per upload, maximum 1.5 MB each.` : retailDocumentHelp;
+    if (healthOnly) documentHint.textContent = `${schema.sections.find(section=>section.healthOnly).fields.find(field=>field[0]==='healthCredentials')[4]}\n\nPDF, JPEG or PNG; up to 4 files per upload, maximum 1.5 MB each.`;
+    if (salonOnly) {
+      heading.textContent = 'Salon partner onboarding';
+      intro.textContent = 'Salon operations and customer care';
+      submit.textContent = 'Submit application';
+      documentHint.textContent = schema.sections.find(section=>section.salonOnly).fields.find(field=>field[0]==='salonSafety')[4];
+      evidenceHint.textContent = documentHint.textContent;
+    }
+    panel.querySelectorAll('[data-health-only]').forEach(group => { group.hidden = !health; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !health); });
+    // Healthcare captures facility registration/evidence in its own section.
+    for (const key of ['registration','expiry','evidence']) {
+      const input = panel.querySelector(`[data-key="${key}"]`);
+      input.closest('fieldset').hidden = healthOnly;
+      input.closest('fieldset').querySelectorAll('input,textarea,select').forEach(control=>control.disabled = !active || healthOnly);
+    }
     panel.querySelectorAll('[data-studio-only]').forEach(group => { group.hidden = !studio; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !studio); });
-    panel.querySelectorAll('[data-shop-only]').forEach(group => { group.hidden = !shop || studioOnly; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !shop || studioOnly); });
+    panel.querySelectorAll('[data-shop-only]').forEach(group => { group.hidden = !shop || studioOnly || healthOnly; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !shop || studioOnly || healthOnly); });
     const hardware = services.some(service => [...schema.electronicsServices, ...schema.homeServices].includes(service));
     const clothing = services.some(service => schema.clothingServices.includes(service));
     const clothingOnly = clothing && services.every(service => schema.clothingServices.includes(service));
-    const enhancedServices = [...schema.electronicsServices, ...schema.homeServices, ...schema.clothingServices];
+    const accessories = services.some(service => schema.accessoryServices.includes(service));
+    panel.querySelectorAll('[data-accessory-only]').forEach(group => { group.hidden = !accessories; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !accessories); });
+    const enhancedServices = [...schema.electronicsServices, ...schema.homeServices, ...schema.clothingServices, ...schema.accessoryServices, ...schema.medicalSupplyServices];
     const electronics = services.some(service => enhancedServices.includes(service));
     const electronicsOnly = electronics && services.every(service => enhancedServices.includes(service));
     const home = services.some(service => schema.homeServices.includes(service));
@@ -178,16 +219,32 @@
     const installation = panel.querySelector('[data-key="installationOffered"]').value === 'Yes';
     const bridal = services.includes('Bridal Wear');
     const conditional = {
-      installationOffered: hardware, warrantyDetails: hardware, installationDetails: hardware && installation,
+      salonHomeDetails: salon && panel.querySelector('[data-key="salonHomeOffered"]').value === 'Yes',
+      equipmentRentalOffered: services.includes('Medical Equipment'),
+      equipmentRentalTerms: services.includes('Medical Equipment') && panel.querySelector('[data-key="equipmentRentalOffered"]').value === 'Yes',
+      clinicians: health && !elderOnly,
+      sampleCollectionDetails: diagnostic && panel.querySelector('[data-key="sampleCollectionOffered"]').value === 'Yes',
+      visionDelivery: visionProduct && panel.querySelector('[data-key="visionDeliveryOffered"]').value === 'Yes',
+      installationOffered: hardware, warrantyDetails: hardware || accessories, installationDetails: hardware && installation,
       customDetails: home && panel.querySelector('[data-key="customOffered"]').value === 'Yes', largeDelivery: home && delivery,
       tailoringDetails: clothing && panel.querySelector('[data-key="tailoringOffered"]').value === 'Yes',
       bridalRentalOffered: bridal, bridalRentalTerms: bridal && panel.querySelector('[data-key="bridalRentalOffered"]').value === 'Yes',
-      filePrivacy: shop && !clothingOnly && !studioOnly,
+      filePrivacy: shop && !clothingOnly && !studioOnly && !healthOnly,
+      businessType: !healthOnly,
+      emergencyDetails: health && panel.querySelector('[data-key="emergencyOffered"]').value === 'Yes',
+      teleDetails: health && panel.querySelector('[data-key="teleOffered"]').value === 'Yes',
+      healthVisitDetails: health && panel.querySelector('[data-key="healthVisitOffered"]').value === 'Yes',
       collectionDetails: studio && panel.querySelector('[data-key="collectionOffered"]').value === 'Yes',
       studioVisitDetails: studio && panel.querySelector('[data-key="studioVisitOffered"]').value === 'Yes'
     };
-    ['radius','areas','delivery'].forEach(key => conditional[key] = shop && !studioOnly && (!electronicsOnly || delivery));
-    ['extras','customPolicy','warranty'].forEach(key => conditional[key] = shop && !studioOnly && !electronicsOnly);
+    ['radius','areas','delivery'].forEach(key => conditional[key] = shop && !studioOnly && !healthOnly && (!electronicsOnly || delivery));
+    ['extras','customPolicy'].forEach(key => conditional[key] = shop && !studioOnly && !healthOnly && (!electronicsOnly || accessories));
+    conditional.warranty = shop && !studioOnly && !healthOnly && !electronicsOnly;
+    ['healthFacilities','healthAppointments','healthFees','emergencyOffered','teleOffered','healthVisitOffered'].forEach(key => conditional[key] = health && !elderOnly);
+    if (elderOnly) ['healthFacilities','healthAppointments','healthFees','emergencyOffered','emergencyDetails','teleOffered','teleDetails','healthVisitOffered','healthVisitDetails'].forEach(key => conditional[key] = false);
+    if (services.every(service => service === 'Optical Store' || schema.healthServices.includes(service))) {
+      ['radius','areas','delivery'].forEach(key => conditional[key] = false);
+    }
     Object.entries(conditional).forEach(([key,relevant]) => {
       const input = panel.querySelector(`[data-key="${key}"]`);
       input.closest('.retail-field').hidden = !relevant; input.disabled = !active || !relevant;
@@ -195,7 +252,7 @@
     panel.querySelectorAll('.retail-field-pair').forEach(row => { row.hidden = [...row.children].every(field => field.hidden); });
     schema.policies.forEach(([key,,,scope]) => {
       const input = agreements.querySelector(`[data-agreement="${key}"]`);
-      const relevant = scope === 'shop' ? shop && !studioOnly : scope === 'operator' ? operator : true;
+      const relevant = scope === 'shop' ? shop && !studioOnly && !healthOnly : scope === 'operator' ? operator : true;
       input.disabled = !active || !relevant; input.closest('label').hidden = !relevant;
     });
     if (active) {
@@ -205,11 +262,13 @@
     activeBefore = active;
   }
   ['vendorMainCategory','vendorSubcategories','vendorServicesProducts'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>setTimeout(sync,0)));
-  panel.addEventListener('change', event => { if (['deliveryOffered','installationOffered','customOffered','tailoringOffered','bridalRentalOffered','collectionOffered','studioVisitOffered'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['salonHomeOffered','equipmentRentalOffered','sampleCollectionOffered','visionDeliveryOffered','deliveryOffered','installationOffered','customOffered','tailoringOffered','bridalRentalOffered','collectionOffered','studioVisitOffered','emergencyOffered','teleOffered','healthVisitOffered'].includes(event.target.dataset.key)) sync(); });
   async function persist(submitted) {
     status.classList.remove('error'); const fields = [...panel.querySelectorAll('[data-key]')].filter(f=>!f.disabled);
     panel.querySelectorAll('[aria-invalid]').forEach(f=>f.removeAttribute('aria-invalid'));
     if (submitted) {
+      const declaration = panel.querySelector('[data-key="healthDeclaration"]');
+      if (!declaration.disabled && declaration.value !== 'Yes') { status.textContent = 'Confirm credential accuracy and publication consent.'; status.classList.add('error'); declaration.setAttribute('aria-invalid','true'); declaration.focus(); return; }
       const invalid = fields.find(f=>(f.dataset.required==='true' && !f.value.trim()) || !f.validity.valid) || [...agreements.querySelectorAll('input')].find(f=>!f.disabled && !f.checked);
       if (invalid) { status.textContent = invalid.dataset.key ? `${invalid.labels[0].textContent.replace(' *','')}: ${window.AppI18n?.t('Enter a valid value.') || 'Enter a valid value.'}` : 'Accept all agreements and declarations.'; status.classList.add('error'); invalid.setAttribute('aria-invalid','true'); invalid.focus(); invalid.scrollIntoView({block:'center'}); return; }
       if (fileInput.files.length) { status.textContent='Upload the selected documents before submitting.'; status.classList.add('error'); upload.focus(); return; }

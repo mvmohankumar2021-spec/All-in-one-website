@@ -1,5 +1,57 @@
 # Language rollout status
 
+## Beauty services onboarding — 28 September 2026
+
+- Added Beauty Parlour, Bridal Makeup, Makeup Artist, Mehndi Artist, Nail Studio and Skin Care to the shared salon form. Existing compact layout, uploads, help, selected-service validation and conditional home service flow are reused.
+- Added bilingual service-specific labels/help. Expanded shared safety guidance for ingredients, single-use items, product instructions and promotional-photo consent; home-service help includes event/outstation setup. Skin Care explicitly excludes medical/invasive procedures from this listing scope.
+- 111 backend tests (including each new service and conditional home-service validation) and localization runtime tests pass. Active taxonomy and live schema verified. Fresh visual checks and real signed-in uploads/submission remain unverified.
+
+## Salon onboarding — 28 September 2026
+
+- Added Mens Salon, Womens Salon, Unisex Salon, Haircut, Hair Styling and Hair Coloring using the existing compact layout, help controls, document uploads/removal and agreements.
+- Shared team/booking/pricing/hygiene fields are entered once. Service-specific questions follow selection; home service coverage/setup appears only when offered. Salon-only forms omit retail fulfilment and fashion-studio questions.
+- New labels/help translated into Tamil and Hindi; coverage and active taxonomy entries verified. 111 backend tests and localization runtime tests pass. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Pharmacy and medical supplies — 28 September 2026
+
+- Added Pharmacy, Medical Equipment and Surgical Supplies using the existing retail layout, documents, help and approval workflow. Includes pharmacist/prescription controls, product evidence and safeguards, equipment support and surgical traceability.
+- Rental terms appear only for equipment rental; delivery uses the existing conditional fields. New labels/help translated into Tamil and Hindi.
+- 110 backend tests, localization runtime tests and syntax checks pass. Translation coverage and active taxonomy entries verified. Fresh visual audit and real signed-in upload/submission remain unverified.
+
+## Care and ambulance onboarding — 28 September 2026
+
+- Added Physiotherapy, Home Nursing, Elder Care, Rehabilitation Centre and Ambulance Service, using existing layout, help, documents, agreements and verification workflow.
+- Includes selected-service scope, coverage/pricing and safeguarding. Elder-care-only applications omit clinician and clinical-service questions; adding a clinical service restores those requirements. Ambulance guidance distinguishes patient transport from emergency capability.
+- Tamil/Hindi labels and help coverage verified. 109 backend tests and localization runtime tests pass. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Diagnostic onboarding — 28 September 2026
+
+- Added Diagnostic Centre, Blood Test Lab, Scan Centre, X-Ray Centre and Health Checkup to the existing healthcare onboarding layout and credential-review flow.
+- Includes selected-service questions, preparation/prices/report delivery, quality/sample/critical-result processes, and conditional home sample collection distinct from clinical home visits. Existing uploads, help and agreements are reused.
+- Tamil/Hindi coverage verified for all new labels and help. 108 backend tests and localization runtime tests pass. Fresh browser visual checks and real signed-in uploads/submission remain unverified.
+
+## Eye, optical, ENT and hearing onboarding — 28 September 2026
+
+- Added Eye Hospital, Optical Store, Eye Checkup, ENT Clinic and Hearing Aid Centre using the existing responsive form, help controls, document upload/removal and agreements.
+- Optical-only applications retain retail requirements without clinical credential declarations. The other four services use healthcare credential review. Product support and conditional delivery apply to optical/hearing services; clinical home visits retain existing conditional fields.
+- New labels and help have Tamil/Hindi translations. All five active taxonomy entries verified. 107 backend tests, localization runtime tests and JavaScript syntax checks pass.
+- This increment has not had a fresh browser visual audit or real signed-in upload/submission test. Existing layout is reused; native-language review remains recommended.
+
+## Healthcare and dental onboarding — 28 September 2026
+
+- Added six hospital/clinic services and six dental services to the healthcare onboarding flow. Dental applications include selected-service questions and infection-control, consent and aftercare guidance, with English, Tamil and Hindi labels/help.
+- Reused compact responsive layout, authenticated document upload/removal and mandatory validation. Healthcare credential review is required before profile approval; changed applications invalidate earlier review.
+- 106 isolated backend tests and localization runtime checks pass. Dental service switching and translated help verified in a write-disabled browser fixture; Tamil mobile had no horizontal overflow. Screenshot: dental-hindi-preview.png.
+- Real signed-in uploads/submission and human credential verification were not performed. Translations still need native-language review; policy translations remain drafts.
+
+## Fashion accessories onboarding — 28 September 2026
+
+- Added Footwear, Bags & Luggage, Fashion Jewellery, Watches and Fashion Accessories under Fashion & Clothing → Accessories using the existing retail form and authenticated persistence/upload workflow.
+- Added selected-category specifications, material/authenticity claims, fit/exchange/hygiene guidance and repairs/care. Shared warranty and personalisation fields are retained; delivery is conditional and appliance installation is omitted for accessory-only applications.
+- Tamil/Hindi labels, help and taxonomy translations added. 102 isolated backend tests and runtime translation tests pass.
+- Tamil desktop and Tamil/Hindi mobile previews checked in a write-disabled fixture: no horizontal overflow, category switching, delivery visibility and translated help opening verified. Screenshot: accessories-tamil-desktop.png.
+- Temporary fixture removed and local server restarted. No real documents or agreements were submitted; authenticated end-to-end submission remains unverified.
+
 ## Fashion services onboarding — 27 September 2026
 
 - Added Tailoring, Boutique, Fashion Designer, Uniform Supplier and Embroidery Service under Fashion & Clothing → Tailoring & Design, using the existing authenticated retail persistence and document workflow.
