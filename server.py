@@ -2550,7 +2550,115 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                     inactive.update(f[0] for section in schema["sections"] if section.get("accessoryOnly") for f in section["fields"])
                 studio = any(s in schema.get("studioServices", []) for s in services)
                 salon = any(s in schema.get("salonServices", []) for s in services)
-                studio_only = (studio or salon) and all(s in schema["studioServices"] + schema.get("salonServices", []) for s in services)
+                wellness = any(s in schema.get("wellnessServices", []) for s in services)
+                education = any(s in schema.get("educationServices", []) for s in services)
+                if not any(s in schema.get("onlineLearningServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("onlineLearningOnly") for f in section["fields"])
+                for choice in ("digitalSubscription", "digitalThirdParty"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if all(s in schema.get("onlineLearningServices", []) for s in services):
+                    for choice in ("eduTransport", "eduMeals", "eduHostel", "eduOnline", "eduExtended"):
+                        inactive.update((choice, choice + "Details"))
+                if not any(s in schema.get("practicalTrainingServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("practicalTrainingOnly") for f in section["fields"])
+                for choice in ("practicalHome", "practicalRental", "practicalEvents", "practicalPlacement"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if not any(s in schema.get("languageServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("languageOnly") for f in section["fields"])
+                for choice in ("languageHome", "languageExam", "languageCorporate"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if not any(s in schema.get("itTrainingServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("itTrainingOnly") for f in section["fields"])
+                for choice in ("itCorporate", "itCertification", "itPlacement"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if not any(s in schema.get("coachingServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("coachingOnly") for f in section["fields"])
+                for choice in ("coachHome", "coachTests"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                recruitment = any(s in schema.get("recruitmentServices", []) for s in services)
+                job_services = any(s in schema.get("jobServices", []) for s in services)
+                freelance = any(s in schema.get("freelanceServices", []) for s in services)
+                if not any(s in schema.get("securityServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("securityOnly") for f in section["fields"])
+                if not any(s in schema.get("accountingServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("accountingOnly") for f in section["fields"])
+                if not any(s in schema.get("registrationServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("registrationOnly") for f in section["fields"])
+                if not any(s in schema.get("consultingServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("consultingOnly") for f in section["fields"])
+                if not any(s in schema.get("officeServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("officeOnly") for f in section["fields"])
+                if not any(s in schema.get("bankingServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("bankingOnly") for f in section["fields"])
+                if not any(s in schema.get("loanServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("loanOnly") for f in section["fields"])
+                if not any(s in schema.get("insuranceServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("insuranceOnly") for f in section["fields"])
+                if not any(s in schema.get("investmentServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("investmentOnly") for f in section["fields"])
+                if not any(s in schema.get("legalServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("legalOnly") for f in section["fields"])
+                if not any(s in schema.get("vehicleDealerServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("vehicleDealerOnly") for f in section["fields"])
+                if not any(s in schema.get("vehicleRepairServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("vehicleRepairOnly") for f in section["fields"])
+                if not any(s in schema.get("roadServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("roadOnly") for f in section["fields"])
+                if not any(s in schema.get("travelServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("travelOnly") for f in section["fields"])
+                if not any(s in schema.get("rentalServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("rentalOnly") for f in section["fields"])
+                if not any(s in schema.get("hotelServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("hotelOnly") for f in section["fields"])
+                if data.get("securityMaintenance") != "Yes":
+                    inactive.add("securityMaintenanceDetails")
+                if not any(s in schema.get("itSupportServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("itSupportOnly") for f in section["fields"])
+                if data.get("itBackup") != "Yes":
+                    inactive.add("itBackupDetails")
+                if not any(s in schema.get("softwareServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("softwareOnly") for f in section["fields"])
+                for choice in ("softwareHosting", "softwareIntegration", "softwareMigration", "softwareSupport", "softwarePublishing", "softwareCompliance"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                device = any(s in schema.get("deviceServices", []) for s in services)
+                studio_only = (studio or salon or wellness or education or recruitment or job_services or freelance or device) and all(s in schema["studioServices"] + schema.get("salonServices", []) + schema.get("wellnessServices", []) + schema.get("educationServices", []) + schema.get("recruitmentServices", []) + schema.get("jobServices", []) + schema.get("freelanceServices", []) + schema.get("deviceServices", []) for s in services)
+                if not device:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("deviceOnly") for f in section["fields"])
+                if not any(s in ("Computer Sales", "Laptop Sales", "Mobile Sales") for s in services):
+                    inactive.add("deviceSalesTerms")
+                if not any(s in ("Computer Repair", "Laptop Repair", "Mobile Repair") for s in services):
+                    inactive.add("deviceRepairTerms")
+                for choice in ("devicePickup", "deviceOnsite", "deviceRemote", "devicePartner", "deviceBulk"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if not freelance:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("freelanceOnly") for f in section["fields"])
+                for choice in ("freeOnsite", "freeTeam", "freeRights", "freeData", "freeRegulated"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if not job_services:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("jobsOnly") for f in section["fields"])
+                if not recruitment:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("recruitmentOnly") for f in section["fields"])
+                for choice in ("recruitOverseas", "recruitChecks", "recruitPayroll", "recruitBulk"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if not education:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("educationOnly") for f in section["fields"])
+                for choice in ("eduTransport", "eduMeals", "eduHostel", "eduOnline", "eduExtended"):
+                    if data.get(choice) != "Yes":
+                        inactive.add(choice + "Details")
+                if not wellness:
+                    inactive.update(f[0] for section in schema["sections"] if section.get("wellnessOnly") for f in section["fields"])
+                for choice, detail in (("wellHomeOffered", "wellHomeDetails"), ("wellOnlineOffered", "wellOnlineDetails"), ("wellRetreatOffered", "wellRetreatDetails")):
+                    if data.get(choice) != "Yes":
+                        inactive.add(detail)
                 if not salon:
                     inactive.update(f[0] for section in schema["sections"] if section.get("salonOnly") for f in section["fields"])
                 if data.get("salonHomeOffered") != "Yes":
@@ -2608,6 +2716,9 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             saved["agreements"] = {p[0]: (data.get("agreements") or {}).get(p[0]) is True for p in policies} if isinstance(data.get("agreements"), dict) else {}
             submitted = data.get("submit") is True
             if submitted:
+                if retail_store and any(s in schema.get("wellnessServices", []) for s in services) and saved.get("wellClinical") != "No":
+                    self.send_json({"error": "Clinical services require separate credential review; submit only non-medical wellness services here."}, HTTPStatus.BAD_REQUEST)
+                    return
                 error = next((f"{f[1]} is required." for f in fields if f[2] and not saved[f[0]]), None)
                 if retail_store and health and saved.get("healthDeclaration") != "Yes":
                     error = error or "Confirm credential accuracy and publication consent."

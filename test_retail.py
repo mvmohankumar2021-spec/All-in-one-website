@@ -26,6 +26,157 @@ class RetailTests(BaseTests):
         self.handler.vendor_catering_onboarding(retail_store=True)
         self.assertEqual(self.result[0]['details']['gift'], 'Daily essentials')
 
+    def test_device_services_and_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['deviceServices']:
+            data = self.valid(); data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Device service details'
+            if 'Sales' not in service: data['deviceSalesTerms'] = ''
+            if 'Repair' not in service: data['deviceRepairTerms'] = ''
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['devicePickup','deviceOnsite','deviceRemote','devicePartner','deviceBulk']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Service terms'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_freelance_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['freelanceServices']:
+            data = self.valid(); data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Provider details'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['freeOnsite','freeTeam','freeRights','freeData','freeRegulated']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Offering terms and safeguards'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_job_category_onboarding(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['jobServices']:
+            data = self.valid(); data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Job category details'
+            self.assertEqual(self.save(data)[1], 200)
+            data['jobPay'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+        data = self.valid(); data['services'] = ['IT Jobs','Part-Time Jobs','Work From Home Jobs']
+        for service in data['services']:
+            data[self.schema['specific'][service][0]] = 'Relevant details'
+        self.assertEqual(self.save(data)[1], 200)
+
+    def test_recruitment_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['recruitmentServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Recruitment details'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['recruitOverseas','recruitChecks','recruitPayroll','recruitBulk']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Offering terms and safeguards'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_online_learning_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['onlineLearningServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Online learning details'
+            for key in ['eduTransport','eduMeals','eduHostel','eduOnline','eduExtended']:
+                data[key] = ''
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['digitalSubscription','digitalThirdParty']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Offering terms and responsibilities'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_practical_training_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['practicalTrainingServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Training details'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['practicalHome','practicalRental','practicalEvents','practicalPlacement']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Offering terms and safeguards'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_language_training_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['languageServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Language course details'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['languageHome','languageExam','languageCorporate']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Offering terms'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_it_training_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['itTrainingServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Training details'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['itCorporate','itCertification','itPlacement']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Offering terms and evidence'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_coaching_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['coachingServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Course details'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['coachHome','coachTests']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Service terms'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_education_facility_validation(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['educationServices']:
+            if service in self.schema['onlineLearningServices']:
+                continue  # Online-only facility exclusions are tested separately.
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Institution details'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ['eduTransport','eduMeals','eduHostel','eduOnline','eduExtended']:
+                data[key] = 'Yes'; data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Facility terms and safeguards'
+                self.assertEqual(self.save(data)[1], 200)
+
+    def test_wellness_conditional_fields_and_scope(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['wellnessServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Service scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for choice, detail in [('wellHomeOffered','wellHomeDetails'),('wellOnlineOffered','wellOnlineDetails'),('wellRetreatOffered','wellRetreatDetails')]:
+                data[choice] = 'Yes'; data[detail] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[detail] = 'Coverage, terms and safeguards'
+                self.assertEqual(self.save(data)[1], 200)
+            data['wellClinical'] = 'Yes'
+            self.assertEqual(self.save(data)[1], 400)
+            data['submit'] = False
+            self.assertEqual(self.save(data)[1], 200)
+
     def test_salon_home_service_validation(self):
         self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
         for service in self.schema['salonServices']:
@@ -356,6 +507,341 @@ class RetailTests(BaseTests):
         self.assertEqual(json.loads(self.db.execute('SELECT details_json FROM retail_partner_onboarding').fetchone()[0])['healthcareReview']['reviewedBy'], 9)
         self.assertEqual(self.save({'services':['General Physician'], 'physician':'Changed credentials'})[1], 200)
         self.assertFalse(self.handler.verify_healthcare_review(self.db, 1, 'General Physician', {'healthcareCredentialsVerified':True, 'healthcareReviewToken':token}, 9))
+
+    def test_computer_equipment_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in ('Computer Accessories', 'Networking Equipment', 'Printers & Peripherals'):
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Product range and compatibility'
+            self.assertEqual(self.save(data)[1], 200)
+            data[key] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data[key] = 'Product range and compatibility'
+            data['installationOffered'] = 'Yes'; data['installationDetails'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data['installationDetails'] = 'Setup scope and charges'
+            self.assertEqual(self.save(data)[1], 200)
+
+    def test_vehicle_parts_and_accessories(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in ('Car Spare Parts', 'Bike Spare Parts', 'Car Accessories', 'Bike Accessories'):
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Range and compatibility'
+            self.assertEqual(self.save(data)[1], 200)
+            data[key] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data[key] = 'Range and compatibility'
+            data['installationOffered'] = 'Yes'; data['installationDetails'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data['installationDetails'] = 'Approved fitting and charges'
+            self.assertEqual(self.save(data)[1], 200)
+
+    def test_hotel_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['hotelServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Hotel scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'hotelRooms', 'hotelBooking', 'hotelSafety'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_rental_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['rentalServices']:
+            data = self.valid(); data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Rental scope'
+            self.assertEqual(self.save(data)[1], 200)
+            data['rentalTerms'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+
+    def test_travel_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['travelServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Travel scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'travelProfile', 'travelTerms', 'travelSupport'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_travel_draft_scope(self):
+        self.assertEqual(self.save({'services':['Flight Booking'], 'flightBooking':'Routes', 'trainBooking':'Unselected', 'roadTerms':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['flightBooking'], 'Routes')
+        self.assertNotIn('trainBooking', details)
+        self.assertNotIn('roadTerms', details)
+
+    def test_road_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['roadServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Service scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'roadProfile', 'roadTerms', 'roadSafety'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_road_draft_scope(self):
+        self.assertEqual(self.save({'services':['Driving School'], 'drivingSchool':'Lessons', 'towingService':'Unselected', 'workshopScope':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['drivingSchool'], 'Lessons')
+        self.assertNotIn('towingService', details)
+        self.assertNotIn('workshopScope', details)
+
+    def test_vehicle_repairs(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['vehicleRepairServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Workshop scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'workshopScope', 'workshopEstimate', 'workshopHandover'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_vehicle_dealers(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['vehicleDealerServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Dealer scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'vehicleSalesTerms', 'warrantyDetails'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+        self.assertEqual(self.schema['services'].count('Notary'), 1)
+
+    def test_legal_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['legalServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Practice scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'legalCredentials', 'legalEngagement', 'legalPrivacy'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_legal_draft_scope(self):
+        self.assertEqual(self.save({'services':['Civil Lawyer'], 'civilLawyer':'Practice details', 'familyLawyer':'Unselected', 'investmentFees':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['civilLawyer'], 'Practice details')
+        self.assertNotIn('familyLawyer', details)
+        self.assertNotIn('investmentFees', details)
+
+    def test_investment_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['investmentServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Provider scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'investmentAuthority', 'investmentProcess', 'investmentFees', 'investmentSafety'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_investment_draft_scope(self):
+        self.assertEqual(self.save({'services':['Financial Planner'], 'financialPlanner':'Planning', 'stockBroker':'Unselected', 'insuranceAuthority':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['financialPlanner'], 'Planning')
+        self.assertNotIn('stockBroker', details)
+        self.assertNotIn('insuranceAuthority', details)
+
+    def test_insurance_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['insuranceServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Provider scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'insuranceAuthority', 'insuranceDisclosure', 'insuranceSupport', 'insurancePrivacy'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_insurance_draft_scope(self):
+        self.assertEqual(self.save({'services':['Health Insurance'], 'healthInsurance':'Cover guidance', 'lifeInsurance':'Unselected', 'loanTerms':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['healthInsurance'], 'Cover guidance')
+        self.assertNotIn('lifeInsurance', details)
+        self.assertNotIn('loanTerms', details)
+
+    def test_loan_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['loanServices']:
+            data = self.valid(); data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Provider product scope'
+            self.assertEqual(self.save(data)[1], 200)
+            data['loanTerms'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+
+    def test_banking_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['bankingServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Provider scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'bankAuthority', 'bankLocation', 'bankCharges', 'bankSafety'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_banking_draft_scope(self):
+        self.assertEqual(self.save({'services':['ATM'], 'atmService':'Public location', 'bankService':'Unselected', 'officeTerms':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['atmService'], 'Public location')
+        self.assertNotIn('bankService', details)
+        self.assertNotIn('officeTerms', details)
+
+    def test_office_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['officeServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Office service scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'officeFacilities', 'officeTerms', 'officeAccess'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_office_draft_scope(self):
+        self.assertEqual(self.save({'services':['Virtual Office'], 'virtualOffice':'Mail forwarding', 'coworkingSpace':'Unselected', 'consultingExpertise':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['virtualOffice'], 'Mail forwarding')
+        self.assertNotIn('coworkingSpace', details)
+        self.assertNotIn('consultingExpertise', details)
+
+    def test_consulting_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['consultingServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Consulting scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'consultingExpertise', 'consultingDelivery', 'consultingTerms', 'consultingEthics'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_consulting_draft_scope(self):
+        self.assertEqual(self.save({'services':['HR Consultant'], 'hrConsultant':'Policies', 'strategyConsultant':'Unselected', 'registrationScope':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['hrConsultant'], 'Policies')
+        self.assertNotIn('strategyConsultant', details)
+        self.assertNotIn('registrationScope', details)
+
+    def test_registration_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['registrationServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Registration scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'registrationScope', 'registrationProcess', 'registrationFees', 'registrationHandover'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_registration_draft_scope(self):
+        self.assertEqual(self.save({'services':['MSME Registration'], 'msmeRegistration':'Application assistance', 'companyRegistration':'Unselected', 'accountingProfile':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['msmeRegistration'], 'Application assistance')
+        self.assertNotIn('companyRegistration', details)
+        self.assertNotIn('accountingProfile', details)
+
+    def test_accounting_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['accountingServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Professional scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'accountingProfile', 'accountingEngagement', 'accountingPrivacy'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_accounting_draft_scope(self):
+        self.assertEqual(self.save({'services':['Bookkeeping'], 'bookkeeping':'Reconciliation', 'auditing':'Unselected', 'securityScope':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['bookkeeping'], 'Reconciliation')
+        self.assertNotIn('auditing', details)
+        self.assertNotIn('securityScope', details)
+
+    def test_security_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['securityServices']:
+            data = self.valid(); data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Authorised service scope'
+            self.assertEqual(self.save(data)[1], 200)
+            data['securityAuthorisation'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data['securityAuthorisation'] = 'Written authorisation and data safeguards'
+            data['securityMaintenance'] = 'Yes'; data['securityMaintenanceDetails'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data['securityMaintenanceDetails'] = 'Hours, scope and renewal terms'
+            self.assertEqual(self.save(data)[1], 200)
+
+    def test_security_draft_scope(self):
+        self.assertEqual(self.save({'services':['CCTV Installation'], 'cctvInstallation':'Cameras', 'cybersecurity':'Unselected', 'securityMaintenance':'No', 'securityMaintenanceDetails':'Stale'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['cctvInstallation'], 'Cameras')
+        self.assertNotIn('cybersecurity', details)
+        self.assertNotIn('securityMaintenanceDetails', details)
+
+    def test_it_support_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['itSupportServices']:
+            data = self.valid(); data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Support scope'
+            self.assertEqual(self.save(data)[1], 200)
+            data['itSla'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data['itSla'] = 'Hours and response targets'
+            data['itBackup'] = 'Yes'; data['itBackupDetails'] = ''
+            self.assertEqual(self.save(data)[1], 400)
+            data['itBackupDetails'] = 'Retention and tested recovery'
+            self.assertEqual(self.save(data)[1], 200)
+
+    def test_software_options(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['softwareServices']:
+            data = self.valid()
+            data['services'] = [service]
+            data[self.schema['specific'][service][0]] = 'Development scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for key in ('softwareHosting','softwareIntegration','softwareMigration','softwareSupport','softwarePublishing','softwareCompliance'):
+                data[key] = 'Yes'
+                data[key+'Details'] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[key+'Details'] = 'Scope, responsibilities and delivery terms'
+                self.assertEqual(self.save(data)[1], 200)
 
     def test_healthcare_review_requires_approver(self):
         self.handler.require_approver = lambda: None

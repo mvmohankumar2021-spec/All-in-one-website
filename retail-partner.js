@@ -88,6 +88,35 @@
     if (section.accessoryOnly) group.dataset.accessoryOnly = 'true';
     if (section.healthOnly) group.dataset.healthOnly = 'true';
     if (section.salonOnly) group.dataset.salonOnly = 'true';
+    if (section.wellnessOnly) group.dataset.wellnessOnly = 'true';
+    if (section.educationOnly) group.dataset.educationOnly = 'true';
+    if (section.recruitmentOnly) group.dataset.recruitmentOnly = 'true';
+    if (section.jobsOnly) group.dataset.jobsOnly = 'true';
+    if (section.freelanceOnly) group.dataset.freelanceOnly = 'true';
+    if (section.softwareOnly) group.dataset.softwareOnly = 'true';
+    if (section.itSupportOnly) group.dataset.itSupportOnly = 'true';
+    if (section.securityOnly) group.dataset.securityOnly = 'true';
+    if (section.accountingOnly) group.dataset.accountingOnly = 'true';
+    if (section.registrationOnly) group.dataset.registrationOnly = 'true';
+    if (section.consultingOnly) group.dataset.consultingOnly = 'true';
+    if (section.officeOnly) group.dataset.officeOnly = 'true';
+    if (section.bankingOnly) group.dataset.bankingOnly = 'true';
+    if (section.loanOnly) group.dataset.loanOnly = 'true';
+    if (section.insuranceOnly) group.dataset.insuranceOnly = 'true';
+    if (section.investmentOnly) group.dataset.investmentOnly = 'true';
+    if (section.legalOnly) group.dataset.legalOnly = 'true';
+    if (section.vehicleDealerOnly) group.dataset.vehicleDealerOnly = 'true';
+    if (section.vehicleRepairOnly) group.dataset.vehicleRepairOnly = 'true';
+    if (section.roadOnly) group.dataset.roadOnly = 'true';
+    if (section.travelOnly) group.dataset.travelOnly = 'true';
+    if (section.rentalOnly) group.dataset.rentalOnly = 'true';
+    if (section.hotelOnly) group.dataset.hotelOnly = 'true';
+    if (section.deviceOnly) group.dataset.deviceOnly = 'true';
+    if (section.coachingOnly) group.dataset.coachingOnly = 'true';
+    if (section.itTrainingOnly) group.dataset.itTrainingOnly = 'true';
+    if (section.languageOnly) group.dataset.languageOnly = 'true';
+    if (section.onlineLearningOnly) group.dataset.onlineLearningOnly = 'true';
+    if (section.practicalTrainingOnly) group.dataset.practicalTrainingOnly = 'true';
     if (section.medicalSupplyOnly) group.dataset.medicalSupplyOnly = 'true';
     if (section.careOnly) group.dataset.careOnly = 'true';
     if (section.diagnosticOnly) group.dataset.diagnosticOnly = 'true';
@@ -165,7 +194,74 @@
     const studio = services.some(service => schema.studioServices.includes(service));
     const salon = services.some(service => schema.salonServices.includes(service));
     const salonOnly = salon && services.every(service => schema.salonServices.includes(service));
-    const studioOnly = (studio || salon) && services.every(service => [...schema.studioServices,...schema.salonServices].includes(service));
+    const wellness = services.some(service => schema.wellnessServices.includes(service));
+    const wellnessOnly = wellness && services.every(service => schema.wellnessServices.includes(service));
+    const education = services.some(service => schema.educationServices.includes(service));
+    const onlineLearning = services.some(service => schema.onlineLearningServices.includes(service));
+    const onlineOnly = onlineLearning && services.every(service => schema.onlineLearningServices.includes(service));
+    panel.querySelectorAll('[data-online-learning-only]').forEach(group => { group.hidden = !onlineLearning; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !onlineLearning); });
+    const practicalTraining = services.some(service => schema.practicalTrainingServices.includes(service));
+    panel.querySelectorAll('[data-practical-training-only]').forEach(group => { group.hidden = !practicalTraining; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !practicalTraining); });
+    const languageTraining = services.some(service => schema.languageServices.includes(service));
+    panel.querySelectorAll('[data-language-only]').forEach(group => { group.hidden = !languageTraining; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !languageTraining); });
+    const itTraining = services.some(service => schema.itTrainingServices.includes(service));
+    panel.querySelectorAll('[data-it-training-only]').forEach(group => { group.hidden = !itTraining; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !itTraining); });
+    const coaching = services.some(service => schema.coachingServices.includes(service));
+    panel.querySelectorAll('[data-coaching-only]').forEach(group => { group.hidden = !coaching; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !coaching); });
+    const educationOnly = education && services.every(service => schema.educationServices.includes(service));
+    const recruitment = services.some(service => schema.recruitmentServices.includes(service));
+    const recruitmentOnly = recruitment && services.every(service => schema.recruitmentServices.includes(service));
+    const jobServices = services.some(service => schema.jobServices.includes(service));
+    const jobsOnly = jobServices && services.every(service => schema.jobServices.includes(service));
+    const freelance = services.some(service => schema.freelanceServices.includes(service));
+    const software = services.some(service => schema.softwareServices.includes(service));
+    const itSupport = services.some(service => schema.itSupportServices.includes(service));
+    const security = services.some(service => schema.securityServices.includes(service));
+    const accounting = services.some(service => schema.accountingServices.includes(service));
+    const registration = services.some(service => schema.registrationServices.includes(service));
+    const consulting = services.some(service => schema.consultingServices.includes(service));
+    const office = services.some(service => schema.officeServices.includes(service));
+    const banking = services.some(service => schema.bankingServices.includes(service));
+    const insurance = services.some(service => schema.insuranceServices.includes(service));
+    const investment = services.some(service => schema.investmentServices.includes(service));
+    const legal = services.some(service => schema.legalServices.includes(service));
+    const vehicleDealer = services.some(service => schema.vehicleDealerServices.includes(service));
+    const vehicleRepair = services.some(service => schema.vehicleRepairServices.includes(service));
+    const road = services.some(service => schema.roadServices.includes(service));
+    const travel = services.some(service => schema.travelServices.includes(service));
+    const rental = services.some(service => schema.rentalServices.includes(service));
+    const hotel = services.some(service => schema.hotelServices.includes(service));
+    panel.querySelectorAll('[data-hotel-only]').forEach(group => { group.hidden = !hotel; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !hotel); });
+    panel.querySelectorAll('[data-rental-only]').forEach(group => { group.hidden = !rental; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !rental); });
+    panel.querySelectorAll('[data-travel-only]').forEach(group => { group.hidden = !travel; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !travel); });
+    panel.querySelectorAll('[data-road-only]').forEach(group => { group.hidden = !road; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !road); });
+    panel.querySelectorAll('[data-vehicle-repair-only]').forEach(group => { group.hidden = !vehicleRepair; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !vehicleRepair); });
+    panel.querySelectorAll('[data-vehicle-dealer-only]').forEach(group => { group.hidden = !vehicleDealer; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !vehicleDealer); });
+    panel.querySelectorAll('[data-legal-only]').forEach(group => { group.hidden = !legal; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !legal); });
+    panel.querySelectorAll('[data-investment-only]').forEach(group => { group.hidden = !investment; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !investment); });
+    panel.querySelectorAll('[data-insurance-only]').forEach(group => { group.hidden = !insurance; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !insurance); });
+    const loan = services.some(service => schema.loanServices.includes(service));
+    panel.querySelectorAll('[data-loan-only]').forEach(group => { group.hidden = !loan; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !loan); });
+    panel.querySelectorAll('[data-banking-only]').forEach(group => { group.hidden = !banking; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !banking); });
+    panel.querySelectorAll('[data-office-only]').forEach(group => { group.hidden = !office; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !office); });
+    panel.querySelectorAll('[data-consulting-only]').forEach(group => { group.hidden = !consulting; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !consulting); });
+    panel.querySelectorAll('[data-registration-only]').forEach(group => { group.hidden = !registration; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !registration); });
+    panel.querySelectorAll('[data-accounting-only]').forEach(group => { group.hidden = !accounting; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !accounting); });
+    panel.querySelectorAll('[data-security-only]').forEach(group => { group.hidden = !security; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !security); });
+    panel.querySelectorAll('[data-it-support-only]').forEach(group => { group.hidden = !itSupport; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !itSupport); });
+    panel.querySelectorAll('[data-software-only]').forEach(group => { group.hidden = !software; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !software); });
+    const freelanceOnly = freelance && services.every(service => schema.freelanceServices.includes(service));
+    const device = services.some(service => schema.deviceServices.includes(service));
+    const deviceOnly = device && services.every(service => schema.deviceServices.includes(service));
+    const deviceSales = services.some(service => ['Computer Sales','Laptop Sales','Mobile Sales'].includes(service));
+    const deviceRepair = services.some(service => ['Computer Repair','Laptop Repair','Mobile Repair'].includes(service));
+    const studioOnly = (studio || salon || wellness || education || recruitment || jobServices || freelance || device) && services.every(service => [...schema.studioServices,...schema.salonServices,...schema.wellnessServices,...schema.educationServices,...schema.recruitmentServices,...schema.jobServices,...schema.freelanceServices,...schema.deviceServices].includes(service));
+    panel.querySelectorAll('[data-device-only]').forEach(group => { group.hidden = !device; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !device); });
+    panel.querySelectorAll('[data-freelance-only]').forEach(group => { group.hidden = !freelance; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !freelance); });
+    panel.querySelectorAll('[data-jobs-only]').forEach(group => { group.hidden = !jobServices; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !jobServices); });
+    panel.querySelectorAll('[data-recruitment-only]').forEach(group => { group.hidden = !recruitment; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !recruitment); });
+    panel.querySelectorAll('[data-education-only]').forEach(group => { group.hidden = !education; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !education); });
+    panel.querySelectorAll('[data-wellness-only]').forEach(group => { group.hidden = !wellness; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !wellness); });
     panel.querySelectorAll('[data-salon-only]').forEach(group => { group.hidden = !salon; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !salon); });
     const health = services.some(service => schema.healthServices.includes(service));
     const medicalSupply = services.some(service => schema.medicalSupplyServices.includes(service));
@@ -194,7 +290,49 @@
       documentHint.textContent = schema.sections.find(section=>section.salonOnly).fields.find(field=>field[0]==='salonSafety')[4];
       evidenceHint.textContent = documentHint.textContent;
     }
+    if (wellnessOnly) {
+      heading.textContent = 'Wellness partner onboarding';
+      intro.textContent = 'Clinical services require separate credential review; submit only non-medical wellness services here.';
+      submit.textContent = 'Submit application';
+      documentHint.textContent = schema.sections.find(section=>section.wellnessOnly).fields.find(field=>field[0]==='wellSafety')[4];
+      evidenceHint.textContent = documentHint.textContent;
+    }
     panel.querySelectorAll('[data-health-only]').forEach(group => { group.hidden = !health; group.querySelectorAll('input,textarea,select').forEach(input=>input.disabled = !active || !health); });
+    if (deviceOnly) {
+      heading.textContent = 'Device sales, repair and recovery onboarding';
+      intro.textContent = 'Device services, technicians and evidence';
+      submit.textContent = 'Submit application';
+      documentHint.textContent = schema.sections.find(section=>section.deviceOnly).fields.find(field=>field[0]==='deviceProfile')[4];
+      evidenceHint.textContent = documentHint.textContent;
+    }
+    if (freelanceOnly) {
+      heading.textContent = legal ? 'Legal service provider details' : investment ? 'Investment and planning provider details' : insurance ? 'Insurance provider details' : banking ? 'Banking service provider details' : office ? 'Workspace and office services' : consulting ? 'Business and management consulting' : registration ? 'Registration, certification and compliance' : accounting ? 'Accounting and tax services' : security ? 'Security systems and services' : itSupport ? 'IT infrastructure and support' : software ? 'Software development onboarding' : 'Freelance and project services onboarding';
+      intro.textContent = 'Provider skills, coverage and evidence';
+      submit.textContent = 'Submit application';
+      documentHint.textContent = schema.sections.find(section=>section.freelanceOnly).fields.find(field=>field[0]==='freeProfile')[4];
+      evidenceHint.textContent = documentHint.textContent;
+    }
+    if (jobsOnly) {
+      heading.textContent = 'Employer and vacancy onboarding';
+      intro.textContent = 'These details are private onboarding information, not a published vacancy. Use Job openings after employer approval.';
+      submit.textContent = 'Submit application';
+      documentHint.textContent = schema.sections.find(section=>section.jobsOnly).fields.find(field=>field[0]==='jobSelection')[4];
+      evidenceHint.textContent = documentHint.textContent;
+    }
+    if (recruitmentOnly) {
+      heading.textContent = 'Recruitment partner onboarding';
+      intro.textContent = 'Agency coverage and engagement process';
+      submit.textContent = 'Submit application';
+      documentHint.textContent = schema.sections.find(section=>section.recruitmentOnly).fields.find(field=>field[0]==='recruitPrivacy')[4];
+      evidenceHint.textContent = documentHint.textContent;
+    }
+    if (educationOnly) {
+      heading.textContent = practicalTraining ? 'Creative and vocational training onboarding' : languageTraining ? 'Language training onboarding' : itTraining ? 'Technology training onboarding' : coaching ? 'Coaching centre onboarding' : 'Institution partner onboarding';
+      intro.textContent = 'Institution management and recognition';
+      submit.textContent = 'Submit application';
+      documentHint.textContent = schema.sections.find(section=>section.educationOnly).fields.find(field=>field[0]==='eduSafety')[4];
+      evidenceHint.textContent = documentHint.textContent;
+    }
     // Healthcare captures facility registration/evidence in its own section.
     for (const key of ['registration','expiry','evidence']) {
       const input = panel.querySelector(`[data-key="${key}"]`);
@@ -219,6 +357,11 @@
     const installation = panel.querySelector('[data-key="installationOffered"]').value === 'Yes';
     const bridal = services.includes('Bridal Wear');
     const conditional = {
+      coachHomeDetails: coaching && panel.querySelector('[data-key="coachHome"]').value === 'Yes',
+      coachTestsDetails: coaching && panel.querySelector('[data-key="coachTests"]').value === 'Yes',
+      wellHomeDetails: wellness && panel.querySelector('[data-key="wellHomeOffered"]').value === 'Yes',
+      wellOnlineDetails: wellness && panel.querySelector('[data-key="wellOnlineOffered"]').value === 'Yes',
+      wellRetreatDetails: wellness && panel.querySelector('[data-key="wellRetreatOffered"]').value === 'Yes',
       salonHomeDetails: salon && panel.querySelector('[data-key="salonHomeOffered"]').value === 'Yes',
       equipmentRentalOffered: services.includes('Medical Equipment'),
       equipmentRentalTerms: services.includes('Medical Equipment') && panel.querySelector('[data-key="equipmentRentalOffered"]').value === 'Yes',
@@ -240,6 +383,22 @@
     ['radius','areas','delivery'].forEach(key => conditional[key] = shop && !studioOnly && !healthOnly && (!electronicsOnly || delivery));
     ['extras','customPolicy'].forEach(key => conditional[key] = shop && !studioOnly && !healthOnly && (!electronicsOnly || accessories));
     conditional.warranty = shop && !studioOnly && !healthOnly && !electronicsOnly;
+    conditional.itBackupDetails = itSupport && panel.querySelector('[data-key="itBackup"]').value === 'Yes';
+    conditional.securityMaintenanceDetails = security && panel.querySelector('[data-key="securityMaintenance"]').value === 'Yes';
+    ['softwareHosting','softwareIntegration','softwareMigration','softwareSupport','softwarePublishing','softwareCompliance'].forEach(key => conditional[key+'Details'] = software && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    conditional.deviceSalesTerms = deviceSales;
+    conditional.deviceRepairTerms = deviceRepair;
+    ['devicePickup','deviceOnsite','deviceRemote','devicePartner','deviceBulk'].forEach(key => conditional[key+'Details'] = device && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    ['freeOnsite','freeTeam','freeRights','freeData','freeRegulated'].forEach(key => conditional[key+'Details'] = freelance && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    ['recruitOverseas','recruitChecks','recruitPayroll','recruitBulk'].forEach(key => conditional[key+'Details'] = recruitment && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    ['digitalSubscription','digitalThirdParty'].forEach(key => conditional[key+'Details'] = onlineLearning && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    if (onlineOnly) {
+      heading.textContent = 'Online learning onboarding';
+    }
+    ['practicalHome','practicalRental','practicalEvents','practicalPlacement'].forEach(key => conditional[key+'Details'] = practicalTraining && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    ['languageHome','languageExam','languageCorporate'].forEach(key => conditional[key+'Details'] = languageTraining && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    ['itCorporate','itCertification','itPlacement'].forEach(key => conditional[key+'Details'] = itTraining && panel.querySelector(`[data-key="${key}"]`).value === 'Yes');
+    ['eduTransport','eduMeals','eduHostel','eduOnline','eduExtended'].forEach(key => { conditional[key] = education && !onlineOnly; conditional[key+'Details'] = education && !onlineOnly && panel.querySelector(`[data-key="${key}"]`).value === 'Yes'; });
     ['healthFacilities','healthAppointments','healthFees','emergencyOffered','teleOffered','healthVisitOffered'].forEach(key => conditional[key] = health && !elderOnly);
     if (elderOnly) ['healthFacilities','healthAppointments','healthFees','emergencyOffered','emergencyDetails','teleOffered','teleDetails','healthVisitOffered','healthVisitDetails'].forEach(key => conditional[key] = false);
     if (services.every(service => service === 'Optical Store' || schema.healthServices.includes(service))) {
@@ -262,11 +421,23 @@
     activeBefore = active;
   }
   ['vendorMainCategory','vendorSubcategories','vendorServicesProducts'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>setTimeout(sync,0)));
-  panel.addEventListener('change', event => { if (['salonHomeOffered','equipmentRentalOffered','sampleCollectionOffered','visionDeliveryOffered','deliveryOffered','installationOffered','customOffered','tailoringOffered','bridalRentalOffered','collectionOffered','studioVisitOffered','emergencyOffered','teleOffered','healthVisitOffered'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['coachHome','coachTests','eduTransport','eduMeals','eduHostel','eduOnline','eduExtended','wellHomeOffered','wellOnlineOffered','wellRetreatOffered','salonHomeOffered','equipmentRentalOffered','sampleCollectionOffered','visionDeliveryOffered','deliveryOffered','installationOffered','customOffered','tailoringOffered','bridalRentalOffered','collectionOffered','studioVisitOffered','emergencyOffered','teleOffered','healthVisitOffered'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['itCorporate','itCertification','itPlacement'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['languageHome','languageExam','languageCorporate'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['practicalHome','practicalRental','practicalEvents','practicalPlacement'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['digitalSubscription','digitalThirdParty'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['recruitOverseas','recruitChecks','recruitPayroll','recruitBulk'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['freeOnsite','freeTeam','freeRights','freeData','freeRegulated'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['devicePickup','deviceOnsite','deviceRemote','devicePartner','deviceBulk'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (['softwareHosting','softwareIntegration','softwareMigration','softwareSupport','softwarePublishing','softwareCompliance'].includes(event.target.dataset.key)) sync(); });
+  panel.addEventListener('change', event => { if (event.target.dataset.key === 'itBackup') sync(); });
+  panel.addEventListener('change', event => { if (event.target.dataset.key === 'securityMaintenance') sync(); });
   async function persist(submitted) {
     status.classList.remove('error'); const fields = [...panel.querySelectorAll('[data-key]')].filter(f=>!f.disabled);
     panel.querySelectorAll('[aria-invalid]').forEach(f=>f.removeAttribute('aria-invalid'));
     if (submitted) {
+      const clinical = panel.querySelector('[data-key="wellClinical"]');
+      if (!clinical.disabled && clinical.value !== 'No') { status.textContent = 'Clinical services require separate credential review; submit only non-medical wellness services here.'; status.classList.add('error'); clinical.setAttribute('aria-invalid','true'); clinical.focus(); return; }
       const declaration = panel.querySelector('[data-key="healthDeclaration"]');
       if (!declaration.disabled && declaration.value !== 'Yes') { status.textContent = 'Confirm credential accuracy and publication consent.'; status.classList.add('error'); declaration.setAttribute('aria-invalid','true'); declaration.focus(); return; }
       const invalid = fields.find(f=>(f.dataset.required==='true' && !f.value.trim()) || !f.validity.valid) || [...agreements.querySelectorAll('input')].find(f=>!f.disabled && !f.checked);

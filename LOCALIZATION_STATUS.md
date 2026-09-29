@@ -1,5 +1,245 @@
 # Language rollout status
 
+## Guest and shared accommodation onboarding — 29 September 2026
+
+- Added Guest House, Lodge, Service Apartment, Hostel and PG Accommodation to the accommodation flow, with Tamil/Hindi labels/help and existing document/agreement controls. Covers shared/private facilities, meals, supervision, long-stay terms, deposits, notices and handover alongside common booking/safety fields.
+- 153 backend tests pass, including hotel-family required-field coverage for the new entries. Localization runtime, syntax, translation coverage, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No live accommodation inventory or booking integration is implemented.
+
+## Resort and hosted-stay onboarding — 29 September 2026
+
+- Added Resort, Homestay, Holiday Home and Farm Stay using existing accommodation fields, help, documents and agreements. Specifics cover activities, host/shared-space arrangements, whole-home handover and farm hazards/supervision; Tamil/Hindi labels and help included.
+- 153 backend tests pass, including hotel-family required-field coverage for the additions. Localization runtime, syntax, translation coverage, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No live room inventory or booking integration is implemented.
+
+## Hotel provider onboarding — 29 September 2026
+
+- Added Budget Hotel, Business Hotel, Luxury Hotel and Boutique Hotel with shared room/accessibility, booking/rate/policy, safety/privacy and selected-hotel fields. Reuses provider layout, help, documents and agreements with Tamil/Hindi translations.
+- 153 backend tests, localization runtime, translation coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No live room inventory, hotel booking or rating verification integration is implemented.
+
+## Travel assistance onboarding — 29 September 2026
+
+- Added Tourist Guide, Visa Service, Passport Assistance and Travel Insurance to the travel-provider flow with Tamil/Hindi labels/help. Travel Insurance also activates insurance credentials/disclosure/privacy/support fields. Reuses document controls and agreements.
+- 152 backend tests pass, including travel/insurance family validation for the additions. Localization runtime, syntax, translation coverage, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No visa/passport issuance, insurance issuance or government submission integration is implemented. Schema is read per request; no restart needed.
+
+## Vehicle rental onboarding — 29 September 2026
+
+- Added Car Rental, Bike Rental, Bus Rental and Tourist Vehicle Rental to the road-provider flow with rental-specific deposits, insurance/damage, return and selected-fleet terms. Reuses help, documents and agreements with Tamil/Hindi translations.
+- 152 backend tests, localization runtime, translation coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No live fleet availability or rental-booking integration is implemented.
+
+## Passenger transport onboarding — 29 September 2026
+
+- Added Taxi Service, Cab Service, Auto Service (passenger auto-rickshaw) and Driver Service using the road-provider flow, help, documents and agreements. Covers coverage/hours, pricing/cancellation, safety and selected-service fleet/driver/assignment details.
+- 151 backend tests pass, including road-family required-field checks for these additions. Localization runtime, syntax, Tamil/Hindi coverage, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No live trip booking, dispatch or automatic driver/permit verification is implemented.
+
+## Travel provider onboarding — 29 September 2026
+
+- Added Travel Agency, Tour Operator, Flight Booking, Train Booking, Bus Booking and Holiday Package using the existing provider layout, help, documents and agreements. Includes credentials/destinations, price/confirmation/cancellation disclosures, traveller support/privacy and selected-service scope.
+- 151 backend tests, localization runtime, Tamil/Hindi coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No ticket issuance, supplier booking or live availability integration is implemented.
+
+## Road support and driving-school onboarding — 29 September 2026
+
+- Added Towing Service, Roadside Assistance and Driving School with the shared provider layout, help, documents and agreements. Covers credentials/coverage, booking/fees, safety and selected-service capability or curriculum details.
+- 149 backend tests, localization runtime, Tamil/Hindi coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No live dispatch, licence issuance or automatic credential verification is implemented.
+
+## Vehicle wash and detailing onboarding — 29 September 2026
+
+- Added Car Wash, Bike Wash, Car Detailing and Ceramic Coating to the existing workshop-provider flow, reusing estimates/approval, safe handover/warranty, help, documents and agreements. Specifics cover packages, cleaning methods, protection, preparation, curing and aftercare.
+- 147 backend tests pass, including workshop-family required-field tests for these additions. Localization runtime, Tamil/Hindi coverage, syntax, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. Existing handler reads schema per request; no restart needed.
+
+## Vehicle parts and accessories onboarding — 29 September 2026
+
+- Added Car/Bike Spare Parts and Car/Bike Accessories using the existing retail sales/support layout, help, documents and agreements. Covers selected-service range/compatibility, sourcing/condition, fitting and warranty; reuses conditional installation/delivery and returns fields.
+- 147 backend tests, localization runtime, Tamil/Hindi coverage and syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. Existing handler loads schema per request; no restart needed.
+
+## Tyre and battery onboarding — 29 September 2026
+
+- Added Tyre Shop and Battery Dealer using retail sales/support fields; Wheel Alignment and Battery Replacement use workshop fields. Reuses help, documents, agreements and conditional installation/delivery controls; specifics cover compatibility, tests, warranty and exchange terms.
+- 146 backend tests pass, including family/service coverage for these additions. Localization runtime, Tamil/Hindi coverage, syntax, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. Existing server reads the schema per request; no restart needed.
+
+## Vehicle workshop onboarding — 29 September 2026
+
+- Added Car/Bike Service, Car/Bike Repair, Engine Repair, AC Repair (vehicle AC scope) and Body Repair using the shared provider layout, help, uploads and agreements. Includes workshop capability, estimates/approval, parts/warranty and safe handover plus selected-service details.
+- 146 backend tests, localization runtime, Tamil/Hindi coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. AC Repair is matched by the existing English service name; category-specific duplicate-name routing was not verified.
+
+## Vehicle dealer onboarding — 29 September 2026
+
+- Reused Notary without duplication. Added New/Used Car Dealer, New/Used Bike Dealer and Commercial Vehicle Dealer to the existing retail sales/support flow. Includes selected-dealer scope, condition/ownership checks, pricing/document handover, warranty, delivery, help, uploads and agreements.
+- 145 backend tests, localization runtime, Tamil/Hindi coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No vehicle-title or dealership-authorisation verification integration is included.
+
+## Intellectual property provider onboarding — 29 September 2026
+
+- Reused Notary without duplication; added Trademark Service, Patent Service and Copyright Service to the legal-provider flow with Tamil/Hindi labels/help. Inherits credentials, consultation/fees, privacy/conflict checks, document controls and agreements; new scope fields distinguish assistance from representation and warn against unpublished client work disclosures.
+- 144 backend tests pass, including legal-family validation for the new entries. Localization runtime, syntax, translation coverage, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No government filing or automatic professional credential verification is implemented.
+
+## Document and notarial provider onboarding — 29 September 2026
+
+- Added Notary, Document Writer, Affidavit Service, Agreement Drafting and Registration Service to the existing legal-provider flow, reusing credentials, engagement/privacy, help, documents and agreements. Distinguishes drafting, attestation and official registration roles and captures selected-service details.
+- 144 backend tests pass, including legal-family tests iterating over all five additions. Localization runtime, Tamil/Hindi coverage, syntax, active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No automatic professional-authority verification or government filing integration is included. Existing server reads schema per request; no restart needed.
+
+## Legal provider onboarding — 29 September 2026
+
+- Added Civil Lawyer, Criminal Lawyer, Family Lawyer, Property Lawyer, Corporate Lawyer and Legal Consultant using the existing professional-provider layout, help, documents and agreements. Captures credentials/jurisdictions, engagement terms, confidentiality/conflicts and selected practice scope without requesting client case files.
+- 144 backend tests, localization runtime, translation coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No automatic professional credential verification or client case-management integration is implemented.
+
+## Investment provider onboarding — 29 September 2026
+
+- Added Mutual Fund Service, Stock Broker, Investment Advisor, Financial Planner and Retirement Planning using the shared professional-provider layout, help, documents and agreements. Covers role/credentials, assessment process, fees/conflicts, risk/privacy and selected-service scope.
+- 142 backend tests, localization runtime, translation coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No investment execution, personal financial advice or automatic credential verification is implemented.
+
+## Insurance provider onboarding — 29 September 2026
+
+- Added Life, Health, Vehicle and Business Insurance plus Insurance Agent using the existing professional-provider layout, help, document and agreement controls. Captures authorisation, disclosures, support/privacy and selected-service scope without requesting customer medical or policy records.
+- 140 backend tests, localization runtime, translation coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No policy issuance, claims processing or automatic authorisation verification is implemented.
+
+## Loan provider onboarding — 29 September 2026
+
+- Added Personal, Home, Business, Vehicle, Gold and Education Loan services using banking-provider scope, authorisation, safety, document and agreement controls. Includes selected-product scope and current rate/cost/repayment disclosure guidance; not a borrower application workflow.
+- 138 backend tests, localization runtime, translation coverage and renderer syntax checks pass. Active taxonomy and live schema checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No loan approvals, transactions or automatic authorisation verification are implemented.
+
+## Banking provider onboarding — 29 September 2026
+
+- Added Bank, ATM, Banking Correspondent and Digital Banking Assistance using the shared provider layout, help, documents and agreements. Captures authorisation evidence, locations/accessibility, service/charge information, safeguards and selected-service scope; warns against uploading customer banking secrets or records.
+- Tamil/Hindi field/help coverage and active taxonomy verified. 137 backend tests and localization runtime checks pass; renderer syntax checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No banking transactions or automatic regulatory-authorisation verification are implemented.
+
+## Workspace and office onboarding — 29 September 2026
+
+- Added Coworking Space, Virtual Office, Office Administration and Business Centre using the shared provider layout, help, document controls and agreements. Covers facilities, availability/pricing, access/privacy and selected-service scope.
+- Tamil/Hindi field/help coverage and active taxonomy verified. 135 backend tests and localization runtime checks pass; renderer syntax checked.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified.
+
+## Certification and compliance onboarding — 29 September 2026
+
+- Added ISO Certification, Trademark Registration, Compliance Service and Secretarial Service to the existing registration-provider flow, reusing shared credentials, fees, process/privacy, documents and agreements. Each selected service has its own scope and help text in English, Tamil and Hindi.
+- 133 backend tests pass, including registration tests iterating over the four additions; localization runtime, translation coverage, active taxonomy and live schema checked. Renderer syntax checked.
+- Fresh visual/mobile and signed-in upload checks remain unverified. No government submission or accreditation verification integration is included.
+
+## Consulting services onboarding — 29 September 2026
+
+- Added Business Consultant, Management Consultant, HR Consultant, Operations Consultant and Strategy Consultant using the existing professional-provider layout, help, document controls and agreements. Covers expertise, deliverables, engagement terms, confidentiality and selected-service scope.
+- Tamil/Hindi field/help coverage and active taxonomy verified. 133 backend tests and localization runtime checks pass; renderer syntax checked.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified.
+
+## Registration services onboarding — 29 September 2026
+
+- Added Company Registration, Startup Registration, MSME Registration, Business License and Import Export Registration using the existing provider layout, help, document controls and agreements. Includes scope/eligibility process, authorisation, fees, handover/privacy and selected-service details.
+- Tamil/Hindi field/help coverage and active taxonomy verified. 131 backend tests and localization runtime checks pass; renderer syntax checked.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified. These are provider onboarding forms, not government application or filing integrations.
+
+## Accounting services onboarding — 29 September 2026
+
+- Added Chartered Accountant, Accounting, Bookkeeping, GST Consultant, Tax Consultant, Auditing and Payroll Service using the existing professional-provider layout, help, document controls and agreements. Captures credentials, engagement terms, confidentiality and selected-service scope without collecting client financial records.
+- Tamil/Hindi labels/help and active taxonomy verified. 129 backend tests and localization runtime checks pass; renderer syntax checked.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified. Credential claims are collected, not automatically verified; no tax calculations or filings are performed by these forms.
+
+## Computer equipment retail onboarding — 29 September 2026
+
+- Added Computer Accessories, Networking Equipment and Printers & Peripherals to the existing electronics retail flow. Reuses shared supply, delivery, optional installation, warranty, documents and policies; service-specific fields cover compatibility, specifications, licensing and consumables.
+- Tamil/Hindi labels/help coverage, active taxonomy and live schema verified. 127 backend tests and localization runtime checks pass.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified. No server restart needed: existing handler reads the schema per request.
+
+## Security services onboarding — 29 September 2026
+
+- Added Cybersecurity, CCTV Installation, Access Control and Network Security using the existing provider layout, help, documents and agreement controls. Includes qualifications, authorisation/privacy, testing/handover, pricing/warranty, selected-service scope and conditional maintenance/monitoring details.
+- Tamil/Hindi field/help coverage and active taxonomy verified. 126 backend tests, localization runtime and JavaScript syntax checks pass.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified.
+
+## IT support onboarding — 29 September 2026
+
+- Added IT Support, Networking, Server Support, Cloud Services and Managed IT Services with existing provider layout, help, document controls and agreements. Includes coverage, service levels, access/change security, commercial terms, service-specific scope and conditional backup/recovery details.
+- Tamil/Hindi field/help coverage and active taxonomy verified. 124 backend tests and localization runtime checks pass; JavaScript syntax checked.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified.
+
+## Software development onboarding — 29 September 2026
+
+- Added Software Development, Website Development, Mobile App Development, ERP Development and Custom Software using the existing project-provider layout, help, uploads and agreements. Includes engineering, ownership, security and conditional hosting, integration, migration, support, publishing and sensitive-data scope.
+- Tamil/Hindi field and help coverage verified. 123 backend tests, localization runtime and JavaScript syntax checks pass.
+- Fresh visual/mobile checks and real signed-in upload/submission remain unverified. A separate customer-facing project-brief workflow is not included.
+
+## Device services onboarding — 29 September 2026
+
+- Added Computer Sales, Laptop Sales, Mobile Sales, Computer Repair, Laptop Repair, Mobile Repair and Data Recovery using existing compact controls, help, uploads and agreements. Sales and repair terms are scoped to selected services; recovery includes consent, custody, limitations and secure deletion guidance.
+- Conditional pickup/delivery, onsite, remote, third-party and business/bulk details included. Tamil/Hindi coverage, active taxonomy and live schema verified.
+- 122 backend tests, localization runtime and syntax checks pass. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Freelance onboarding — 29 September 2026
+
+- Added Freelance Professionals, Gig Services and Project-Based Services using compact provider layout, shared help, uploads and agreements. Includes pricing, collaboration, evidence and conditional onsite/team/IP/data/regulated-scope questions, translated into Tamil/Hindi.
+- Project-brief requirements are provider-process guidance only; a separate customer-facing project-request workflow was not implemented.
+- 121 backend tests, localization runtime and syntax checks pass. Translation coverage, active taxonomy and live schema verified. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Job-category onboarding — 29 September 2026
+
+- Added IT Jobs, Sales Jobs, Driver Jobs, Security Jobs, Domestic Help Jobs, Part-Time Jobs, Work From Home Jobs and Internships to private employer onboarding, with shared employer/vacancy/pay/selection fields and selected-category details. Existing upload/help/agreement controls reused; Tamil/Hindi coverage verified.
+- Combined category selections supported. No changes to public job creation or candidate application workflows: approved employers still publish separately through Job openings. Household-employer verification is not newly implemented; help directs private review and excludes exact household addresses/candidate documents.
+- 120 backend tests, localization runtime and syntax checks pass. Active taxonomy/live schema checked. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Recruitment onboarding — 29 September 2026
+
+- Added Recruitment Agency, Job Consultant, Executive Search and Staffing Service using existing compact layout, help, uploads and agreements; unrelated retail fields are excluded for recruitment-only listings.
+- Includes selected-service scope, coverage/process, fee payer/remedies, candidate privacy/evidence and conditional overseas, screening, payroll and bulk recruitment. Tamil/Hindi labels and help coverage verified.
+- 119 backend tests, localization runtime and syntax checks pass. Active taxonomy and live schema verified. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Online learning onboarding — 29 September 2026
+
+- Added Online Tuition, Online Courses and E-Learning Platform using the education layout, uploads, help and agreements. Online-only listings omit physical-facility questions.
+- Includes delivery/support, instructors/assessments/certificates, fees/privacy/content rights, conditional subscriptions and third-party hosting. Tamil/Hindi coverage and active taxonomy verified.
+- 118 backend tests, localization runtime and syntax checks pass. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Creative and vocational training — 29 September 2026
+
+- Added Music Classes, Dance Classes, Art Classes, Handwriting Classes, Skill Development and Vocational Training using the education layout, shared facility/safeguarding fields, help, uploads and agreements.
+- Includes selected-service topics, trainers/curriculum/practice, safety/evidence and conditional home training, rentals, events/exams and placement assistance. Tamil/Hindi labels/help coverage verified.
+- 117 backend tests, localization runtime and syntax checks pass. Active taxonomy and live schema verified. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Language-training onboarding — 29 September 2026
+
+- Added Spoken English, Tamil Classes, Hindi Classes and Foreign Language Classes using education layout, shared online/facility/safeguarding fields, help, uploads and agreements.
+- Includes selected-language scope, tutors/levels/courses, fees/certificates/privacy and conditional home tuition, exam preparation and corporate classes. Tamil/Hindi labels and help verified.
+- 116 backend tests, localization runtime and syntax checks pass. Active taxonomy and live schema verified. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Technology training onboarding — 29 September 2026
+
+- Added Computer Training, Coding Classes, Data Science Training, Networking Training and Cybersecurity Training using education layout, shared facilities, help, uploads and agreements.
+- Includes selected-service topics, curriculum/trainers/certificates, devices/software/labs/costs and conditional corporate, certification and placement support. Cybersecurity practice is restricted in guidance to authorised environments; provider onboarding must not collect credentials or student IDs.
+- Tamil/Hindi coverage, active taxonomy and live schema verified. 115 backend tests, localization runtime and syntax checks pass. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Coaching onboarding — 29 September 2026
+
+- Added Tuition Centre, NEET Coaching, JEE Coaching, Competitive Exam Coaching and Government Exam Coaching using the education layout, shared facilities, uploads, help and agreements.
+- Includes selected-exam scope, teaching/faculty/materials, fees/results/privacy guidance, conditional home tuition and standalone test series. Tamil/Hindi labels/help coverage verified.
+- 114 backend tests, localization runtime and syntax checks pass. Active taxonomy and live schema checked. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Institution onboarding — 29 September 2026
+
+- Added Preschool, School, College, University and Daycare using existing compact fields, help, document controls and agreements. Shared management/recognition, admissions/fees and safeguarding fields are entered once, alongside selected-service questions.
+- Transport, meals, hostel, online learning and extended care have conditional details. Student identity, medical and admission records must not be uploaded in provider onboarding.
+- Tamil/Hindi coverage, active taxonomy and live schema verified. 113 backend tests, localization runtime and syntax checks pass. Fresh visual checks and real signed-in upload/submission remain unverified.
+
+## Wellness onboarding — 29 September 2026
+
+- Added Spa, Massage Centre, Wellness Centre, Ayurvedic Wellness and Meditation Centre using existing compact controls, document uploads/removal, help and agreements. Shared staff/pricing/safety fields and selected-service details have Tamil/Hindi translations.
+- Home visits, online sessions and residential retreats have separate conditional details. Clinical services may be saved as drafts but cannot be submitted through this non-medical listing flow; separate clinical review is required.
+- 112 backend tests, localization runtime and JavaScript syntax checks pass. Translation coverage and active taxonomy verified. Fresh browser visual checks and real signed-in upload/submission remain unverified.
+
 ## Beauty services onboarding — 28 September 2026
 
 - Added Beauty Parlour, Bridal Makeup, Makeup Artist, Mehndi Artist, Nail Studio and Skin Care to the shared salon form. Existing compact layout, uploads, help, selected-service validation and conditional home service flow are reused.
