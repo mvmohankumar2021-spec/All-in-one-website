@@ -263,7 +263,277 @@
   "Lodge",
   "Service Apartment",
   "Hostel",
-  "PG Accommodation"
+  "PG Accommodation",
+  "Wedding Planner",
+  "Event Organizer",
+  "Corporate Event Planner",
+  "Birthday Planner",
+  "Marriage Hall",
+  "Party Hall",
+  "Banquet Hall",
+  "Outdoor Venue",
+  "Wedding Decorator",
+  "Stage Decoration",
+  "Flower Decoration",
+  "Lighting Decoration",
+  "Wedding Photography",
+  "Wedding Videography",
+  "Drone Photography",
+  "Photo Booth",
+  "DJ",
+  "Music Band",
+  "Live Singer",
+  "Dance Troupe",
+  "Invitation Printing",
+  "Furniture Rental",
+  "Tent Rental",
+  "Sound System Rental",
+  "Cinema",
+  "Gaming Centre",
+  "Amusement Centre",
+  "Kids Entertainment",
+  "Photo Studio",
+  "Photography",
+  "Videography",
+  "Video Editing",
+  "Drone Service",
+  "Animation",
+  "Graphic Design",
+  "Music Studio",
+  "Recording Studio",
+  "Content Creation",
+  "SEO Service",
+  "Social Media Marketing",
+  "Search Ads",
+  "Display Ads",
+  "Email Marketing",
+  "Content Marketing",
+  "Branding",
+  "Logo Design",
+  "Content Writing",
+  "Video Marketing",
+  "Advertising Agency",
+  "Outdoor Advertising",
+  "Newspaper Advertising",
+  "Influencer Marketing",
+  "Digital Printing",
+  "Flex Printing",
+  "Sign Board",
+  "Promotional Materials",
+  "Seeds",
+  "Fertilizers",
+  "Pesticides",
+  "Organic Inputs",
+  "Animal Feed",
+  "Tractor Dealer",
+  "Tractor Rental",
+  "Farm Equipment",
+  "Irrigation System",
+  "Pump Sets",
+  "Agricultural Consultant",
+  "Soil Testing",
+  "Farm Labour",
+  "Harvesting Service",
+  "Organic Farming",
+  "Dairy Farming",
+  "Poultry Farming",
+  "Livestock Farming",
+  "Aquaculture",
+  "Plant Nursery",
+  "Saplings",
+  "Landscaping Plants",
+  "Machinery Manufacturer",
+  "Textile Manufacturer",
+  "Food Manufacturer",
+  "Plastic Manufacturer",
+  "Metal Manufacturer",
+  "Electrical Equipment Manufacturer",
+  "Electronics Manufacturer",
+  "Fabrication",
+  "Industrial Automation",
+  "Machine Repair",
+  "Industrial Maintenance",
+  "Tooling Service",
+  "Industrial Supplier",
+  "Factory Equipment",
+  "Safety Equipment",
+  "Packaging Material",
+  "FMCG Wholesaler",
+  "Food Wholesaler",
+  "Textile Wholesaler",
+  "Electronics Wholesaler",
+  "Hardware Wholesaler",
+  "FMCG Distributor",
+  "Food Distributor",
+  "Pharma Distributor",
+  "Electronics Distributor",
+  "Importer",
+  "Exporter",
+  "Dealer",
+  "General Supplier",
+  "Building Material Supplier",
+  "Domestic Courier",
+  "International Courier",
+  "Same-Day Delivery",
+  "Parcel Service",
+  "Goods Transport",
+  "Truck Rental",
+  "Mini Truck Service",
+  "Container Transport",
+  "Packers & Movers",
+  "House Shifting",
+  "Office Shifting",
+  "Vehicle Transport",
+  "Warehousing",
+  "Freight Forwarding",
+  "Shipping Service",
+  "Import Export Logistics",
+  "Last-Mile Delivery",
+  "Gym",
+  "Fitness Centre",
+  "Personal Trainer",
+  "Yoga Centre",
+  "Cross Training",
+  "Cricket Coaching",
+  "Football Coaching",
+  "Badminton Coaching",
+  "Swimming Classes",
+  "Martial Arts",
+  "Sports Shop",
+  "Sports Equipment",
+  "Fitness Equipment",
+  "Indoor Sports",
+  "Outdoor Sports",
+  "Sports Club",
+  "Playschool",
+  "Babysitting",
+  "Childcare Service",
+  "Kids Activity Centre",
+  "Art for Kids",
+  "Music for Kids",
+  "Dance for Kids",
+  "Summer Camp",
+  "Baby Products",
+  "Birthday Party Service",
+  "Kids Party Venue",
+  "Kids Entertainer",
+  "Veterinary Clinic",
+  "Pet Vaccination",
+  "Pet Surgery",
+  "Animal Hospital",
+  "Pet Grooming",
+  "Pet Boarding",
+  "Dog Training",
+  "Pet Walking",
+  "Pet Sitting",
+  "Pet Shop",
+  "Pet Food",
+  "Pet Accessories",
+  "Pet Adoption",
+  "Animal Rescue",
+  "Animal Care",
+  "Temple",
+  "Church",
+  "Mosque",
+  "Spiritual Centre",
+  "Pooja Service",
+  "Priest",
+  "Religious Event Service",
+  "Pilgrimage Service",
+  "Astrology",
+  "Vastu Consultant",
+  "Meditation",
+  "Yoga Spirituality",
+  "Pooja Items",
+  "Devotional Products",
+  "Religious Books",
+  "Municipal Office",
+  "Revenue Office",
+  "Taluk Office",
+  "Registration Office",
+  "Public Utility Office",
+  "E-Seva Centre",
+  "Aadhaar Service",
+  "PAN Assistance",
+  "Government Scheme Assistance",
+  "Electricity Office",
+  "Water Service",
+  "Post Office",
+  "Public Distribution Service",
+  "Security Agency",
+  "Security Guard",
+  "Event Security",
+  "Corporate Security",
+  "Alarm System",
+  "Video Door Phone",
+  "GPS Tracking",
+  "Solar Panel Sales",
+  "Solar Installation",
+  "Solar Water Heater",
+  "Solar Maintenance",
+  "Inverter",
+  "Battery",
+  "UPS",
+  "Generator",
+  "EV Charging Station",
+  "EV Charger Installation",
+  "EV Service",
+  "Waste Management",
+  "Recycling",
+  "Water Treatment",
+  "Sewage Treatment",
+  "Rainwater Harvesting",
+  "Fire Extinguisher",
+  "Fire Alarm",
+  "Fire Safety Audit",
+  "Private Investigation",
+  "Background Verification",
+  "Offset Printing",
+  "Visiting Card Printing",
+  "Book Printing",
+  "Photo Printing",
+  "LED Signage",
+  "Name Board",
+  "Custom Packaging",
+  "Labels & Stickers",
+  "Corrugated Boxes",
+  "Office Stationery",
+  "Office Furniture",
+  "Photocopy Centre",
+  "Printer Service",
+  "Commercial Vehicle Rental",
+  "Construction Equipment Rental",
+  "Power Tool Rental",
+  "Generator Rental",
+  "Industrial Equipment Rental",
+  "Party Equipment Rental",
+  "Lighting Rental",
+  "Appliance Rental",
+  "Camera Rental",
+  "Costume Rental",
+  "Online Shopping Store",
+  "Marketplace Seller",
+  "D2C Brand",
+  "Local Online Seller",
+  "Online Service Provider",
+  "Freelance Platform",
+  "Subscription Service",
+  "Digital Product",
+  "Online Course Provider",
+  "Online Tutor",
+  "Laundry",
+  "Dry Cleaning",
+  "Domestic Help",
+  "Matrimonial Service",
+  "Senior Citizen Service",
+  "NGO",
+  "Charitable Organization",
+  "Community Service",
+  "Volunteer Organization",
+  "Funeral Service",
+  "Relocation Assistance",
+  "Concierge Service",
+  "Miscellaneous Service"
  ],
  "deviceServices": [
   "Computer Sales",
@@ -397,7 +667,206 @@
   "Lodge",
   "Service Apartment",
   "Hostel",
-  "PG Accommodation"
+  "PG Accommodation",
+  "Wedding Planner",
+  "Event Organizer",
+  "Corporate Event Planner",
+  "Birthday Planner",
+  "Marriage Hall",
+  "Party Hall",
+  "Banquet Hall",
+  "Outdoor Venue",
+  "Wedding Decorator",
+  "Stage Decoration",
+  "Flower Decoration",
+  "Lighting Decoration",
+  "Wedding Photography",
+  "Wedding Videography",
+  "Drone Photography",
+  "Photo Booth",
+  "DJ",
+  "Music Band",
+  "Live Singer",
+  "Dance Troupe",
+  "Invitation Printing",
+  "Furniture Rental",
+  "Tent Rental",
+  "Sound System Rental",
+  "Cinema",
+  "Gaming Centre",
+  "Amusement Centre",
+  "Kids Entertainment",
+  "Photo Studio",
+  "Photography",
+  "Videography",
+  "Video Editing",
+  "Drone Service",
+  "Animation",
+  "Graphic Design",
+  "Music Studio",
+  "Recording Studio",
+  "Content Creation",
+  "SEO Service",
+  "Social Media Marketing",
+  "Search Ads",
+  "Display Ads",
+  "Email Marketing",
+  "Content Marketing",
+  "Branding",
+  "Logo Design",
+  "Content Writing",
+  "Video Marketing",
+  "Advertising Agency",
+  "Outdoor Advertising",
+  "Newspaper Advertising",
+  "Influencer Marketing",
+  "Digital Printing",
+  "Flex Printing",
+  "Sign Board",
+  "Promotional Materials",
+  "Tractor Rental",
+  "Agricultural Consultant",
+  "Soil Testing",
+  "Farm Labour",
+  "Harvesting Service",
+  "Organic Farming",
+  "Dairy Farming",
+  "Poultry Farming",
+  "Livestock Farming",
+  "Aquaculture",
+  "Fabrication",
+  "Industrial Automation",
+  "Machine Repair",
+  "Industrial Maintenance",
+  "Tooling Service",
+  "Domestic Courier",
+  "International Courier",
+  "Same-Day Delivery",
+  "Parcel Service",
+  "Goods Transport",
+  "Truck Rental",
+  "Mini Truck Service",
+  "Container Transport",
+  "Packers & Movers",
+  "House Shifting",
+  "Office Shifting",
+  "Vehicle Transport",
+  "Warehousing",
+  "Freight Forwarding",
+  "Shipping Service",
+  "Import Export Logistics",
+  "Last-Mile Delivery",
+  "Gym",
+  "Fitness Centre",
+  "Personal Trainer",
+  "Yoga Centre",
+  "Cross Training",
+  "Cricket Coaching",
+  "Football Coaching",
+  "Badminton Coaching",
+  "Swimming Classes",
+  "Martial Arts",
+  "Indoor Sports",
+  "Outdoor Sports",
+  "Sports Club",
+  "Babysitting",
+  "Childcare Service",
+  "Birthday Party Service",
+  "Kids Party Venue",
+  "Kids Entertainer",
+  "Veterinary Clinic",
+  "Pet Vaccination",
+  "Pet Surgery",
+  "Animal Hospital",
+  "Pet Grooming",
+  "Pet Boarding",
+  "Dog Training",
+  "Pet Walking",
+  "Pet Sitting",
+  "Pet Adoption",
+  "Animal Rescue",
+  "Animal Care",
+  "Temple",
+  "Church",
+  "Mosque",
+  "Spiritual Centre",
+  "Pooja Service",
+  "Priest",
+  "Religious Event Service",
+  "Pilgrimage Service",
+  "Astrology",
+  "Vastu Consultant",
+  "Meditation",
+  "Yoga Spirituality",
+  "Municipal Office",
+  "Revenue Office",
+  "Taluk Office",
+  "Registration Office",
+  "Public Utility Office",
+  "E-Seva Centre",
+  "Aadhaar Service",
+  "PAN Assistance",
+  "Government Scheme Assistance",
+  "Electricity Office",
+  "Water Service",
+  "Post Office",
+  "Public Distribution Service",
+  "Security Agency",
+  "Security Guard",
+  "Event Security",
+  "Corporate Security",
+  "Alarm System",
+  "Video Door Phone",
+  "GPS Tracking",
+  "Solar Installation",
+  "Solar Maintenance",
+  "EV Charging Station",
+  "EV Charger Installation",
+  "EV Service",
+  "Waste Management",
+  "Recycling",
+  "Water Treatment",
+  "Sewage Treatment",
+  "Rainwater Harvesting",
+  "Fire Alarm",
+  "Fire Safety Audit",
+  "Private Investigation",
+  "Background Verification",
+  "Offset Printing",
+  "Visiting Card Printing",
+  "Book Printing",
+  "Photo Printing",
+  "LED Signage",
+  "Name Board",
+  "Photocopy Centre",
+  "Printer Service",
+  "Commercial Vehicle Rental",
+  "Construction Equipment Rental",
+  "Power Tool Rental",
+  "Generator Rental",
+  "Industrial Equipment Rental",
+  "Party Equipment Rental",
+  "Lighting Rental",
+  "Appliance Rental",
+  "Camera Rental",
+  "Costume Rental",
+  "Online Service Provider",
+  "Freelance Platform",
+  "Subscription Service",
+  "Digital Product",
+  "Laundry",
+  "Dry Cleaning",
+  "Domestic Help",
+  "Matrimonial Service",
+  "Senior Citizen Service",
+  "NGO",
+  "Charitable Organization",
+  "Community Service",
+  "Volunteer Organization",
+  "Funeral Service",
+  "Relocation Assistance",
+  "Concierge Service",
+  "Miscellaneous Service"
  ],
  "softwareServices": [
   "Software Development",
@@ -450,12 +919,22 @@
   "Vocational Training",
   "Online Tuition",
   "Online Courses",
-  "E-Learning Platform"
+  "E-Learning Platform",
+  "Playschool",
+  "Kids Activity Centre",
+  "Art for Kids",
+  "Music for Kids",
+  "Dance for Kids",
+  "Summer Camp",
+  "Online Course Provider",
+  "Online Tutor"
  ],
  "onlineLearningServices": [
   "Online Tuition",
   "Online Courses",
-  "E-Learning Platform"
+  "E-Learning Platform",
+  "Online Course Provider",
+  "Online Tutor"
  ],
  "practicalTrainingServices": [
   "Music Classes",
@@ -610,7 +1089,11 @@
   "Car Spare Parts",
   "Bike Spare Parts",
   "Car Accessories",
-  "Bike Accessories"
+  "Bike Accessories",
+  "Tractor Dealer",
+  "Farm Equipment",
+  "Irrigation System",
+  "Pump Sets"
  ],
  "sections": [
   {
@@ -3001,6 +3484,40 @@
      "Describe relevant property credentials, fire/emergency arrangements, housekeeping, maintenance, reception hours, complaint contacts and secure guest-record handling. Do not upload guest IDs, booking records or security-sensitive layouts."
     ]
    ]
+  },
+  {
+   "title": "Event planning provider details",
+   "eventOnly": true,
+   "fields": [
+    [
+     "eventScope",
+     "Experience, coverage and event capacity",
+     true,
+     "textarea",
+     "Describe experience, team, locations, event types, guest-capacity range and planning lead times. Provide permitted portfolio samples without private guest information."
+    ],
+    [
+     "eventDelivery",
+     "Planning, suppliers and event-day delivery",
+     true,
+     "textarea",
+     "Describe consultation, budget planning, venue/vendor coordination, approvals, schedules, setup/cleanup and on-site supervision. Identify outsourced services, supplier responsibilities and backup arrangements."
+    ],
+    [
+     "eventTerms",
+     "Packages, payments and change policies",
+     true,
+     "textarea",
+     "Explain planning fees, supplier costs, taxes, inclusions/exclusions, deposits, milestones, overtime, guest-count changes, postponement, cancellation and refunds. Record written approval before extra costs."
+    ],
+    [
+     "eventSafety",
+     "Safety, accessibility and privacy",
+     true,
+     "textarea",
+     "Describe venue safety coordination, crowd/accessibility arrangements, weather contingencies, emergency contacts, applicable permission responsibilities, damage complaints and guest-data/photo consent. Do not upload private guest lists or identity records."
+    ]
+   ]
   }
  ],
  "specific": {
@@ -4851,6 +5368,1896 @@
    true,
    "textarea",
    "State resident eligibility, sharing options, meals/dietary options, house rules, visitor/access hours, cleaning and laundry. Explain rent, utility/meal charges, deposit refund, notice period and move-in/out checks; do not upload resident identity records."
+  ],
+  "Wedding Planner": [
+   "weddingPlanner",
+   "Wedding functions and coordination",
+   true,
+   "textarea",
+   "State full/partial/day-of planning, ceremonies supported, venues, decor, catering/vendor coordination, guest hospitality and destination arrangements. Clarify family approvals and separate supplier contracts."
+  ],
+  "Event Organizer": [
+   "eventOrganizer",
+   "Event formats and production scope",
+   true,
+   "textarea",
+   "List private/public events, stage, sound/light, entertainment, registration, logistics and supplier management offered. State capacity, technical requirements and excluded activities."
+  ],
+  "Corporate Event Planner": [
+   "corporateEventPlanner",
+   "Corporate formats, branding and reporting",
+   true,
+   "textarea",
+   "Describe conferences, launches, meetings, exhibitions or team events, attendee registration, AV/hybrid support, branding approvals, invoicing, confidentiality and post-event reporting."
+  ],
+  "Birthday Planner": [
+   "birthdayPlanner",
+   "Birthday themes, age groups and supervision",
+   true,
+   "textarea",
+   "Describe age groups, themes, decor, games, performers and food/cake coordination. Explain age-appropriate activities, child supervision responsibilities, allergy coordination and guardian consent for photos."
+  ],
+  "Marriage Hall": [
+   "marriageHall",
+   "Marriage hall capacity and facilities",
+   true,
+   "textarea",
+   "Describe seated/standing and dining capacity, stage, changing/guest rooms, kitchen, parking, accessibility and power backup. State ceremony arrangements, catering permissions, setup/cleanup windows and included equipment."
+  ],
+  "Party Hall": [
+   "partyHall",
+   "Party layouts, amenities and restrictions",
+   true,
+   "textarea",
+   "List layout capacities, furniture, decor/entertainment permissions, sound equipment, food service, child-friendly facilities and toilets. State noise/end-time rules, prohibited activities and supervision responsibilities."
+  ],
+  "Banquet Hall": [
+   "banquetHall",
+   "Banquet layouts and catering arrangements",
+   true,
+   "textarea",
+   "Describe dining/conference layouts, capacity, AC, AV, service staff, in-house/external catering, menu tasting and minimum-guarantee arrangements. Separate hall hire, per-person food, equipment and overtime charges."
+  ],
+  "Outdoor Venue": [
+   "outdoorVenue",
+   "Outdoor capacity, utilities and weather backup",
+   true,
+   "textarea",
+   "Describe usable areas, ground conditions, capacity, lighting, power, water, toilets, parking and accessible routes. Explain rain/heat/wind contingencies, shelters, drainage, restricted areas and weather-related postponement/refund terms."
+  ],
+  "Wedding Decorator": [
+   "weddingDecorator",
+   "Wedding designs, approvals and decor packages",
+   true,
+   "textarea",
+   "Describe themes, ceremony/reception areas, materials, design previews, revision limits and client approval. State package inclusions, rental items, venue coordination, setup/removal times, damage deposits and substitution approval."
+  ],
+  "Stage Decoration": [
+   "stageDecoration",
+   "Stage structures, backdrops and installation",
+   true,
+   "textarea",
+   "Describe stage/backdrop sizes, materials, seating, branding and included structures. Explain site measurements, venue approval, qualified rigging where needed, stability/load limits, clear exits, installation checks and dismantling responsibilities."
+  ],
+  "Flower Decoration": [
+   "flowerDecoration",
+   "Flower selection, freshness and substitutions",
+   true,
+   "textarea",
+   "List fresh/artificial flower options, arrangement types, seasonal availability, sourcing, colour matching and freshness care. Explain substitutions, allergy/scent requests, delivery/storage, installation and disposal or customer handover."
+  ],
+  "Lighting Decoration": [
+   "lightingDecoration",
+   "Decorative lighting and electrical safety",
+   true,
+   "textarea",
+   "Describe lighting types, indoor/outdoor coverage, power needs, controls and backup arrangements. State qualified installation, safe cabling, weather protection, venue restrictions, testing, operating support and removal; disclose extra power/equipment charges."
+  ],
+  "Wedding Photography": [
+   "weddingPhotography",
+   "Photography coverage, editing and delivery",
+   true,
+   "textarea",
+   "State styles, functions, hours, photographers, equipment backup, edited-image counts, albums, delivery formats/timelines and revision limits. Explain raw-file availability, usage rights, portfolio consent, secure storage and retention/deletion."
+  ],
+  "Wedding Videography": [
+   "weddingVideography",
+   "Video coverage, audio and production",
+   true,
+   "textarea",
+   "Describe crew, coverage hours, cameras, audio capture, highlight/full-film lengths, resolution, editing rounds and delivery. Explain music licensing, raw-footage terms, backups and consent for publication."
+  ],
+  "Drone Photography": [
+   "dronePhotography",
+   "Drone capability, permissions and safe operation",
+   true,
+   "textarea",
+   "State equipment, operator credentials where applicable, service areas, site/airspace permission checks, insurance arrangements and deliverables. Explain weather, crowd and venue restrictions, safe operating plans, no-fly decisions and rescheduling/refunds; do not guarantee flight permission."
+  ],
+  "Photo Booth": [
+   "photoBooth",
+   "Booth setup, outputs and guest privacy",
+   true,
+   "textarea",
+   "Describe booth type, attendant, operating hours, space/power/network needs, backdrops, props, print limits and digital delivery. State branding approval, accessibility, setup/removal, breakdown backup and guest-photo consent/retention; do not upload private guest photos here."
+  ],
+  "DJ": [
+   "djService",
+   "DJ repertoire, equipment and performance terms",
+   true,
+   "textarea",
+   "Describe genres/languages, event types, set duration/breaks, playlists and request restrictions. State decks, sound/light equipment, power/space needs, setup/soundcheck, overtime, backup and venue noise limits. Clarify responsibility for music permissions and recording consent."
+  ],
+  "Music Band": [
+   "musicBand",
+   "Band lineup, repertoire and stage requirements",
+   true,
+   "textarea",
+   "State band size, instruments, genres/languages, live/backing-track format, sets/breaks and substitutions. Describe stage plot, microphones/PA, monitors, power, soundcheck, travel/accommodation and backup arrangements; disclose included versus hired equipment."
+  ],
+  "Live Singer": [
+   "liveSinger",
+   "Vocal performance and accompaniment",
+   true,
+   "textarea",
+   "Describe genres, languages, solo/duet options, live accompaniment or backing tracks, repertoire, custom-song preparation and performance duration. State microphones/PA, soundcheck, breaks, travel costs, recording consent and replacement/cancellation arrangements."
+  ],
+  "Dance Troupe": [
+   "danceTroupe",
+   "Dance styles, performers and safe staging",
+   true,
+   "textarea",
+   "List styles, troupe size, age groups, choreography/customisation, rehearsal needs, costumes, props and set lengths. Describe non-slip stage dimensions, changing rooms, sound cues, safe activity limits and supervision/guardian consent for minors; state travel and recording terms."
+  ],
+  "Invitation Printing": [
+   "invitationPrinting",
+   "Invitation designs, proofs and printing",
+   true,
+   "textarea",
+   "Describe languages, paper/materials, sizes, finishes, envelopes, minimum quantities, proof approval and revisions. State pricing, production/delivery times, reprint rules, design rights and secure deletion of guest names/addresses; upload only permitted samples."
+  ],
+  "Furniture Rental": [
+   "furnitureRental",
+   "Furniture inventory and rental handling",
+   true,
+   "textarea",
+   "List chairs, tables, sofas and other items, quantities, dimensions, condition and load limits. Describe hire duration, transport, setup/collection, cleaning, deposits, shortage/damage checks, replacement charges and availability confirmation."
+  ],
+  "Tent Rental": [
+   "tentRental",
+   "Tent sizes, site survey and weather safety",
+   true,
+   "textarea",
+   "Describe tent types, capacity, flooring, sidewalls, lighting and ventilation. State site survey, anchoring/rigging, clear exits, weather limits, permission responsibilities, installation/dismantling, backup plans and cancellation terms."
+  ],
+  "Sound System Rental": [
+   "soundSystemRental",
+   "Audio equipment, operators and setup",
+   true,
+   "textarea",
+   "List PA speakers, microphones, mixers and packages by venue capacity. Describe technician inclusion, power/cabling, soundcheck, venue noise limits, backup, hire hours, transport, deposits, damage and collection terms."
+  ],
+  "Cinema": [
+   "cinema",
+   "Screens, seating and cinema facilities",
+   true,
+   "textarea",
+   "State screens, seating capacity/classes, projection/audio formats, accessible seating, toilets, parking and food facilities. Explain showtime availability, ticket verification, age-rating checks, late entry, cancellations and screening disruptions."
+  ],
+  "Gaming Centre": [
+   "gamingCentre",
+   "Gaming equipment, sessions and user rules",
+   true,
+   "textarea",
+   "Describe PC/console/VR/arcade equipment, game categories, stations, session lengths, multiplayer and age restrictions. State licensed-content arrangements, hygiene, account logout/data clearing, staff support and equipment-damage rules."
+  ],
+  "Amusement Centre": [
+   "amusementCentre",
+   "Attractions, restrictions and maintenance",
+   true,
+   "textarea",
+   "List rides/activities, capacity, age/height/health restrictions, supervision, inspection/maintenance and safety briefings. Explain weather closures, queues, first aid, emergency procedures and unavailable-attraction refunds."
+  ],
+  "Kids Entertainment": [
+   "kidsEntertainment",
+   "Age groups, activities and child safeguarding",
+   true,
+   "textarea",
+   "Describe play/entertainment activities, age bands, capacity, staff supervision and guardian-presence rules. Explain safe check-in/authorised pickup, hygiene, allergy coordination, first aid, lost-child procedures and photo consent; do not upload child records."
+  ],
+  "Photo Studio": [
+   "photoStudio",
+   "Studio facilities and booking scope",
+   true,
+   "textarea",
+   "Describe studio size, backdrops, lighting, equipment, changing/accessibility facilities and portrait/product/document-photo services. State hire or staffed-session options, appointment duration, prints/digital outputs and client privacy."
+  ],
+  "Photography": [
+   "photographyService",
+   "Photography scope, editing and rights",
+   true,
+   "textarea",
+   "List genres, locations, team/equipment, coverage hours, edited-image counts, formats, retouching and delivery times. Explain raw files, revisions, usage/licensing rights, model/property permissions, portfolio consent and secure retention/deletion."
+  ],
+  "Videography": [
+   "videographyService",
+   "Video production and deliverables",
+   true,
+   "textarea",
+   "Describe filming types, scripting/storyboards, crew, cameras/audio, coverage, resolution, final lengths and editing rounds. State music/footage licences, raw-footage availability, backups, approvals and delivery deadlines."
+  ],
+  "Video Editing": [
+   "videoEditing",
+   "Editing workflow, source files and revisions",
+   true,
+   "textarea",
+   "Describe accepted footage/formats, editing, colour/audio, subtitles, graphics, output specifications and turnaround. State source-transfer limits, revision rounds, project-file handover, licensed assets, confidentiality and deletion; do not upload private client footage here."
+  ],
+  "Drone Service": [
+   "droneService",
+   "Drone operations, scope and authorisations",
+   true,
+   "textarea",
+   "State aerial photography/video, survey or inspection services actually supported, equipment, operator credentials and deliverables. Explain site/airspace checks, required permissions, insurance, weather/crowd limits, privacy, safe operating plans and rescheduling; no guaranteed flight authorisation."
+  ],
+  "Animation": [
+   "animation",
+   "Animation scope, production and handover",
+   true,
+   "textarea",
+   "Describe 2D/3D/motion graphics, styles, scripting/storyboards, duration, resolution, production stages and revisions. State voice/music/asset licensing, source-file delivery, ownership, render costs, timelines and permitted portfolio use."
+  ],
+  "Graphic Design": [
+   "graphicDesign",
+   "Design services, proofs and file formats",
+   true,
+   "textarea",
+   "List branding, print/digital, packaging or illustration services. Explain brief collection, concepts, revision limits, proof approval, print-ready/export formats, editable files, font/image licences and ownership; separate printing costs."
+  ],
+  "Music Studio": [
+   "musicStudio",
+   "Music production, facilities and rights",
+   true,
+   "textarea",
+   "Describe composition, arrangement, rehearsal, production, mixing/mastering, genres, instruments and engineer/musician availability. State session rates, stems/project files, credits, composition/master ownership, sample licensing and backups."
+  ],
+  "Recording Studio": [
+   "recordingStudio",
+   "Recording facilities, sessions and delivery",
+   true,
+   "textarea",
+   "Describe vocal/instrument/voice-over/podcast recording, room capacity, acoustic treatment, microphones, interfaces and monitoring. Explain engineer inclusion, booking minimums, retakes, editing, formats, delivery, secure file retention and deletion."
+  ],
+  "Content Creation": [
+   "contentCreation",
+   "Content formats, approvals and publication",
+   true,
+   "textarea",
+   "List written, photo, video, audio or social content, languages, platforms and monthly/project volumes. Describe research/fact checks, brand approvals, revisions, licensed assets, AI-use disclosure, publication permissions and ownership. Do not request account passwords or guarantee engagement results."
+  ],
+  "SEO Service": [
+   "seoService",
+   "SEO scope, audits and reporting",
+   true,
+   "textarea",
+   "Describe technical/on-page/local SEO, keyword research, content recommendations, site access, approved changes, deliverables and reporting frequency. State methods and exclusions; do not guarantee rankings or use deceptive link schemes."
+  ],
+  "Social Media Marketing": [
+   "socialMediaMarketing",
+   "Social platforms, content and community management",
+   true,
+   "textarea",
+   "List platforms, posting volumes, content formats, approval workflow, moderation hours, escalation and reporting. Separate organic management from paid ads; explain role-based access, ownership and offboarding without collecting passwords."
+  ],
+  "Search Ads": [
+   "searchAds",
+   "Search campaign setup, budgets and measurement",
+   true,
+   "textarea",
+   "State platforms, keyword/negative-keyword work, ad copy, landing-page scope, conversion setup and reporting. Separate management fees from ad spend; explain client budget caps, approval, account ownership and optimisation limits. Do not guarantee leads or returns."
+  ],
+  "Display Ads": [
+   "displayAds",
+   "Display creatives, placements and brand safety",
+   true,
+   "textarea",
+   "Describe networks, creative sizes, placement controls, audience sources, frequency caps and exclusions. Explain budget approval, consent-aware remarketing, brand-safety review, tracking and reporting; disclose third-party costs."
+  ],
+  "Email Marketing": [
+   "emailMarketing",
+   "Permission-based email campaigns",
+   true,
+   "textarea",
+   "Describe platforms, consent/list-source checks, segmentation, templates, automation, testing, unsubscribe/suppression handling and reporting. State sending volumes, platform fees, data retention and authorised access; do not upload contact lists or use harvested addresses."
+  ],
+  "Content Marketing": [
+   "contentMarketing",
+   "Content strategy, production and distribution",
+   true,
+   "textarea",
+   "Describe audiences, languages, formats, editorial calendars, research/fact checks, production volumes, revisions, approvals, distribution and performance reports. Explain licensed assets, AI-use disclosure, ownership and exclusions; no guaranteed traffic."
+  ],
+  "Branding": [
+   "branding",
+   "Brand strategy, identity and guidelines",
+   true,
+   "textarea",
+   "Describe discovery, research, positioning, naming, visual identity, messaging and brand guidelines. State concepts, revisions, approvals, editable assets, licensing, ownership and rollout scope; distinguish design work from trademark clearance."
+  ],
+  "Logo Design": [
+   "logoDesign",
+   "Logo concepts, formats and ownership",
+   true,
+   "textarea",
+   "Describe brief collection, original concepts, revision rounds, colour/monochrome variants, vector/raster formats and source files. Explain font/asset licensing, final approval, ownership transfer and exclusions; do not guarantee trademark registration."
+  ],
+  "Content Writing": [
+   "contentWriting",
+   "Writing formats, research and editorial review",
+   true,
+   "textarea",
+   "List languages, industries, articles/web copy/scripts and word or project volumes. Describe research, fact checks, references, originality review, AI-use disclosure, tone, revisions, deadlines, ownership and confidentiality."
+  ],
+  "Video Marketing": [
+   "videoMarketing",
+   "Video campaigns, distribution and reporting",
+   true,
+   "textarea",
+   "Describe campaign goals, platforms, audiences, video formats, production/editing scope, captions and approvals. Separate production, management and ad spend; state licensed media, participant consent, account-access controls, reporting and reuse rights without guaranteeing views or sales."
+  ],
+  "Advertising Agency": [
+   "advertisingAgency",
+   "Agency scope, media buying and campaign delivery",
+   true,
+   "textarea",
+   "Describe strategy, research, creative production, media channels, buying arrangements, campaign timelines and reporting. Separate agency fees, commissions, production and media spend; explain client budget approval, account ownership, supplier responsibilities and cancellations."
+  ],
+  "Outdoor Advertising": [
+   "outdoorAdvertising",
+   "Outdoor sites, permissions and installation",
+   true,
+   "textarea",
+   "List billboard, transit, digital-screen or other formats, locations, dimensions and availability confirmation. Describe site-owner/authority permissions, artwork specifications, safe installation, maintenance, display proof, removal and weather/downtime remedies; substantiate reach estimates."
+  ],
+  "Newspaper Advertising": [
+   "newspaperAdvertising",
+   "Publications, editions and insertion terms",
+   true,
+   "textarea",
+   "State publications, editions/languages, classified/display formats, sizes, colour, deadlines and placement options. Explain publisher approval, proof sign-off, rate validity, taxes, publication evidence, corrections, cancellations and missed-insertion remedies; do not guarantee placement without confirmation."
+  ],
+  "Influencer Marketing": [
+   "influencerMarketing",
+   "Creator selection, disclosures and content rights",
+   true,
+   "textarea",
+   "Describe platforms, niches, audience verification, creator screening, deliverables, approvals and reporting. State sponsored-content disclosure, fees/gifting, usage duration, paid amplification permissions, exclusivity and cancellation terms. Obtain guardian consent for minors; do not guarantee engagement or use fake followers."
+  ],
+  "Digital Printing": [
+   "digitalPrinting",
+   "Print formats, proofs and finishing",
+   true,
+   "textarea",
+   "List print products, sizes, paper/material weights, colour options, minimum quantities and finishing. Explain artwork formats/resolution, bleed, proof approval, colour tolerances, turnaround, delivery, reprint rules and secure deletion of client files."
+  ],
+  "Flex Printing": [
+   "flexPrinting",
+   "Banner materials, dimensions and mounting",
+   true,
+   "textarea",
+   "Describe flex/banner materials, thickness, indoor/outdoor use, dimensions, print resolution, hems/eyelets and expected durability. State artwork approval, installation or supply-only scope, mounting/weather limitations, delivery and defect remedies."
+  ],
+  "Sign Board": [
+   "signBoard",
+   "Signage design, fabrication and safe installation",
+   true,
+   "textarea",
+   "List board types, materials, lettering, illuminated/non-illuminated options and sizes. Explain site measurements, design approval, permission responsibilities, qualified electrical/height work, mounting checks, maintenance, warranty and removal."
+  ],
+  "Promotional Materials": [
+   "promotionalMaterials",
+   "Promotional range, customisation and fulfilment",
+   true,
+   "textarea",
+   "List brochures, cards, branded merchandise or other items, materials, branding methods, minimum orders and sample approval. Describe artwork rights, substitutions, production times, packaging, bulk delivery, shortages and personalised-order cancellation terms."
+  ],
+  "Seeds": [
+   "seeds",
+   "Seed varieties, labels and traceability",
+   true,
+   "textarea",
+   "List crops, varieties, brands, pack sizes and seasonal availability. Describe supplier/authorisation evidence, batch labels, germination/purity information from suppliers, treatment disclosures, storage, expiry checks and complaints; do not guarantee yields."
+  ],
+  "Fertilizers": [
+   "fertilizers",
+   "Fertilizer range, grades and storage",
+   true,
+   "textarea",
+   "Describe product types/grades, brands, labelled nutrient composition, pack sizes and relevant sale credentials. Explain sourcing, batch/expiry checks, moisture-safe storage, transport, damaged-stock handling and manufacturer-label guidance; do not prescribe application rates."
+  ],
+  "Pesticides": [
+   "pesticides",
+   "Pesticide authorisation and safe supply",
+   true,
+   "textarea",
+   "State relevant dealer credentials, product categories, manufacturers and label/registration verification process. Describe restricted-sale checks, secure segregated storage, expiry/recall tracking, safety-data availability, transport and spill/return arrangements. Supply only within authorisation; no mixing or dosage instructions in this form."
+  ],
+  "Organic Inputs": [
+   "organicInputs",
+   "Organic input claims and product evidence",
+   true,
+   "textarea",
+   "List compost, bio-inputs or other products, ingredients, suppliers, pack sizes and shelf life. Provide evidence for organic/certification claims and clarify their scope; describe contamination prevention, storage, batch traceability and label guidance."
+  ],
+  "Animal Feed": [
+   "animalFeed",
+   "Feed range, species and quality handling",
+   true,
+   "textarea",
+   "List species/life-stage categories, feed types, brands, pack sizes and labelled ingredients/nutrition. Describe sourcing, batch/expiry checks, dry pest-controlled storage, contamination/recall procedures and delivery. Separate ordinary feed from medicated products; refer feeding/health advice to qualified professionals."
+  ],
+  "Tractor Dealer": [
+   "tractorDealer",
+   "Tractor range, attachments and after-sales",
+   true,
+   "textarea",
+   "List brands, new/used condition, power ranges, drive types and attachment compatibility. Describe dealer-authorisation evidence, demonstrations, itemised prices, delivery, ownership documents, warranty, spare parts and servicing; separate finance referrals."
+  ],
+  "Tractor Rental": [
+   "tractorRental",
+   "Tractor hire, operators and field conditions",
+   true,
+   "textarea",
+   "State fleet/attachments, operator-included or equipment-only hire, service radius, hourly/daily/acre-based charges and minimum hire. Explain terrain/job suitability, fuel, transport, operator competency, breakdowns, damage assessment, deposits and return conditions."
+  ],
+  "Farm Equipment": [
+   "farmEquipment",
+   "Equipment range, safety and compatibility",
+   true,
+   "textarea",
+   "List implements/machinery, brands, capacities, power/tractor compatibility and new/used condition. Explain demonstrations, guards/safety instructions, installation, operator training, spares, warranty and maintenance; identify excluded repairs."
+  ],
+  "Irrigation System": [
+   "irrigationSystem",
+   "Irrigation survey, design and installation",
+   true,
+   "textarea",
+   "Describe drip/sprinkler/other systems, site survey, water-source/quality checks, area coverage, pressure/flow assessment, filtration and controls. State design approval, materials, installation/testing, training, maintenance and warranty; do not guarantee crop yield."
+  ],
+  "Pump Sets": [
+   "pumpSets",
+   "Pump selection, power and commissioning",
+   true,
+   "textarea",
+   "List surface/submersible/solar or other pump types, brands, power ratings and applications. Describe head/flow and water-source assessment, electrical compatibility, qualified installation, protection controls, testing, dry-run precautions, spares and warranty."
+  ],
+  "Agricultural Consultant": [
+   "agriculturalConsultant",
+   "Agricultural expertise, assessment and advice",
+   true,
+   "textarea",
+   "State qualifications, experience, crops, regions and languages. Describe farm visits/remote advice, assessment inputs, written recommendations, follow-up, fees and exclusions. Explain evidence sources and referral limits; do not guarantee yield or income or request private farm records here."
+  ],
+  "Soil Testing": [
+   "soilTesting",
+   "Sampling, laboratory methods and reports",
+   true,
+   "textarea",
+   "List soil parameters tested, methods, laboratory credentials and any accreditation scope with evidence. Describe sampling/collection instructions, sample identification, transport, fees, turnaround, units/methods on reports, interpretation, retesting and limitations; distinguish testing from agronomic advice."
+  ],
+  "Farm Labour": [
+   "farmLabour",
+   "Workforce, tasks and fair working arrangements",
+   true,
+   "textarea",
+   "Describe supported tasks/crops, team size, skills, service areas, availability and supervision. State wages/fees, hours, rest, transport, accommodation if offered, payment responsibility and cancellation. Explain adult-worker verification, consent, protective equipment, training and incident reporting; do not upload worker IDs."
+  ],
+  "Harvesting Service": [
+   "harvestingService",
+   "Harvesting capability, scheduling and crop handling",
+   true,
+   "textarea",
+   "State crops, manual/mechanised options, equipment, operator skills, capacity and site/terrain requirements. Describe per-acre/hour/job rates, fuel/transport, weather rescheduling, crop readiness checks, safe operation, collection/loading, loss/damage review and breakdown backup; no guaranteed yield."
+  ],
+  "Organic Farming": [
+   "organicFarming",
+   "Organic production, certification and traceability",
+   true,
+   "textarea",
+   "Describe crops, farm locations/area, seasons, capacity, products or advisory services offered. State organic certification status/scope with evidence, input sourcing, contamination prevention, records, harvest/storage and traceability. Distinguish certified claims from farming practices; no guaranteed yields."
+  ],
+  "Dairy Farming": [
+   "dairyFarming",
+   "Dairy operations, hygiene and supply",
+   true,
+   "textarea",
+   "State species/breeds, herd and milk-supply capacity, products, service areas and relevant credentials. Describe veterinary oversight, welfare, feed/water, milking hygiene, testing, cooling/transport, batch records and complaint/recall handling; no treatment or dosing instructions."
+  ],
+  "Poultry Farming": [
+   "poultryFarming",
+   "Poultry production, biosecurity and handling",
+   true,
+   "textarea",
+   "Describe species, layer/broiler/breeding operations, capacity and eggs/birds/products supplied. Explain sourcing, housing, welfare, veterinary support, biosecurity, egg/product storage, transport, traceability and waste handling; identify activities not offered."
+  ],
+  "Livestock Farming": [
+   "livestockFarming",
+   "Livestock scope, welfare and movement records",
+   true,
+   "textarea",
+   "List species/breeds, rearing/breeding/supply services, capacity and locations. Describe lawful sourcing, animal identification, housing, feed/water, veterinary care arrangements, isolation/biosecurity, humane handling, transport and buyer handover; avoid guaranteed breeding outcomes."
+  ],
+  "Aquaculture": [
+   "aquaculture",
+   "Aquaculture systems, water quality and harvest",
+   true,
+   "textarea",
+   "State species, freshwater/brackish/marine systems, ponds/tanks/cages, capacity and products supplied. Describe relevant permissions, seed sourcing, water-quality monitoring, biosecurity, feed records, specialist support, harvest/cold chain, traceability and effluent management; no guaranteed survival or yield."
+  ],
+  "Plant Nursery": [
+   "plantNursery",
+   "Nursery range, sourcing and plant health",
+   true,
+   "textarea",
+   "List indoor/outdoor, flowering, ornamental, fruit or other plants, botanical/common names, pot sizes and seasonal availability. Describe propagation/sourcing, relevant credentials, plant-health inspections, pest isolation, labelling, care guidance, nursery visits and retail/bulk supply."
+  ],
+  "Saplings": [
+   "saplings",
+   "Sapling varieties, maturity and planting support",
+   true,
+   "textarea",
+   "State species/varieties, age/height ranges, seedling/grafted status, rootstock where relevant, container/root condition and sourcing evidence. Explain climate/site suitability guidance, planting/transport arrangements, handling and replacement conditions; do not guarantee survival, yield or fruiting dates."
+  ],
+  "Landscaping Plants": [
+   "landscapingPlants",
+   "Landscape plant selection and project supply",
+   true,
+   "textarea",
+   "List trees, shrubs, hedges, ground covers, turf or specimen plants, sizes and quantities. Describe site/light/water suitability, local restrictions, substitutions with approval, bulk scheduling, delivery/unloading and optional planting/maintenance. Separate plant supply from design/civil work; disclose toxicity/thorns and care limitations where relevant."
+  ],
+  "Machinery Manufacturer": [
+   "machineryManufacturer",
+   "Machinery capability, testing and commissioning",
+   true,
+   "textarea",
+   "Describe machine types, applications, materials, power/capacity ranges, standard/custom builds and drawings approval. State production capacity, MOQ, lead times, inspection/acceptance tests, safety documentation, installation/training, spares and warranty."
+  ],
+  "Textile Manufacturer": [
+   "textileManufacturer",
+   "Textile materials, processes and quality",
+   true,
+   "textarea",
+   "List fibres, fabrics/products, weaving/knitting/dyeing/finishing capabilities, GSM/count ranges and capacity. Describe samples, colour/shrinkage tolerances, MOQ, labelling, quality tests, sourcing claims and production/delivery timelines."
+  ],
+  "Food Manufacturer": [
+   "foodManufacturer",
+   "Food production, hygiene and traceability",
+   true,
+   "textarea",
+   "List food categories, facility credentials, ingredients/allergens, processing/packaging capabilities and capacity. Describe sanitation, quality testing, batch/expiry labels, shelf-life evidence, cold-chain needs, recalls and private-label arrangements; upload credentials, not confidential recipes."
+  ],
+  "Plastic Manufacturer": [
+   "plasticManufacturer",
+   "Polymer grades, moulding and tooling",
+   true,
+   "textarea",
+   "Describe polymers, moulding/extrusion processes, part sizes/tolerances, recycled-content claims, tooling ownership and sample approval. State capacity, MOQ, testing, application-specific evidence, waste handling and lead times."
+  ],
+  "Metal Manufacturer": [
+   "metalManufacturer",
+   "Metal grades, fabrication and inspection",
+   true,
+   "textarea",
+   "List metals/grades, casting/forging/machining/fabrication capabilities, dimensions and tolerances. Describe drawings, material traceability, welding/finishing, inspection reports, capacity, MOQ, corrosion protection and delivery handling."
+  ],
+  "Electrical Equipment Manufacturer": [
+   "electricalManufacturer",
+   "Electrical ratings, safety and compliance evidence",
+   true,
+   "textarea",
+   "Describe equipment types, voltage/current/power ratings, operating conditions and standard/custom production. State applicable test/certification evidence and scope, inspection, installation instructions, serial/batch tracking, capacity, warranty and service support."
+  ],
+  "Electronics Manufacturer": [
+   "electronicsManufacturer",
+   "Electronic design, assembly and lifecycle support",
+   true,
+   "textarea",
+   "Describe products, PCB/assembly capabilities, component sourcing, firmware, prototyping and production capacity. Explain functional/reliability testing, ESD controls, traceability, certification claims, IP confidentiality, obsolescence, warranty and repair support."
+  ],
+  "Fabrication": [
+   "fabrication",
+   "Fabrication processes, drawings and inspection",
+   true,
+   "textarea",
+   "List materials/grades, cutting, welding, forming and finishing capabilities, dimensions/tolerances and workshop/site coverage. Describe drawing approval, material traceability, qualified staff, inspection, safe installation, lead times and workmanship warranty."
+  ],
+  "Industrial Automation": [
+   "industrialAutomation",
+   "Automation platforms, integration and commissioning",
+   true,
+   "textarea",
+   "Describe PLC/SCADA/HMI, drives, sensors, robotics or control systems supported. State requirements assessment, design approval, change control, safety responsibilities, testing, downtime/rollback, commissioning and training. Explain source-code/licence ownership and authorised remote access; never upload production credentials."
+  ],
+  "Machine Repair": [
+   "machineRepair",
+   "Machine diagnostics, repairs and acceptance",
+   true,
+   "textarea",
+   "State machine types/brands, mechanical/electrical scope, diagnosis fees, site/workshop options and exclusions. Explain isolation/site permits, repair estimates, customer approval, parts sourcing, testing, replaced-part handover, warranty and unresolved-fault handling."
+  ],
+  "Industrial Maintenance": [
+   "industrialMaintenance",
+   "Maintenance plans, staffing and response",
+   true,
+   "textarea",
+   "Describe preventive/predictive/breakdown maintenance, assets covered, inspection frequency, staffing, spares and reporting. State response versus resolution targets, shutdown coordination, site safety/permit procedures, contract exclusions, renewals and emergency escalation."
+  ],
+  "Tooling Service": [
+   "toolingService",
+   "Tooling design, precision and ownership",
+   true,
+   "textarea",
+   "List dies, moulds, jigs, fixtures or cutting tools, materials, machining capabilities and tolerances. Describe drawings/CAD confidentiality, prototypes, trials, inspection, customer acceptance, tool ownership/storage, maintenance, lead times and revision charges."
+  ],
+  "Industrial Supplier": [
+   "industrialSupplier",
+   "Industrial range, sourcing and fulfilment",
+   true,
+   "textarea",
+   "List product categories, brands, industries served and distributor authorisation evidence. Describe specifications/part-number matching, sourcing traceability, MOQ, bulk pricing, stock/lead times, substitutions with approval, certificates supplied and after-sales support."
+  ],
+  "Factory Equipment": [
+   "factoryEquipment",
+   "Equipment capacity, installation and support",
+   true,
+   "textarea",
+   "Describe equipment types, new/used condition, capacities, power/site requirements and compatibility. State manuals, safety/test evidence, delivery/unloading, installation/commissioning responsibilities, operator training, spares, maintenance and warranty exclusions."
+  ],
+  "Safety Equipment": [
+   "safetyEquipment",
+   "Safety products, ratings and traceability",
+   true,
+   "textarea",
+   "List PPE or safety-product categories, sizes, intended hazards and limitations. Provide evidence for claimed standards/certifications and their scope. Describe fit/compatibility guidance, batch/expiry checks, storage, inspection/replacement instructions and recalls; do not claim universal protection."
+  ],
+  "Packaging Material": [
+   "packagingMaterial",
+   "Packaging specifications and custom orders",
+   true,
+   "textarea",
+   "List boxes, films, bags, cushioning or other materials, dimensions, grades, thickness and load limits. Describe samples, printing/proof approval, MOQ, lead times, tooling costs and storage. Substantiate food-contact, recycled or environmental claims and explain defect/shortage remedies."
+  ],
+  "FMCG Wholesaler": [
+   "fmcgWholesaler",
+   "FMCG brands, packs and stock rotation",
+   true,
+   "textarea",
+   "List categories, brands, authorised-distribution evidence, carton/case units and mixed-order options. Describe batch/expiry checks, stock rotation, storage, damaged/short-dated goods, recalls, minimum orders and retailer delivery schedules."
+  ],
+  "Food Wholesaler": [
+   "foodWholesaler",
+   "Food categories, traceability and cold chain",
+   true,
+   "textarea",
+   "State food categories, relevant credentials, brands, bulk units and supplier traceability. Describe ingredient/allergen labels, shelf life, hygiene, temperature-controlled storage/transport where needed, batch records, rejected stock and recall handling."
+  ],
+  "Textile Wholesaler": [
+   "textileWholesaler",
+   "Textile range, lots and quality tolerances",
+   true,
+   "textarea",
+   "List fabrics/garments, fibres, widths, GSM/counts, colours, sizes and roll/piece units. Explain samples, lot/shade consistency, shrinkage/defect tolerances, composition evidence, MOQ, cutting/customisation and return exclusions."
+  ],
+  "Electronics Wholesaler": [
+   "electronicsWholesaler",
+   "Electronic product authenticity and warranty",
+   true,
+   "textarea",
+   "Describe brands, model/specification range, new/refurbished condition, dealer evidence, serial/batch traceability and regional compatibility. State bulk packs, testing, dead-on-arrival handling, manufacturer/distributor warranty, service contacts and safe storage/shipping."
+  ],
+  "Hardware Wholesaler": [
+   "hardwareWholesaler",
+   "Hardware grades, sizes and bulk fulfilment",
+   true,
+   "textarea",
+   "List tools, fasteners, fittings or other categories, brands, material grades, sizes and pack units. Describe specification matching, test/certification evidence where claimed, corrosion-safe storage, stock/lead times, approved substitutions and shortage/defect remedies."
+  ],
+  "FMCG Distributor": [
+   "fmcgDistributor",
+   "FMCG distribution rights and retailer supply",
+   true,
+   "textarea",
+   "List principals/brands, authorisation evidence, assigned territories, customer channels and pack/case units. Describe outlet onboarding, order cycles, MOQ, pricing/credit terms, warehouse capacity, batch/expiry rotation, delivery schedules, claims and recalls."
+  ],
+  "Food Distributor": [
+   "foodDistributor",
+   "Food distribution, temperature control and recalls",
+   true,
+   "textarea",
+   "State food categories, relevant credentials, supplier authorisations, territories and customers served. Describe ingredient/allergen labels, batch/shelf-life checks, hygiene, dry/chilled/frozen storage and transport, temperature excursions, traceability, damaged stock and recall procedures."
+  ],
+  "Pharma Distributor": [
+   "pharmaDistributor",
+   "Pharmaceutical authorisation and controlled distribution",
+   true,
+   "textarea",
+   "State relevant wholesale licences, validity/scope, premises, responsible qualified personnel, supplier authorisations and product categories. Explain authorised-buyer checks, restricted-product controls where applicable, batch/expiry records, temperature monitoring, quarantine, recalls, returns and secure transport. Upload provider credentials only, not patient records; do not supply outside authorisation."
+  ],
+  "Electronics Distributor": [
+   "electronicsDistributor",
+   "Electronics channels, authenticity and service support",
+   true,
+   "textarea",
+   "List brands, distribution authorisations, territories, dealer channels and model ranges. Describe serial/batch traceability, regional compatibility, pricing/credit terms, stock allocation, safe storage/shipping, dead-on-arrival claims, warranty routing and recalls."
+  ],
+  "Importer": [
+   "importer",
+   "Import products, origins and clearance scope",
+   true,
+   "textarea",
+   "List products, origin countries, supplier relationships and relevant trade credentials. Describe product-restriction checks, specifications, inspection, shipping terms, customs/broker responsibilities, duties/cost allocation, lead times and shortage/damage claims. Do not upload confidential shipment or customer records."
+  ],
+  "Exporter": [
+   "exporter",
+   "Export markets, documentation and fulfilment",
+   true,
+   "textarea",
+   "State products, destination markets, capacity, MOQ and trade credentials. Explain buyer/specification checks, applicable product requirements, export documentation, packing, inspection, freight/insurance responsibilities, payment terms and claims; do not guarantee customs clearance."
+  ],
+  "Dealer": [
+   "dealer",
+   "Dealer brands, territories and customer support",
+   true,
+   "textarea",
+   "List categories, brands, authorised/independent status, territory and customer types. Provide evidence for authorisation claims; describe stock, specifications, order quantities, prices, delivery, warranty routing, spares/service and returns."
+  ],
+  "General Supplier": [
+   "generalSupplier",
+   "Supply categories, sourcing and order controls",
+   true,
+   "textarea",
+   "Describe product categories, sourcing checks, customer sectors, specification matching, MOQ and bulk orders. Explain quotations, approved substitutions, delivery/acceptance, shortages, quality complaints, warranty and supplier responsibilities."
+  ],
+  "Building Material Supplier": [
+   "buildingMaterialSupplier",
+   "Construction materials, grades and site delivery",
+   true,
+   "textarea",
+   "List cement, steel, aggregates, blocks, finishes or other products, grades, brands and selling units. Describe sourcing/test evidence, batch/weight checks, storage, quotes, transport/unloading, site access, breakage/shortage handling and returns; no unsupported structural-performance claims."
+  ],
+  "Domestic Courier": [
+   "domesticCourier",
+   "Domestic courier coverage and parcel handling",
+   true,
+   "textarea",
+   "Describe serviceable PIN codes, pickup/drop-off options, booking cutoff, estimated transit times, parcel weight/dimension limits, packaging and restricted-item checks. Explain actual/volumetric weight pricing, surcharges, tracking, proof of delivery, failed attempts, returns, loss/damage claims and declared-value cover. Do not upload customer addresses or shipment records."
+  ],
+  "International Courier": [
+   "internationalCourier",
+   "International destinations and customs responsibilities",
+   true,
+   "textarea",
+   "List destination countries, carrier partners and authorisation evidence, document/non-document services, parcel limits, packaging and prohibited/restricted-item screening. Describe shipping documents, customs/broker responsibilities, duties and taxes, chargeable weight, surcharges, estimated transit, tracking, delivery proof, returns and claims. Explain delays and exclusions without guaranteeing customs clearance; do not collect customer identity documents here."
+  ],
+  "Same-Day Delivery": [
+   "sameDayDelivery",
+   "Same-day delivery zones and commitments",
+   true,
+   "textarea",
+   "State delivery zones/radius, operating hours, cutoff times, capacity and eligible parcel types, weights and sizes. Explain pickup confirmation, delivery windows, urgent/distance/waiting charges, tracking, recipient verification and proof of delivery. Describe missed-window remedies, failed attempts, cancellations, returns, damage claims and any temperature-control limitations; distinguish estimates from guaranteed commitments."
+  ],
+  "Parcel Service": [
+   "parcelService",
+   "Parcel booking, transport and collection",
+   true,
+   "textarea",
+   "Describe routes, branch-to-branch or doorstep service, carrier arrangements, parcel categories, weight/dimension limits, packing and restricted goods. State chargeable-weight rules, minimum charges, bulk rates, pickup/collection procedure, transit estimates, tracking and delivery proof. Explain storage/unclaimed-parcel rules, failed delivery, returns, loss/damage claims, liability limits and optional cover; keep customer shipment data out of this form."
+  ],
+  "Goods Transport": [
+   "goodsTransport",
+   "Goods, routes and freight arrangements",
+   true,
+   "textarea",
+   "Describe accepted goods, restricted cargo, routes, vehicle types, payload and volume limits, full/part-load options and estimated transit times. State operator credentials, vehicle fitness/permit and insurance evidence where applicable. Explain freight calculation, tolls/taxes, loading/unloading, packing and securing responsibilities, shipment paperwork, tracking, delivery proof, delays, cancellations and loss/damage claims. Do not upload customer shipment or identity records."
+  ],
+  "Truck Rental": [
+   "truckRental",
+   "Truck hire capacity and rental terms",
+   true,
+   "textarea",
+   "List truck/body types, payload, dimensions, operating areas and availability confirmation. State with-driver or self-drive options, driver eligibility, vehicle permits/fitness and insurance arrangements. Explain hourly/daily/trip rates, included distance, fuel, tolls, driver allowance, deposits, overtime, waiting, loading equipment and staff. Describe inspection/handover, breakdown replacement, accident reporting, damage liability, cancellation and refund terms."
+  ],
+  "Mini Truck Service": [
+   "miniTruckService",
+   "Mini truck loads and local delivery",
+   true,
+   "textarea",
+   "State vehicle types, payload/dimensions, accepted goods, service radius, booking cutoff and pickup/delivery windows. Explain narrow-road/site access checks, loading/unloading labour, packaging and securing, multiple stops, floor/stair handling and prohibited loads. Detail trip/distance/time charges, minimum fare, waiting and extra-stop fees, tracking, proof of delivery, breakdown support, cancellations and damage claims. Do not promise availability before confirmation."
+  ],
+  "Container Transport": [
+   "containerTransport",
+   "Container specifications and port logistics",
+   true,
+   "textarea",
+   "List container sizes/types, loaded/empty moves, payload limits, routes, ports/depots and chassis availability. Explain booking and terminal appointments, seal/condition checks, weight verification, lifting/loading responsibilities, required shipment documents and customs-agent coordination without promising clearance. State freight, tolls, detention/demurrage responsibility, free time, return depot, tracking, delivery proof, insurance and claims. Describe reefer or dangerous-goods capability only where supported by appropriate evidence."
+  ],
+  "Packers & Movers": [
+   "packersMovers",
+   "Packing, moving scope and protection",
+   true,
+   "textarea",
+   "Describe local/intercity routes, accepted items, excluded or hazardous goods, survey and inventory process, packing materials, dismantling/reassembly, loading staff and vehicle capacity. State operator credentials and insurance evidence where applicable. Explain itemised estimates, taxes, stairs/lift/access charges, waiting, storage, subcontractors, dates, tracking, delivery inventory, cancellation/refunds and loss/damage claim limits and deadlines. Do not upload customer addresses, valuables lists or identity records."
+  ],
+  "House Shifting": [
+   "houseShifting",
+   "Household move planning and handover",
+   true,
+   "textarea",
+   "State home sizes and areas served, survey/quotation options, packing and fragile-item protection, furniture dismantling, appliance handling and unpacking scope. Explain floor/lift/parking checks, building access permissions, inventory and condition checks, crew and vehicle arrangements, move windows, exclusions and extra charges. Describe storage, delays, cancellation, delivery sign-off, insurance options and damage claims. Electrical, gas or specialist reconnection must be clearly scoped; do not collect private household inventories here."
+  ],
+  "Office Shifting": [
+   "officeShifting",
+   "Office relocation, continuity and confidentiality",
+   true,
+   "textarea",
+   "Describe office sizes, locations, phased/after-hours moves, site surveys, asset labelling, furniture assembly and IT equipment packing. Clarify responsibility for disconnecting/reconnecting equipment, backups and specialist handling. Explain building permissions, crew screening, secure records handling, subcontractors, downtime estimates, itemised pricing, storage, inventory sign-off, delays and damage claims. Do not upload client asset lists, employee data, passwords or confidential documents."
+  ],
+  "Vehicle Transport": [
+   "vehicleTransport",
+   "Vehicle carrier arrangements and condition checks",
+   true,
+   "textarea",
+   "List accepted vehicle types, routes, open/enclosed carriers, door/terminal service and transport capacity. State relevant carrier credentials, permits and insurance evidence. Describe ownership/document checks, pre-move condition photos, fuel/battery and personal-item rules, loading/securement, key custody, estimated transit and tracking. Separate transport fees, tolls, pickup/drop-off and storage charges; explain delivery inspection, delays, cancellation, liability exclusions and damage claim procedure. Do not upload customer registration or identity documents here."
+  ],
+  "Warehousing": [
+   "warehousing",
+   "Warehouse capacity, storage and stock controls",
+   true,
+   "textarea",
+   "State locations, usable space/pallet capacity, accepted and restricted goods, storage conditions and operating hours. Describe receiving checks, inventory tracking, stock counts, security, fire/pest controls and evidence for any temperature-controlled or regulated storage claims. Explain handling equipment, picking/packing, dispatch, storage/handling fees, minimum term, access, insurance, stock discrepancies, damage claims and exit/collection terms. Do not upload customer stock records."
+  ],
+  "Freight Forwarding": [
+   "freightForwarding",
+   "Freight modes, partners and shipment responsibilities",
+   true,
+   "textarea",
+   "List air/sea/road/rail modes, routes, partner carriers, consolidation options, cargo limits and restricted goods. State relevant credentials and clarify forwarder versus carrier responsibilities. Describe quotes and validity, chargeable weight/volume, origin/destination charges, documents, customs-agent coordination, booking, tracking, estimated transit, cargo cover, delays, cancellation and claims. Identify subcontracted stages and exclusions; do not guarantee customs clearance or upload private shipment records."
+  ],
+  "Shipping Service": [
+   "shippingService",
+   "Shipping routes, cargo and delivery terms",
+   true,
+   "textarea",
+   "Describe domestic/international routes, ports, carrier/agent role, full/part-container or other cargo services, sizes/weights and restricted cargo. Explain schedules as estimates, booking confirmation, packing, loading, shipment documents, seal/condition checks and tracking. Itemise freight, port/terminal charges, free time and detention/demurrage responsibilities. State insurance options, destination delivery scope, delays, cancellations, loss/damage claims and relevant authorisation evidence."
+  ],
+  "Import Export Logistics": [
+   "importExportLogistics",
+   "Cross-border logistics and documentation scope",
+   true,
+   "textarea",
+   "State origin/destination countries, transport modes, product categories, capacity and partner roles. Describe document preparation/checks, restricted-goods screening, customs-broker coordination, permits and customer versus provider responsibilities. Explain agreed trade terms, duties/taxes, quote exclusions, packing, inspection, storage, tracking, delivery and returns. Provide evidence for authorisation claims and describe insurance, delays and disputes; never promise clearance or collect customer credentials here."
+  ],
+  "Last-Mile Delivery": [
+   "lastMileDelivery",
+   "Delivery zones, fulfilment and failed attempts",
+   true,
+   "textarea",
+   "State serviceable PIN codes/radius, operating hours, daily capacity, vehicle types, parcel limits, pickup cutoff and delivery windows. Describe order handoff, tracking, recipient verification, proof of delivery, safe-drop consent and customer-data protection. Explain per-order/distance fees, waiting, cash-on-delivery availability and settlement/reconciliation terms if offered, failed attempts, returns, cancellations and loss/damage claims. Clarify restricted goods and temperature-control limits; do not upload recipient data."
+  ],
+  "Gym": [
+   "gym",
+   "Gym facilities, membership and supervision",
+   true,
+   "textarea",
+   "Describe location, opening hours, equipment, capacity, accessibility, changing facilities and supervised hours. List membership options, trial sessions, joining fees, taxes, renewal, freeze, cancellation and refund terms. State trainer qualifications with evidence, equipment maintenance, cleaning, induction, safe-use rules, emergency arrangements and incident reporting. Explain participant screening and referral limits without collecting medical records here or promising health outcomes."
+  ],
+  "Fitness Centre": [
+   "fitnessCentre",
+   "Fitness programmes, classes and centre policies",
+   true,
+   "textarea",
+   "List programmes, age groups, beginner/adapted options, class sizes, timetable, booking and instructor qualifications. Describe facilities, accessibility, equipment maintenance, hygiene, supervision, participant screening and emergency response. Explain packages, included assessments, fees, renewal, missed classes, cancellation/refunds and complaints. State service boundaries, consent and privacy arrangements; do not promise weight loss or collect personal health information in this onboarding form."
+  ],
+  "Personal Trainer": [
+   "personalTrainer",
+   "Trainer credentials, session plans and service limits",
+   true,
+   "textarea",
+   "State qualifications, certification evidence, experience, specialisms and first-aid training where claimed. Describe studio/home/online sessions, coverage, equipment, session duration, assessment and individual programme review. Explain screening, consent, safe progression, referral to qualified healthcare professionals when needed and emergency arrangements. Give session/package rates, travel fees, rescheduling, cancellation/refunds and privacy rules. Do not provide medical-treatment claims, guaranteed results or client health records."
+  ],
+  "Yoga Centre": [
+   "yogaCentre",
+   "Yoga styles, instructor credentials and class safety",
+   true,
+   "textarea",
+   "List yoga styles, levels, age groups, class sizes, timings, online/in-person options and instructor training evidence. Describe mats/props, hygiene, accessibility, beginner modifications, participant screening, consent for physical adjustments and emergency procedures. State limits for specialised sessions and referral arrangements; avoid medical or cure claims. Explain trial classes, fees, memberships, missed sessions, cancellations/refunds and privacy without collecting participant health records here."
+  ],
+  "Cross Training": [
+   "crossTraining",
+   "Cross-training formats, coaching and safe progression",
+   true,
+   "textarea",
+   "Describe strength, conditioning, circuit or other formats, skill levels, class capacity, coach qualifications and supervision ratios. Explain induction, movement assessment, load scaling, equipment checks, rest/recovery guidance, screening, emergency response and incident reporting. State facilities, timetable, trial and package fees, booking, cancellation/refunds and participation rules. Substantiate any branded affiliation and avoid guaranteed performance or health claims; do not upload participant medical records."
+  ],
+  "Cricket Coaching": [
+   "cricketCoaching",
+   "Cricket programmes, facilities and coaching safety",
+   true,
+   "textarea",
+   "List age groups, skill levels, batting/bowling/fielding programmes, coach qualifications and experience, batch sizes, supervision and schedules. Describe grounds/nets, equipment supplied, protective gear, safe practice rules, weather cancellations and emergency arrangements. Explain trials, fees, kit costs, missed sessions, refunds, guardian consent and child safeguarding. State match/tournament opportunities without promising selection; do not upload learner identity or medical records."
+  ],
+  "Football Coaching": [
+   "footballCoaching",
+   "Football training, pitches and safeguarding",
+   true,
+   "textarea",
+   "Describe age/ability groups, individual/team and goalkeeper training, coach credentials, batch sizes, supervision, venues and timings. State pitch condition, equipment, footwear/protective gear requirements, safe drills, weather arrangements and emergency procedures. Explain trial sessions, fees, kit/travel extras, attendance, cancellations/refunds, guardian consent and safeguarding. Describe competition pathways without guaranteeing team selection or professional careers."
+  ],
+  "Badminton Coaching": [
+   "badmintonCoaching",
+   "Badminton levels, courts and session arrangements",
+   true,
+   "textarea",
+   "List age groups, beginner/advanced levels, singles/doubles coaching, coach qualifications, batch sizes and session duration. Describe courts, flooring, lighting, equipment supplied, racket/shuttle costs, footwear rules, accessibility and safe practice supervision. Explain schedules, trial sessions, court-inclusive fees, bookings, missed classes, cancellation/refunds, emergency response and guardian consent for minors. Substantiate competitive-training claims without guaranteeing rankings."
+  ],
+  "Swimming Classes": [
+   "swimmingClasses",
+   "Swimming levels, pool facilities and supervision",
+   true,
+   "textarea",
+   "State age/ability groups, class size, instructor qualifications, lifeguard coverage, session timings and supervision arrangements. Describe pool location, depth zones, water-quality maintenance, changing facilities, accessibility, equipment and beginner assessment. Explain entry/exit controls, guardian consent, safeguarding, emergency/rescue arrangements, closure policies, fees, missed lessons and refunds. Do not promise water safety after a fixed number of lessons or collect medical records here."
+  ],
+  "Martial Arts": [
+   "martialArts",
+   "Martial arts styles, grading and contact safety",
+   true,
+   "textarea",
+   "List styles, age/skill groups, instructor qualifications, affiliation evidence, class sizes and schedules. Explain grading requirements and separate examination/uniform fees without guaranteeing belts or certification. Describe mats, protective gear, contact/sparring rules, progressive training, consent, safeguarding, emergency response and incident reporting. State trial/package fees, attendance, cancellations/refunds and competition options; do not upload participant medical or identity records."
+  ],
+  "Sports Shop": [
+   "sportsShop",
+   "Sports range, sizing and retail support",
+   true,
+   "textarea",
+   "List sports served, product categories, brands, sizes, age groups and store/online availability. State authorised/independent seller status and evidence for authenticity or safety claims. Describe fitting advice, stock updates, team/bulk orders, custom printing, prices/taxes, delivery/pickup and order lead times. Explain trial or hygiene restrictions, exchanges, returns, warranty routing and complaints; do not promise injury prevention or sporting results."
+  ],
+  "Sports Equipment": [
+   "sportsEquipment",
+   "Sports equipment specifications and supply terms",
+   true,
+   "textarea",
+   "Describe equipment types, sports, brands/models, materials, dimensions, intended age/skill levels and indoor/outdoor suitability. Disclose new/used/refurbished condition, sourcing, relevant test/certification evidence and usage limits. State stock, minimum orders, bulk pricing, demonstrations, delivery, assembly/installation and anchoring responsibilities where applicable. Explain inspection on receipt, operating instructions, maintenance, spares, manufacturer/seller warranty, defects, returns and support. Keep item-level specifications and prices in the catalogue."
+  ],
+  "Fitness Equipment": [
+   "fitnessEquipment",
+   "Fitness equipment capacity, installation and servicing",
+   true,
+   "textarea",
+   "List cardio/strength/accessory ranges, brands/models, home/commercial use, condition, user-weight/load limits, dimensions and power/space requirements. Provide evidence for safety or authorisation claims. Describe site checks, delivery access, unloading, assembly, installation, demonstrations and included versus extra charges. Explain maintenance, service coverage, spare parts, warranty exclusions, breakdown response, damaged delivery, returns and complaints. State finance/rental terms only if offered; avoid guaranteed fitness or medical claims."
+  ],
+  "Indoor Sports": [
+   "indoorSports",
+   "Indoor facilities, sessions and booking rules",
+   true,
+   "textarea",
+   "List sports, venue locations, courts/tables, capacity, opening hours, age/skill groups and accessibility. Describe flooring, lighting, ventilation, changing facilities, equipment hire, footwear rules, maintenance and supervision. Explain slot duration, individual/group bookings, coaching if offered, fees, deposits, overtime, cancellations/refunds and damage charges. State participant consent, child safeguarding, emergency arrangements and incident reporting; do not collect participant medical or identity records here."
+  ],
+  "Outdoor Sports": [
+   "outdoorSports",
+   "Outdoor grounds, access and weather policies",
+   true,
+   "textarea",
+   "Describe sports, ground locations, surfaces, dimensions, capacity, opening hours, lighting, toilets, drinking water and accessibility. State equipment availability, supervision, maintenance, site permissions and any coaching qualifications claimed. Explain booking slots, event/group use, fees, deposits, weather-related closure/rescheduling/refunds, prohibited activities and damage responsibility. Describe emergency access, first-aid arrangements, safeguarding and incident reporting without promising risk-free participation."
+  ],
+  "Sports Club": [
+   "sportsClub",
+   "Club membership, activities and member protection",
+   true,
+   "textarea",
+   "List sports, facilities, locations, age groups, membership eligibility, capacity and activity schedules. State club registration/affiliation evidence where claimed, staff/coaching qualifications and supervision. Explain joining/subscription fees, included benefits, guest access, booking priority, renewal, suspension, cancellation/refunds and conduct rules. Describe safeguarding, guardian consent, accessibility, emergency arrangements, complaints and member-data privacy. Distinguish recreational activities from competitions; do not guarantee team selection or upload member records."
+  ],
+  "Playschool": [
+   "playschool",
+   "Play-based learning and child safeguards",
+   true,
+   "textarea",
+   "State accepted ages, session timings, capacity, staff qualifications and child-to-staff ratios. Describe play-based activities, language options, settling-in, safe facilities, hygiene, meals/allergy procedures, toileting support, parent updates and authorised pickup. Explain staff screening, safeguarding, emergency contacts/processes, fees, holidays, cancellation and refunds. Provide evidence for registration claims; do not upload child identity or health records here."
+  ],
+  "Babysitting": [
+   "babysitting",
+   "Babysitter experience, availability and safety",
+   true,
+   "textarea",
+   "State ages served, experience, references/screening process, training and first-aid qualifications where claimed. Describe home visits, coverage, hours, maximum children, supervision, agreed feeding/sleep/play tasks and excluded duties. Explain guardian consent, authorised handover, emergency procedures, safeguarding, parent updates and privacy. State hourly rates, minimum booking, travel/late fees, replacement arrangements and cancellation/refunds. Do not upload child or family records."
+  ],
+  "Childcare Service": [
+   "childcareService",
+   "Childcare scope, staffing and care policies",
+   true,
+   "textarea",
+   "Describe centre/home-based care, ages, locations, hours, capacity and staff-to-child ratios. State staff qualifications, screening, training and applicable registration evidence. Explain routines, meals/allergies, hygiene, rest, inclusion and service limits, guardian consent, authorised pickup, safeguarding, emergency response and parent communication. Describe fees, holidays, late collection, absence, cancellation/refunds and complaints. Keep child medical, identity and family records out of this provider form."
+  ],
+  "Kids Activity Centre": [
+   "kidsActivityCentre",
+   "Children's activities, facilities and supervision",
+   true,
+   "textarea",
+   "List activities, age groups, locations, capacity, session schedules and accessibility. Describe staff qualifications, screening, supervision ratios, safe equipment, hygiene, inclusion and activity restrictions. Explain trial sessions, fees, materials, bookings, missed sessions and refunds. State guardian consent, authorised pickup, parent updates, safeguarding, emergency procedures and separate photo permission. Describe meals or transport only if offered; do not upload child identity or health records."
+  ],
+  "Art for Kids": [
+   "artForKids",
+   "Children's art programmes and material safety",
+   true,
+   "textarea",
+   "State ages, levels, drawing/painting/craft options, instructor qualifications, batch size, duration and venue or online format. Describe age-appropriate materials, tool supervision, ventilation, cleaning and materials included or charged separately. Explain learning approach, portfolios/exhibitions, fees, trials, attendance and cancellation/refunds. State guardian consent, pickup, safeguarding, emergency arrangements and permission for sharing children's artwork or photos; do not upload private child records."
+  ],
+  "Music for Kids": [
+   "musicForKids",
+   "Children's music lessons and practice arrangements",
+   true,
+   "textarea",
+   "List ages, levels, vocal/instrument options, styles, teacher qualifications, individual/group sizes and schedules. State instruments supplied/rented, practice expectations, safe sound levels, instrument hygiene and venue/online arrangements. Explain fees, instrument/exam/performance extras, trials, missed lessons and refunds without guaranteeing exam results. Describe safeguarding, guardian consent, authorised pickup, emergency procedures and recording/photo permissions; do not upload child records."
+  ],
+  "Dance for Kids": [
+   "danceForKids",
+   "Children's dance styles and safe instruction",
+   true,
+   "textarea",
+   "Describe age/skill groups, dance styles, instructor qualifications, class sizes, schedules and rehearsal expectations. State flooring, space, footwear/costume requirements, age-appropriate movements, supervision and consent for physical corrections. Explain fees, costume/performance charges, trial classes, absences and cancellation/refunds. Describe guardian consent, pickup, safeguarding, emergency arrangements and separate permission for performances, photos or recordings; avoid guaranteed competitive outcomes."
+  ],
+  "Summer Camp": [
+   "summerCamp",
+   "Camp dates, activities and child safeguards",
+   true,
+   "textarea",
+   "State dates, ages, location, day/residential format, capacity, daily schedule, activities and staff qualifications/supervision ratios. Describe staff screening, site safety, weather changes, meals/allergy procedures, transport or trips if offered, sleeping arrangements if residential and emergency response. Explain guardian consent, pickup, parent contact, safeguarding, photo permissions, fees/inclusions, cancellation/refunds and early collection. Identify specialist activities and qualified supervision; do not collect child medical or identity records here."
+  ],
+  "Baby Products": [
+   "babyProducts",
+   "Baby product range, safety and after-sales support",
+   true,
+   "textarea",
+   "List product categories, brands, age/size suitability and new/used condition. Describe sourcing and authenticity evidence, applicable safety labels/instructions, batch/expiry checks, storage, recalls and restricted items. State stock, prices, delivery, assembly if offered, warranty, defects, hygiene-related return exclusions and complaints. For feeding, skincare or other specialist products, disclose ingredients/materials and manufacturer warnings where applicable without making medical claims. Do not collect child health or identity records."
+  ],
+  "Birthday Party Service": [
+   "birthdayPartyService",
+   "Birthday packages, activities and child safeguards",
+   true,
+   "textarea",
+   "Describe age groups, guest limits, service areas, themes, activities and package inclusions. Separate venue, decoration, food/cake, entertainment and photography supplied directly or by partners. State setup/cleanup, duration, staffing, supervision responsibilities, safe props, allergy coordination and emergency arrangements. Explain itemised prices, extras, deposits, changes, cancellations/refunds and weather contingencies. Obtain guardian permission for child participation and separate photo use; do not upload child or guest records."
+  ],
+  "Kids Party Venue": [
+   "kidsPartyVenue",
+   "Children's party venue capacity and safety",
+   true,
+   "textarea",
+   "State location, indoor/outdoor areas, age suitability, guest capacity, booking slots, accessibility, toilets and parking. Describe play equipment, maintenance, entry/exit controls, emergency exits, first-aid arrangements and supervision supplied versus guardian responsibilities. Explain catering/allergy arrangements, outside-vendor rules, decorations, setup/cleanup, noise limits and weather backup. List rental inclusions, deposits, overtime, damage charges and cancellation/refunds. Provide evidence for claimed permissions; do not upload children's records."
+  ],
+  "Kids Entertainer": [
+   "kidsEntertainer",
+   "Children's entertainment, suitability and safeguarding",
+   true,
+   "textarea",
+   "List acts such as storytelling, puppetry, magic or games, suitable ages, languages, group limits and performance duration. Describe experience, references/screening, staff, travel coverage, setup and sound/space needs. Explain age-appropriate content, safe props, interaction consent, guardian supervision, safeguarding and emergency procedures. State package/travel/overtime charges, substitutions, cancellation/refunds and separate photo/recording permission. Clarify that entertainment does not include childcare unless explicitly agreed; do not collect child identity records."
+  ],
+  "Veterinary Clinic": [
+   "veterinaryClinic",
+   "Veterinary consultations, credentials and care scope",
+   true,
+   "textarea",
+   "State animal species served, consultation services, veterinarian qualifications and registration evidence, hours, appointment/walk-in options and accessibility. Describe examination facilities, hygiene, handling, diagnostics available directly or by referral, emergency limitations and referral arrangements. Explain consultation fees, estimates, owner consent, records privacy, follow-up, cancellations and complaints. Do not upload owner identity or animal patient records or promise treatment outcomes."
+  ],
+  "Pet Vaccination": [
+   "petVaccination",
+   "Vaccination service, storage and documentation",
+   true,
+   "textarea",
+   "List species served, veterinarian credentials, clinic/home-visit availability and service coverage. Describe veterinary assessment before vaccination, product sourcing, storage monitoring, batch/expiry checks, owner consent, vaccination records and reminders. Explain adverse-event response and referral arrangements, fees, travel charges, cancellation and follow-up. State that vaccine suitability and schedules are determined by the treating veterinarian; do not collect patient records in this provider form."
+  ],
+  "Pet Surgery": [
+   "petSurgery",
+   "Surgical scope, facilities and aftercare",
+   true,
+   "textarea",
+   "State species and procedure categories, surgeon qualifications/registration evidence, operating facilities and services referred elsewhere. Describe preoperative assessment, anaesthesia monitoring arrangements, sterilisation, recovery supervision, emergency transfer and admission/discharge processes. Explain written estimates, owner consent, risks discussed by the treating veterinarian, aftercare, follow-up, additional charges and complaints. Do not guarantee surgical outcomes or upload patient records."
+  ],
+  "Animal Hospital": [
+   "animalHospital",
+   "Hospital capacity, clinical services and emergencies",
+   true,
+   "textarea",
+   "List species, departments, veterinary team credentials, hours and inpatient capacity. Distinguish staffed emergency hours from on-call or referral support. Describe diagnostics, surgery, isolation, hygiene, medicines storage, animal handling, overnight supervision and transfer arrangements. Explain admissions, estimates/deposits, owner consent, updates, discharge and follow-up, records privacy and complaints. Provide evidence for claimed registrations or specialist facilities; do not promise outcomes or upload patient records."
+  ],
+  "Pet Grooming": [
+   "petGrooming",
+   "Grooming scope, handling and hygiene",
+   true,
+   "textarea",
+   "State species, sizes, coat types, staff experience, salon/mobile/home options and coverage. List bathing, trimming and other services, products, equipment cleaning and safe handling. Explain intake screening, owner consent, behaviour limits, breaks, incident response and veterinary referral; disclose excluded medical procedures. Describe duration, estimates, extra charges, pickup/handover, cancellations, refunds and photo permission. Do not upload owner or pet patient records."
+  ],
+  "Pet Boarding": [
+   "petBoarding",
+   "Boarding capacity, routines and emergency care",
+   true,
+   "textarea",
+   "List accepted species/sizes, capacity, accommodation, staffing and overnight supervision. Describe admission requirements, compatibility assessment, separation, hygiene, feeding, exercise, owner-provided instructions and limits on medication assistance. Explain escape prevention, emergency veterinary arrangements, owner authorisation and updates. State daily rates, inclusions, check-in/out, late collection, cancellation/refunds and uncollected-pet procedures. Do not collect private owner or animal medical records here."
+  ],
+  "Dog Training": [
+   "dogTraining",
+   "Training methods, goals and owner participation",
+   true,
+   "textarea",
+   "Describe trainer qualifications/experience, age/behaviour groups, assessment, humane methods, equipment and individual/group/home options. Explain goals, session duration, owner practice, progress reviews, handling limits and referral for veterinary or specialist needs. State supervision, incident procedures, fees, packages, travel, cancellations/refunds and consent. Disclose methods clearly and do not guarantee behaviour changes, certification or service-dog status."
+  ],
+  "Pet Walking": [
+   "petWalking",
+   "Walking coverage, supervision and handover",
+   true,
+   "textarea",
+   "State areas, hours, walk duration, individual/group size limits and handler experience/screening. Describe compatibility checks, leash rules, pickup/return, secure key handling, weather changes, water/rest and waste disposal. Explain owner instructions, emergency contacts, escape/injury response, updates and consent. List rates, travel/extra-pet charges, cancellations and refunds. Do not upload customer addresses, keys/access codes or pet medical records."
+  ],
+  "Pet Sitting": [
+   "petSitting",
+   "Sitting visits, care duties and home access",
+   true,
+   "textarea",
+   "State species, coverage, visit/overnight options, duration, sitter experience and screening. Define feeding, play, cleaning, owner-instructed care and excluded duties, including medication-assistance limits. Explain secure home access, handover, backup sitter, owner updates, consent, emergency veterinary arrangements and privacy. List visit/overnight fees, holiday extras, cancellations/refunds and incident reporting. Do not request customer home access details or animal medical records in this form."
+  ],
+  "Pet Shop": [
+   "petShop",
+   "Pet shop range, sourcing and customer support",
+   true,
+   "textarea",
+   "List product categories, brands, species served, store/online availability and sourcing evidence. Clarify whether live animals are offered; if so, describe applicable permissions, lawful sourcing, welfare, housing, veterinary support and handover safeguards without uploading buyer records. Explain stock, prices, delivery/pickup, restricted items, complaints, returns and warranty support. Do not claim unverified authorisation or health outcomes."
+  ],
+  "Pet Food": [
+   "petFood",
+   "Pet food suitability, storage and traceability",
+   true,
+   "textarea",
+   "List brands, species/life-stage ranges, food types, pack sizes and supplier evidence. Describe ingredient/allergen labels, batch and expiry checks, storage, damaged packs and recall handling. State stock, subscriptions if offered, pricing, delivery, minimum orders and return exclusions. Distinguish ordinary food from veterinary diets and explain referral for dietary advice without medical claims. Keep item-level details in the catalogue; do not collect animal medical records."
+  ],
+  "Pet Accessories": [
+   "petAccessories",
+   "Accessory sizing, materials and safe use",
+   true,
+   "textarea",
+   "List accessory categories, brands, species/size suitability, materials and sourcing evidence. Describe fit guidance, load limits, choking/chewing warnings, cleaning instructions and relevant safety evidence. State stock, custom orders, pricing, delivery, assembly if offered, warranty, defects, returns and complaints. Disclose new/used condition and exclusions; keep product-specific dimensions and instructions in the catalogue without guaranteeing injury prevention."
+  ],
+  "Pet Adoption": [
+   "petAdoption",
+   "Adoption process, animal welfare and follow-up",
+   true,
+   "textarea",
+   "State organisation status, species served, locations, capacity and relevant registration evidence. Describe lawful animal intake, foster/shelter care, veterinary assessment and disclosure of known health or behaviour needs. Explain adopter screening, suitability checks, consent, adoption agreement, itemised fees/donations, handover, follow-up and return/support procedures. Distinguish adoption from animal sales; do not promise suitability or upload adopter identity, addresses or animal patient records."
+  ],
+  "Animal Rescue": [
+   "animalRescue",
+   "Rescue coverage, response limits and safe transfer",
+   true,
+   "textarea",
+   "State species handled, coverage, operating hours, response channels, team training and equipment. Distinguish confirmed availability from estimated response and identify cases outside your capability, including wildlife referrals to authorised responders. Describe safe assessment, handling/transport arrangements, veterinary coordination, shelter capacity, intake records and owner/authority coordination. Explain fees or donations, welfare safeguards, incident reporting and follow-up; do not guarantee emergency response or upload private rescue-location or reporter records."
+  ],
+  "Animal Care": [
+   "animalCare",
+   "Animal care routines, supervision and welfare",
+   true,
+   "textarea",
+   "Describe species, centre/home/foster services, locations, hours, capacity, staff experience and supervision. Define feeding, cleaning, exercise, housing, behaviour support and excluded clinical services. Explain intake assessment, hygiene/separation, owner instructions, medication-assistance limits, veterinary referral, emergency arrangements, consent and handover. State fees/donations, updates, cancellations/refunds, complaints and privacy. Provide evidence for claimed credentials; do not collect owner identity or animal medical records here."
+  ],
+  "Temple": [
+   "temple",
+   "Temple visits, worship and visitor facilities",
+   true,
+   "textarea",
+   "State temple name, location, managing organisation, authorised contact and registration evidence where applicable. Describe opening and worship hours, festival schedules, booking procedures and visitor rules. List accessibility, toilets, parking, queues, crowd management and emergency contacts. Explain optional donations, any published service charges, receipts, cancellation/refund terms, photography rules and complaints. Do not collect visitors' religious beliefs or identity records in this provider form."
+  ],
+  "Church": [
+   "church",
+   "Church services, programmes and visitor access",
+   true,
+   "textarea",
+   "State church name, location, denomination if relevant, managing organisation and authorised contact. Describe service times, languages, community programmes, pastoral appointment arrangements and event booking. Explain accessibility, facilities, safeguarding for children's programmes, crowd safety and emergency arrangements. State optional donations, any service/event charges, receipts, cancellations, privacy and complaints. Do not request congregation membership lists or private pastoral records."
+  ],
+  "Mosque": [
+   "mosque",
+   "Mosque prayer schedules and community facilities",
+   true,
+   "textarea",
+   "State mosque name, location, managing organisation and authorised contact. Describe prayer schedules and update arrangements, Friday/festival timings, visitor guidance, languages and community programmes. List ablution facilities, accessibility, available prayer spaces, toilets and parking. Explain crowd management, safeguarding, emergency arrangements, optional donations, receipts, any booking charges and complaints. Do not collect worshipper identity, attendance or religious-belief records here."
+  ],
+  "Spiritual Centre": [
+   "spiritualCentre",
+   "Spiritual programmes, facilitators and participation",
+   true,
+   "textarea",
+   "Describe the centre's approach, programmes, languages, locations, facilitator experience and any claimed affiliations. State session schedules, capacity, age suitability, accessibility and residential/online options if offered. Explain voluntary participation, consent, safeguarding, privacy, emergency arrangements and limits of non-clinical guidance. List fees or optional donations, inclusions, accommodation/meal terms where offered, cancellations/refunds and complaints. Do not promise cures or spiritual outcomes or collect private belief or health records."
+  ],
+  "Pooja Service": [
+   "poojaService",
+   "Pooja arrangements, materials and booking terms",
+   true,
+   "textarea",
+   "List ceremonies offered, traditions/languages, locations, home/venue/online options and service duration. Describe officiants, included materials, customer-provided items, setup/cleanup and fire/venue permissions where relevant. Explain availability confirmation, itemised fees, optional offerings, travel costs, rescheduling, cancellation/refunds and complaints. State accessibility and photography consent; do not guarantee spiritual outcomes or collect private belief or identity records."
+  ],
+  "Priest": [
+   "priest",
+   "Priest experience, ceremonies and availability",
+   true,
+   "textarea",
+   "State traditions served, languages, experience, training and evidence for claimed affiliations. Describe ceremonies, consultation scope, travel coverage, availability, duration and materials responsibilities. Explain fees or voluntary offerings, travel extras, booking confirmation, substitute arrangements, cancellation/refunds and privacy. Obtain consent for recordings and respect participant boundaries; do not promise spiritual, medical or financial results or request private family records."
+  ],
+  "Religious Event Service": [
+   "religiousEventService",
+   "Religious event coordination and participant safety",
+   true,
+   "textarea",
+   "Describe event types, traditions, locations, guest capacity, languages and directly provided versus partner services. Explain venue/authority permissions, officiants, decorations, sound, meals, queues, accessibility, fire safety and emergency arrangements. State staffing, setup/cleanup, schedule, itemised packages, optional donations, deposits, changes, weather contingencies and cancellation/refunds. Explain safeguarding and photo/privacy consent; do not upload participant lists or promise spiritual outcomes."
+  ],
+  "Pilgrimage Service": [
+   "pilgrimageService",
+   "Pilgrimage itinerary, inclusions and traveller support",
+   true,
+   "textarea",
+   "List destinations, routes, dates, group sizes, languages and provider/partner credentials. Describe itinerary, transport, accommodation, meals, accessibility and walking/physical demands, guides and emergency contacts. Clarify entry permits, visa/document responsibilities where applicable, booking availability and exclusions without guaranteeing access. Explain itemised prices, deposits, optional offerings, changes, cancellations/refunds, insurance options and assistance for disrupted travel. Do not upload traveller identity, belief or health records."
+  ],
+  "Astrology": [
+   "astrology",
+   "Astrology consultation scope and privacy",
+   true,
+   "textarea",
+   "Describe traditions/methods, languages, experience, consultation topics, online/in-person options and session duration. State fees, report inclusions, follow-up, booking, cancellation/refunds and complaints. Explain informed consent, handling/deletion of birth details and separate recording permission. Present interpretations as belief-based guidance, not guaranteed predictions or substitutes for medical, legal or financial advice. Do not upload client birth charts, identity or private records."
+  ],
+  "Vastu Consultant": [
+   "vastuConsultant",
+   "Vastu assessment, deliverables and boundaries",
+   true,
+   "textarea",
+   "State experience, claimed qualifications, property types, service areas and site/remote assessment options. Describe assessment methods, required plans, report scope, follow-up and non-structural recommendations. Explain fees, travel, optional product costs, conflicts of interest, cancellations and plan confidentiality. Refer structural or safety changes to qualified professionals; do not guarantee prosperity, health or approvals. Do not upload client floor plans, addresses or access details here."
+  ],
+  "Meditation": [
+   "meditation",
+   "Meditation sessions, facilitators and participation",
+   true,
+   "textarea",
+   "List approaches, languages, age suitability, beginner options, facilitator training, group sizes and online/in-person schedules. Describe session duration, accessibility, voluntary participation, breaks and participant support. State fees, trials, packages, cancellation/refunds, privacy and recording consent. Explain non-clinical scope and referral arrangements when professional support is needed; do not promise cures or collect private health or belief records."
+  ],
+  "Yoga Spirituality": [
+   "yogaSpirituality",
+   "Spiritual yoga programmes and safe participation",
+   true,
+   "textarea",
+   "Describe traditions, programme content, languages, teacher training, age/experience levels and session or retreat formats. State facilities, accessibility, group limits, physical practice modifications, consent for adjustments, voluntary participation and emergency arrangements. Explain schedules, fees, inclusions, accommodation/meals if offered, cancellations and privacy. Distinguish spiritual guidance from clinical treatment; avoid guaranteed health or spiritual outcomes and do not upload participant records."
+  ],
+  "Pooja Items": [
+   "poojaItems",
+   "Pooja supplies, materials and safe-use information",
+   true,
+   "textarea",
+   "List item categories, brands, pack sizes, materials/ingredients and kit contents. Describe sourcing, freshness/expiry where applicable, storage, fragrance/allergen disclosures and manufacturer warnings for lamps, incense or flammable items. State stock, seasonal availability, bulk/custom kits, prices/taxes, delivery/pickup, substitutions with approval, damaged-item handling and returns. Do not guarantee spiritual or health outcomes; keep product-specific details in the catalogue."
+  ],
+  "Devotional Products": [
+   "devotionalProducts",
+   "Devotional range, authenticity and order terms",
+   true,
+   "textarea",
+   "Describe product categories, traditions represented, materials, dimensions, finishes, brands/artisans and sourcing. Provide evidence for claimed origin, precious-metal content or authenticity; distinguish decorative products from functional items. Explain personalisation, sample approval, lead times, packaging, delivery, installation if offered, care instructions, pricing, warranty and returns, including custom-order exclusions. Avoid guaranteed spiritual benefits or medical claims."
+  ],
+  "Religious Books": [
+   "religiousBooks",
+   "Religious book catalogue, editions and fulfilment",
+   true,
+   "textarea",
+   "List traditions/topics, languages, publishers, authors/translators, editions and print/audio/digital formats. State new/used condition, accessibility formats, age suitability where relevant and lawful sourcing/distribution rights for digital products. Explain stock, special orders, bulk pricing, delivery, damaged/misprinted books, returns and digital-access terms if offered. Keep title-level ISBN, edition and prices in the catalogue; do not collect buyers' religious beliefs or promise spiritual outcomes."
+  ],
+  "Municipal Office": [
+   "municipalOffice",
+   "Municipal jurisdiction and public service information",
+   true,
+   "textarea",
+   "State official office name, governing body, ward/jurisdiction, address, official website and authorised contact. List public services, counter hours, appointment/token arrangements, accessibility and official application channels. Provide document checklists and published fee/receipt information, distinguishing estimates from official processing timelines. Describe grievance contacts and escalation. Provide evidence of authority to represent the office; do not collect citizen applications, identity records or unofficial payments here."
+  ],
+  "Revenue Office": [
+   "revenueOffice",
+   "Revenue jurisdiction, services and application guidance",
+   true,
+   "textarea",
+   "State official department, office level, jurisdiction, address and verified public contact channels. List available revenue services, application portals/counters, hours, appointment rules and accessibility. Describe published eligibility/document guidance, official fees and receipts, status enquiry and grievance escalation. Link official sources for changing requirements; do not guarantee certificates or approvals. Supply representation evidence without uploading citizens' land, income, identity or application records."
+  ],
+  "Taluk Office": [
+   "talukOffice",
+   "Taluk coverage, counters and citizen assistance",
+   true,
+   "textarea",
+   "State official taluk/office name, district, villages/areas covered, address, official contacts and representation evidence. Describe services actually provided, counter timings, token/appointment process, accessibility, document guidance and official online channels. State published fees, receipts, enquiry contacts and grievance escalation. Clarify services referred to other departments and avoid guaranteed completion dates. Do not upload citizen certificates or personal records."
+  ],
+  "Registration Office": [
+   "registrationOffice",
+   "Official registration services and jurisdiction",
+   true,
+   "textarea",
+   "State official office designation, department, territorial jurisdiction, address and authorised contact. List registration services actually handled, appointment/counter hours, official portals and accessibility. Link current official document, fee and payment guidance rather than promising eligibility or approval. Describe receipt/status enquiry and grievance channels, distinguishing the office from private document-writing agents. Provide representation evidence; never upload deeds, identity documents or citizen applications here."
+  ],
+  "Public Utility Office": [
+   "publicUtilityOffice",
+   "Utility coverage, customer services and fault reporting",
+   true,
+   "textarea",
+   "State utility type, official operator, service area, branch address, official website and authorised contacts. Describe connection/billing/service-request counters, opening hours, accessibility and official payment channels. Provide published document/fee guidance, complaint tracking, outage/fault reporting and emergency contact routes; distinguish office hours from emergency support. Provide representation evidence and do not promise restoration times or collect account numbers, bills, passwords or payments here."
+  ],
+  "E-Seva Centre": [
+   "eSevaCentre",
+   "E-Seva services, authorisation and assistance fees",
+   true,
+   "textarea",
+   "List services, service area, centre hours, accessibility, languages and official portal links. State whether officially authorised or an independent assistance provider and supply evidence for authorisation claims. Explain document-checklist guidance, appointment support, published government fees versus assistance charges, receipts, status enquiries, refunds and complaints. Describe consent and secure handling/deletion procedures; do not upload applicant documents, passwords, biometrics or OTPs here. Do not guarantee approvals."
+  ],
+  "Aadhaar Service": [
+   "aadhaarService",
+   "Aadhaar assistance scope and official authorisation",
+   true,
+   "textarea",
+   "Specify appointment/checklist assistance versus authorised enrolment/update operations, with evidence for any official role. State location, hours, accessibility, languages, supported services and official guidance links. Explain official fees separately from permitted assistance charges, receipts, enquiry and grievance routes. Clarify that identity/biometric procedures and decisions remain with authorised channels. Do not collect Aadhaar numbers, copies, biometrics, passwords or OTPs in this onboarding form or promise guaranteed updates."
+  ],
+  "PAN Assistance": [
+   "panAssistance",
+   "PAN application support, fees and privacy",
+   true,
+   "textarea",
+   "Describe new/correction/reprint assistance, service channels, languages, hours and claimed authorisation evidence. Explain current official checklist guidance, form review, appointment or submission support and status enquiries. Separate official charges from assistance fees and describe receipts, cancellation/refunds and complaints. State consent, limited retention and deletion procedures. Do not upload PAN numbers/cards, applicant identity records, passwords or OTPs; issuance decisions remain with official authorities."
+  ],
+  "Government Scheme Assistance": [
+   "governmentSchemeAssistance",
+   "Scheme guidance, eligibility sources and support limits",
+   true,
+   "textarea",
+   "List schemes and jurisdictions supported, languages, hours and official source links with a process for checking current requirements. State official or independent status and authorisation evidence where claimed. Describe eligibility-information guidance, checklists, application review, status enquiries and grievance referrals without guaranteeing benefits or approval. Explain official versus assistance fees, receipts, consent, refunds and data deletion. Do not collect bank details, identity/caste/income documents, passwords or OTPs here."
+  ],
+  "Electricity Office": [
+   "electricityOffice",
+   "Electricity service area, counters and fault reporting",
+   true,
+   "textarea",
+   "State official operator, branch, jurisdiction, address, official website and authorised contact with representation evidence. List connection, billing and service-request assistance, counter hours, accessibility and official payment channels. Link current document/fee guidance, complaint tracking and outage/emergency contacts; distinguish office hours from emergency response. Do not guarantee restoration or collect consumer numbers, bills, passwords, OTPs or payments in this onboarding form."
+  ],
+  "Water Service": [
+   "waterService",
+   "Water service scope, coverage and support",
+   true,
+   "textarea",
+   "Clarify whether a public water office or independent supply service; state operator, service area, address, hours and authorisation evidence where claimed. Describe connection/billing support or delivery scope as applicable, official guidance or supply terms, charges, receipts and complaint channels. Explain interruption/leak reporting, emergency contacts and accessibility. Substantiate any quality claims without guaranteeing uninterrupted supply. Do not upload customer account, address or identity records here."
+  ],
+  "Post Office": [
+   "postOffice",
+   "Postal branch, services and customer enquiries",
+   true,
+   "textarea",
+   "State official branch name/type, postal code, jurisdiction, address, official contact and representation evidence. List services actually available, counter hours, booking cutoffs and accessibility. Link official postage, prohibited-item, packaging and document guidance rather than inventing rates. Describe receipt/tracking enquiries, delivery complaints and escalation; identify financial services only if officially offered. Do not collect parcel recipient records, account details, identity documents, passwords or OTPs here."
+  ],
+  "Public Distribution Service": [
+   "publicDistributionService",
+   "Distribution outlet, entitlements guidance and grievances",
+   true,
+   "textarea",
+   "State official outlet/operator, shop identifier, jurisdiction, address, opening/distribution hours and authorisation evidence. Describe commodities/services actually offered, accessibility and official sources for eligibility, entitlements, prices and schedule updates. Explain stock notices, receipts, shortage/quality complaints and grievance contacts without guaranteeing allocation or approval. Do not collect ration-card numbers, Aadhaar, household/caste/income records, biometrics or OTPs in this provider form."
+  ],
+  "Security Agency": [
+   "securityAgency",
+   "Agency credentials, staffing and deployment",
+   true,
+   "textarea",
+   "State service areas, agency authorisation evidence where applicable, insurance arrangements, management contacts and sectors served. Describe recruitment checks, training, supervision, uniforms, shift capacity, relief staff and subcontractors. Define permitted duties, reporting, emergency escalation and client approval for scope changes. Explain rates, minimum deployment, overtime, equipment costs, contracts, cancellation and complaints. Do not upload guard identity records, client access codes or sensitive security plans."
+  ],
+  "Security Guard": [
+   "securityGuard",
+   "Guard experience, availability and duty limits",
+   true,
+   "textarea",
+   "Describe experience, training, languages, employer/agency relationship and credential verification process. State service locations, availability, shift lengths and tasks such as reception, access checks or patrols. Explain supervision, safe conduct, incident reports, emergency escalation, replacement and welfare arrangements. List rates, overtime, travel, booking and cancellation terms. Distinguish authorised duties from police powers; do not upload personal IDs, weapon details or client security records."
+  ],
+  "Event Security": [
+   "eventSecurity",
+   "Event staffing, crowd safety and coordination",
+   true,
+   "textarea",
+   "List event types, locations, guest-capacity ranges, staffing and supervisor availability. Describe venue coordination, entry checks with consent and applicable rules, queue management, accessibility, safeguarding and emergency-service liaison. Explain briefing, communication, incident reporting and scope exclusions without sharing tactical plans. State setup/shift hours, rates, overtime, equipment, changes and cancellation terms. Supply evidence for claimed authorisation; do not guarantee incident-free events or upload attendee records."
+  ],
+  "Corporate Security": [
+   "corporateSecurity",
+   "Corporate site coverage and service governance",
+   true,
+   "textarea",
+   "Describe office/industrial site types, service areas, staffing capacity, credentials and supervision. Define reception/access duties, patrol scope, visitor privacy, shift handover, reporting and coordination with client emergency procedures. Explain screening, training, confidentiality, subcontractors, relief staffing and service reviews. State contract scope, rates, overtime, equipment responsibility, escalation, cancellation and complaints. Do not upload site layouts, access credentials, employee lists or detailed security procedures."
+  ],
+  "Alarm System": [
+   "alarmSystem",
+   "Alarm coverage, monitoring and response",
+   true,
+   "textarea",
+   "List alarm types, brands, site types and installer qualifications. Describe survey, sensor coverage, power/network backup, tamper alerts, testing, user training and false-alarm handling. Distinguish notifications from staffed monitoring and emergency response; state limitations and third-party responsibilities. Explain equipment/installation/subscription costs, maintenance, warranty, cancellation and secure account handover. Do not upload site plans, alarm codes or customer credentials."
+  ],
+  "Video Door Phone": [
+   "videoDoorPhone",
+   "Video entry compatibility, installation and privacy",
+   true,
+   "textarea",
+   "Describe brands, wired/wireless options, single/multi-unit capacity, door-lock compatibility, cabling, power backup and remote-app features. Explain site survey, installation permissions, safe door release, testing and user training. State recording/retention, visitor privacy, viewing permissions, secure account transfer and update support. List equipment, installation and subscription charges, warranty, maintenance and complaints. Do not collect door codes, visitor recordings or customer credentials here."
+  ],
+  "GPS Tracking": [
+   "gpsTracking",
+   "Authorised tracking, coverage and data controls",
+   true,
+   "textarea",
+   "State vehicle/asset types, brands, installation options, network coverage and power requirements. Describe owner authorisation and lawful user notice/consent, location accuracy limits, update intervals, alerts, history retention and role-based access. Explain SIM/data subscriptions, installation, support, warranty, cancellation and secure deletion/transfer on resale. Do not offer covert tracking of people or upload live locations, vehicle identifiers, passwords or customer tracking records."
+  ],
+  "Solar Panel Sales": [
+   "solarPanelSales",
+   "Solar equipment specifications and sales support",
+   true,
+   "textarea",
+   "List brands, module types, rated capacities, dimensions, new/used condition and compatible equipment. Provide sourcing, authorisation and claimed certification evidence. Explain stock, system-sizing assistance, prices/taxes, delivery, installation inclusions, product versus performance warranty, claims and returns. State assumptions behind output estimates; do not guarantee savings, subsidies or approvals. Keep model-level specifications in the catalogue."
+  ],
+  "Solar Installation": [
+   "solarInstallation",
+   "Solar site assessment, installation and commissioning",
+   true,
+   "textarea",
+   "Describe residential/commercial scope, system types, capacity range, service area and installer qualifications. Explain roof/structural and electrical assessment responsibilities, shading, design approval, permits and grid-connection coordination where applicable. State safe-work arrangements, equipment scope, testing, commissioning, documentation and training. Itemise survey, equipment, labour and extra works, timelines, payment stages, warranties and after-sales support. Do not promise subsidies or generation without stated assumptions."
+  ],
+  "Solar Water Heater": [
+   "solarWaterHeater",
+   "Solar water heater capacity, plumbing and warranty",
+   true,
+   "textarea",
+   "List brands, types, tank capacity, pressure ratings, materials and warranty evidence. Describe site suitability, roof/load assessment, water quality, plumbing compatibility, backup heating and installation responsibilities. Explain delivery, mounting, testing, user instructions, maintenance, spare parts and exclusions. State itemised prices, additional plumbing/electrical work, timelines, returns and service coverage; clarify weather and usage assumptions behind hot-water estimates."
+  ],
+  "Solar Maintenance": [
+   "solarMaintenance",
+   "Solar inspection, servicing and maintenance terms",
+   true,
+   "textarea",
+   "State supported system types/brands, service area, technician qualifications and one-off/contract options. Describe inspection, cleaning, fault diagnosis, monitoring review and parts replacement scope, including safe roof access and electrical isolation responsibilities. Explain visit frequency, response estimates, exclusions, customer approval for repairs, service reports, warranty coordination and waste handling. List visit/contract charges, parts/travel extras and cancellation terms; do not request monitoring passwords or guarantee restored output."
+  ],
+  "Inverter": [
+   "inverter",
+   "Inverter capacity, compatibility and installation",
+   true,
+   "textarea",
+   "List brands/models, rated capacity, output type, supported loads, battery compatibility and new/used condition. Describe load assessment, site/electrical checks by qualified personnel, delivery, installation, testing and user instructions. Explain equipment/labour charges, backup-time assumptions, warranty, service coverage, spares, returns and disposal/take-back options. Do not guarantee runtime without stating load and battery conditions; keep model specifications in the catalogue."
+  ],
+  "Battery": [
+   "battery",
+   "Battery applications, condition and replacement support",
+   true,
+   "textarea",
+   "State applications, brands, chemistry, voltage/capacity, sizes, compatibility and new/refurbished condition. Describe sourcing, manufacturing-date checks, storage, testing, installation and handling by qualified staff. Explain pricing, exchange valuation, warranty and exclusions, charging/maintenance instructions and authorised recycling/take-back arrangements. State delivery, returns and complaints; do not promise service life without usage assumptions or collect customer device records."
+  ],
+  "UPS": [
+   "ups",
+   "UPS sizing, backup and service support",
+   true,
+   "textarea",
+   "List brands, topology, VA/W ratings, input/output requirements, battery options and supported applications. Describe load/runtime assessment, site survey, qualified installation, testing, monitoring features and user handover. Separate equipment, battery, installation and maintenance costs. Explain warranty, replacement batteries, response estimates, exclusions, returns and recycling. State assumptions behind backup estimates and do not guarantee uninterrupted critical operations."
+  ],
+  "Generator": [
+   "generator",
+   "Generator capacity, site suitability and servicing",
+   true,
+   "textarea",
+   "State sales/rental/service scope, brands, capacity, fuel type, phase and new/used condition. Describe load assessment, site ventilation/exhaust, noise and placement checks, applicable permission responsibilities and qualified electrical connection. Explain transport, unloading, installation, testing, operator training, fuel responsibility and maintenance. Itemise prices, hire hours/deposits if offered, warranty, breakdown support, cancellation and returns; substantiate compliance claims without guaranteeing approvals."
+  ],
+  "EV Charging Station": [
+   "evChargingStation",
+   "Charging connectors, access and tariffs",
+   true,
+   "textarea",
+   "State station location, operator, opening hours, public/restricted access, parking and accessibility. List connector standards, AC/DC power ratings, bays and vehicle compatibility. Describe booking/app/payment requirements, published energy/time/session tariffs, parking/idle fees, receipts and refunds. Explain availability updates, support, fault reporting and emergency arrangements. Provide evidence for claimed approvals; do not guarantee charging speed or collect vehicle, payment or account credentials here."
+  ],
+  "EV Charger Installation": [
+   "evChargerInstallation",
+   "Charger installation, site assessment and handover",
+   true,
+   "textarea",
+   "List residential/commercial scope, brands, connector/power options, service areas and installer qualifications. Describe electrical-load and site assessment, property permission, utility coordination and qualified design responsibilities. Explain equipment, cabling/protection, mounting, testing, commissioning, user training and documentation at a service level. Itemise survey, hardware, labour and additional works; state timelines, warranties, maintenance and cancellation. Do not promise approvals or request site access codes."
+  ],
+  "EV Service": [
+   "evService",
+   "EV workshop scope, diagnostics and safety",
+   true,
+   "textarea",
+   "State supported vehicle types/brands, workshop/mobile coverage, technician training and authorisation evidence where claimed. Distinguish routine servicing from high-voltage battery or drivetrain work and identify referral-only tasks. Describe diagnostic estimates, customer approval, genuine/compatible parts, software permissions, qualified safety procedures, battery handling/disposal and emergency arrangements without technical repair instructions. Explain timelines, warranty impact, service guarantees, custody, test-drive consent, charges and complaints. Do not upload customer vehicle or diagnostic records."
+  ],
+  "Waste Management": [
+   "wasteManagement",
+   "Waste streams, collection and authorised disposal",
+   true,
+   "textarea",
+   "List accepted/excluded waste streams, customer sectors, service area, capacity and collection frequency. State authorisation evidence where applicable and downstream facility arrangements. Describe segregation requirements, containers, transport, weighing/receipts, traceability, staff training, PPE and incident escalation. Explain site survey, charges, minimum quantities, missed collections, cancellation and complaints. Distinguish ordinary waste from hazardous or biomedical waste; do not claim handling capability without evidence."
+  ],
+  "Recycling": [
+   "recycling",
+   "Recyclable materials, processing and traceability",
+   true,
+   "textarea",
+   "List materials, grades, contamination limits, minimum volumes and collection/drop-off options. Describe sorting, weighing, processing partners, applicable authorisation evidence and downstream records. Explain purchase rates or service fees, deductions, payment terms, rejected materials and complaints. State safe handling, storage and environmental controls at a service level. For electronics, describe data-destruction options and evidence without collecting device contents; substantiate recycling claims."
+  ],
+  "Water Treatment": [
+   "waterTreatment",
+   "Water treatment assessment, capacity and verification",
+   true,
+   "textarea",
+   "State residential/commercial/industrial scope, source-water types, intended use and treatment capacity. Describe sampling/testing arrangements, qualified design, technology selection, site requirements, installation and commissioning. Explain treated-water verification, consumables, maintenance, reject-water handling and operator training. Itemise equipment, labour, testing and ongoing costs, warranty and support. Do not claim drinking-water suitability or removal performance without appropriate test evidence and stated operating conditions."
+  ],
+  "Sewage Treatment": [
+   "sewageTreatment",
+   "Sewage treatment scope, operations and disposal",
+   true,
+   "textarea",
+   "Describe plant types, design/installation/operation services, daily capacity and site sectors. State qualified personnel, influent assessment, site/approval responsibilities and commissioning tests. Explain monitoring, maintenance, sludge handling through appropriate channels, odour control, emergency response and operator training. State worker safety arrangements, including restricted access and qualified specialist procedures; do not provide entry instructions. Itemise project/operating costs, service levels and warranty; substantiate discharge/reuse claims."
+  ],
+  "Rainwater Harvesting": [
+   "rainwaterHarvesting",
+   "Rainwater capture, storage and maintenance",
+   true,
+   "textarea",
+   "State building/site types, survey coverage and design/installation/maintenance scope. Describe catchment assessment, storage or recharge options, filtration, overflow, site suitability and qualified design responsibilities. Explain permissions where applicable, installation, testing, cleaning, mosquito prevention and maintenance schedule. Itemise materials/labour, timelines, warranty and support. State rainfall/yield assumptions and do not guarantee recharge volumes or potable quality without suitable assessment and testing."
+  ],
+  "Fire Extinguisher": [
+   "fireExtinguisher",
+   "Extinguisher supply, servicing and traceability",
+   true,
+   "textarea",
+   "State supply/installation/inspection/refill scope, brands, types, capacities and intended applications. Provide evidence for claimed product standards and technician competence. Describe site assessment by qualified personnel, batch/manufacture/service records, mounting, signage, user training and maintenance reminders. Explain pricing, service intervals based on applicable guidance, warranty, replacement/disposal and complaints. Do not guarantee protection or upload confidential site plans; keep technical specifications in the catalogue."
+  ],
+  "Fire Alarm": [
+   "fireAlarm",
+   "Fire detection, commissioning and maintenance",
+   true,
+   "textarea",
+   "List system types, brands, building categories and installation/maintenance scope. State designer/installer competence and evidence for claimed approvals. Describe survey, detection/notification coverage, backup power, integrations, testing, commissioning records and user handover at a service level. Clarify monitoring versus emergency response, false-alarm support, inspection plans, exclusions, costs and warranty. Do not guarantee compliance or response without verification; do not collect alarm codes or detailed site security plans."
+  ],
+  "Fire Safety Audit": [
+   "fireSafetyAudit",
+   "Audit qualifications, scope and reporting",
+   true,
+   "textarea",
+   "State auditor qualifications, experience, authorisation evidence where claimed, building sectors and service area. Define inspection scope, applicable assessment framework, exclusions, site access requirements and report deliverables. Describe findings prioritisation, corrective-action guidance, follow-up verification and confidentiality. Distinguish an advisory audit from statutory certification or authority approval. Explain fees, timelines, conflicts of interest, cancellation and complaints; do not guarantee approval or upload sensitive building plans."
+  ],
+  "Private Investigation": [
+   "privateInvestigation",
+   "Investigation scope, lawful authority and confidentiality",
+   true,
+   "textarea",
+   "Describe permitted case categories, jurisdictions, qualifications, experience and authorisation evidence where applicable. Explain client-authority checks, consent or other lawful basis, conflict checks, approved information sources and prohibited activities such as hacking, impersonation or covert tracking without lawful authority. State scope agreements, evidence handling, secure reports, retention/deletion, fees, expenses, cancellation and complaints. Do not promise findings or upload subject identities, locations, communications or case evidence in this provider form."
+  ],
+  "Background Verification": [
+   "backgroundVerification",
+   "Verification checks, consent and dispute handling",
+   true,
+   "textarea",
+   "List checks offered, such as employment, education or references, jurisdictions, client sectors and provider credentials. Describe subject consent or applicable lawful authority, source verification, identity matching, accuracy review and correction/dispute procedures. Explain limits, incomplete results, turnaround estimates, subcontractors, secure delivery, access controls, retention/deletion and cross-border handling if relevant. State per-check/package fees, cancellation/refunds and complaints. Do not upload candidate IDs, reports, criminal-history records, passwords or sensitive personal data here; do not guarantee clearance."
+  ],
+  "Offset Printing": [
+   "offsetPrinting",
+   "Offset print specifications, proofs and production",
+   true,
+   "textarea",
+   "List products, paper sizes/weights, colour options, minimum quantities and production capacity. Explain artwork requirements, prepress/plate charges, proof approval, colour tolerances, finishing and quantity tolerances. State turnaround, delivery, itemised pricing, cancellation after approval, defects/reprints and copyright permissions. Describe secure file handling and deletion; do not upload confidential customer artwork."
+  ],
+  "Visiting Card Printing": [
+   "visitingCardPrinting",
+   "Business card designs, finishes and approval",
+   true,
+   "textarea",
+   "State card sizes, paper/materials, thickness, single/double-sided printing, finishes and minimum quantities. Describe design assistance, languages, logo/QR proof checks, customer approval and revisions. Explain prices, design/setup extras, turnaround, delivery, cancellation, defects and reprints. Require permission for logos and protect contact details; do not upload customers' business cards or address lists here."
+  ],
+  "Book Printing": [
+   "bookPrinting",
+   "Book formats, binding and publishing permissions",
+   true,
+   "textarea",
+   "List trim sizes, page ranges, paper, colour/monochrome options, cover and binding types, minimum runs and capacity. Explain manuscript/layout requirements, proof copies, approval, revisions, page-count pricing and finishing. Clarify printing versus editing/publishing/ISBN services, rights permissions, delivery, defects/reprints and cancellation terms. Describe confidential manuscript storage/deletion; upload only authorised samples, not private manuscripts."
+  ],
+  "Photo Printing": [
+   "photoPrinting",
+   "Photo formats, colour approval and privacy",
+   true,
+   "textarea",
+   "List print sizes, paper/finishes, albums, canvas/framing options and quantities. Describe file formats/resolution, cropping and colour expectations, retouching scope and proof approval. State prices, extras, turnaround, delivery, damaged prints, reprints and cancellation terms. Explain ownership/consent checks, secure transfer, retention/deletion and separate permission for portfolio use. Do not upload private customer photos or identity-document images here."
+  ],
+  "LED Signage": [
+   "ledSignage",
+   "LED signage specifications, installation and support",
+   true,
+   "textarea",
+   "List illuminated-letter or digital-display types, sizes, materials, indoor/outdoor ratings, brightness controls and power requirements. Describe site survey, artwork/content approval, property/authority permissions, qualified electrical and height work, mounting and testing. Explain controller access, user training, maintenance, weather limitations, warranty, itemised prices and repair/removal terms. Do not guarantee permits; do not upload client passwords or private display content."
+  ],
+  "Name Board": [
+   "nameBoard",
+   "Name board materials, proofs and mounting",
+   true,
+   "textarea",
+   "Describe home/office/shop boards, materials, dimensions, lettering, languages, finishes and lighting options. Explain measurements, spelling/logo proof approval, revisions, indoor/outdoor suitability, mounting and installation responsibilities. State production times, design/material/installation charges, delivery, care instructions, warranty, defects and custom-order cancellation/return exclusions. Obtain permission for logos and do not upload customer names, addresses or private designs here."
+  ],
+  "Custom Packaging": [
+   "customPackaging",
+   "Custom packaging design, samples and production",
+   true,
+   "textarea",
+   "List packaging types, materials, dimensions, product applications, minimum quantities and capacity. Describe design/dieline support, prototypes, sample approval, printing, finishes, tolerances and tooling ownership. Itemise design/tooling/unit costs, lead times, delivery, changes, defects and cancellation terms. Provide evidence for food-contact, recycled or sustainability claims where made. Protect client artwork and do not upload confidential product designs."
+  ],
+  "Labels & Stickers": [
+   "labelsStickers",
+   "Label materials, adhesives and print approval",
+   true,
+   "textarea",
+   "State paper/film options, sizes, shapes, roll/sheet formats, adhesive types, surfaces and intended conditions. Describe artwork, variable data/barcodes, proof approval, colour tolerances, finishing and minimum quantities. Explain compatibility testing, durability limitations, prices, setup charges, lead times, delivery and reprint rules. Substantiate food-contact or safety claims and require rights to logos; do not upload customer datasets or confidential labels."
+  ],
+  "Corrugated Boxes": [
+   "corrugatedBoxes",
+   "Box grades, dimensions and load requirements",
+   true,
+   "textarea",
+   "List box styles, internal/external dimensions, flute/ply options, board grades, printing and minimum quantities. Describe intended contents, load/stacking requirements, samples, tolerances and evidence for claimed strength tests. Explain flat-packed/assembled supply, storage/moisture limitations, custom tooling, prices, bulk orders, production times, delivery, shortages and defect remedies. Do not guarantee transit protection without agreed packing and handling conditions."
+  ],
+  "Office Stationery": [
+   "officeStationery",
+   "Stationery range, bulk orders and fulfilment",
+   true,
+   "textarea",
+   "List categories, brands, pack sizes, paper grades and business supply coverage. Describe stock updates, minimum orders, bulk/custom-branded orders, sample approval, lead times and approved substitutions. Explain prices/taxes, delivery/pickup, recurring-order terms, shortages, defects and returns. Provide evidence for sourcing or environmental claims and protect customer branding; keep item-level specifications in the catalogue."
+  ],
+  "Office Furniture": [
+   "officeFurniture",
+   "Office furniture specifications and installation",
+   true,
+   "textarea",
+   "List desks, chairs, storage or partitions, brands, materials, dimensions, load ratings and new/used condition. Describe site measurements, accessibility/fit guidance, layouts, custom samples and approval. Explain minimum orders, prices, delivery access, unloading, assembly, installation, timelines and removal if offered. State warranty, spares, maintenance, damage claims and custom-order return exclusions; substantiate ergonomic or safety claims."
+  ],
+  "Photocopy Centre": [
+   "photocopyCentre",
+   "Copying formats, finishing and document privacy",
+   true,
+   "textarea",
+   "List colour/monochrome copying, paper sizes, scanning, binding and lamination services, hours and capacity. Describe file submission, page/quantity checks, proof approval, finishing and turnaround. Explain per-page/bulk prices, extras, delivery/pickup, errors and reprint remedies. Require lawful permission to copy, protect originals, and describe secure deletion of scans and files. Do not upload customers' identity documents, certificates or confidential originals in this provider form."
+  ],
+  "Printer Service": [
+   "printerService",
+   "Printer diagnostics, repairs and maintenance terms",
+   true,
+   "textarea",
+   "State supported brands, printer types, workshop/onsite areas, technician experience and service hours. Describe diagnosis, written estimates, customer approval, parts/consumable authenticity, pickup/custody and test printing with non-sensitive samples. Explain service contracts, response estimates, labour/parts/travel fees, warranty, unresolved faults and cancellation. Protect stored documents and network settings; obtain consent before resets and do not collect passwords or customer print files here."
+  ],
+  "Commercial Vehicle Rental": [
+   "commercialVehicleRental",
+   "Commercial rental fleet, capacity and operating terms",
+   true,
+   "textarea",
+   "List vehicle/body types, payload or passenger capacity, dimensions, self-drive/with-driver options, coverage and permitted uses. Describe vehicle fitness/permit and insurance evidence, driver eligibility, rental duration, mileage/fuel rules and geographic limits. Explain loading/unloading responsibilities, equipment, inspection and handover, breakdown replacement and incident reporting. Itemise hire, deposit, tolls, waiting/overtime and damage charges; state cancellation/refunds. Do not upload customer licences, identity or vehicle records."
+  ],
+  "Construction Equipment Rental": [
+   "constructionEquipmentRental",
+   "Construction fleet, site readiness and hire terms",
+   true,
+   "textarea",
+   "List equipment types, models, capacity, attachments, condition and operator-included/bare-hire options. Describe site access/readiness checks, operator eligibility, inspection/service evidence, delivery, unloading and handover. Explain permitted uses, safety briefing, breakdown replacement and incident reporting. Itemise daily/hourly hire, minimum term, deposit, fuel, transport, overtime, damage liability and cancellation/refunds. Do not upload customer site plans or personal records."
+  ],
+  "Power Tool Rental": [
+   "powerToolRental",
+   "Tool compatibility, inspection and return conditions",
+   true,
+   "textarea",
+   "List tool categories, brands, ratings, corded/battery options and included accessories. Describe intended applications, user eligibility, inspection/testing, instructions and required protective equipment. State consumables, battery/charger inclusion, hire duration, deposits, delivery/pickup and return inspection. Explain wear versus damage, missing parts, late fees, breakdowns, cancellation/refunds and support. Do not provide unsafe operating instructions or collect customer identity records here."
+  ],
+  "Generator Rental": [
+   "generatorRental",
+   "Generator hire capacity, fuel and site responsibilities",
+   true,
+   "textarea",
+   "State capacities, fuel/phase options, load assessment, operator availability and hire periods. Describe ventilation/exhaust and placement assessment by qualified personnel, electrical connection, applicable permissions, delivery and commissioning responsibilities. Explain fuel provision, included running hours, monitoring, maintenance and breakdown backup. Itemise transport, installation, deposit, overtime and damage charges; state cancellation/refunds and return conditions. Do not guarantee uninterrupted supply."
+  ],
+  "Industrial Equipment Rental": [
+   "industrialEquipmentRental",
+   "Industrial equipment specifications and rental support",
+   true,
+   "textarea",
+   "List machinery categories, capacity, utility requirements, attachments and inspection/calibration evidence where claimed. Describe application/site assessment, operator competence, installation, commissioning, training and permitted-use limits. Explain maintenance responsibilities, spare equipment, breakdown response, insurance arrangements and return inspection. State rental periods, deposits, transport, consumables, overtime, damage liability, cancellation and complaints. Do not upload confidential production or site records."
+  ],
+  "Party Equipment Rental": [
+   "partyEquipmentRental",
+   "Party inventory, setup and rental conditions",
+   true,
+   "textarea",
+   "List equipment categories, quantities, dimensions, condition, capacity and age/use restrictions. Describe availability confirmation, venue access checks, delivery, setup, operator inclusion, cleaning and collection. Explain safe-use briefing, inspection/handover, backup equipment and breakdown response. Itemise hire periods, deposits, transport, overtime, missing/damaged-item charges, cancellation/refunds and weather contingencies. Identify specialist equipment requiring qualified operators; do not upload private guest or venue records."
+  ],
+  "Lighting Rental": [
+   "lightingRental",
+   "Lighting packages, power and safe installation",
+   true,
+   "textarea",
+   "List decorative/stage lighting, quantities, coverage, indoor/outdoor suitability and control options. Describe venue survey, power requirements, qualified electrical/rigging work, mounting, cable protection, testing and operator support. State weather limitations, backup, setup/dismantling, venue permissions and safe audience use. Itemise hire hours, transport, labour, deposits, damage charges, overtime and cancellation/refunds. Confirm availability and disclose exclusions; do not guarantee permits or upload venue access credentials."
+  ],
+  "Appliance Rental": [
+   "applianceRental",
+   "Appliance inventory, installation and hire terms",
+   true,
+   "textarea",
+   "List appliance types, brands/models, capacity, condition, power/space requirements and included accessories. Describe rental periods, availability confirmation, delivery access, installation by qualified staff, testing and handover. Explain maintenance, breakdown replacement, permitted use, cleaning, return inspection and normal wear versus damage. Itemise rent, deposit, transport, installation, late fees and cancellation/refunds. Do not upload customer identity, address or payment records."
+  ],
+  "Camera Rental": [
+   "cameraRental",
+   "Camera kits, compatibility and return checks",
+   true,
+   "textarea",
+   "List camera/lens/accessory models, mounts, condition, included batteries/cards and rental durations. Explain compatibility advice, inspection/test shots, handover, pickup/delivery, availability and backup arrangements. State deposits, rates, late returns, loss/damage liability, insurance options and cancellation/refunds. Describe secure removal of customer media before reuse and ownership of recorded content; do not request private footage, passwords or identity records here."
+  ],
+  "Costume Rental": [
+   "costumeRental",
+   "Costume sizes, fitting and cleaning policies",
+   true,
+   "textarea",
+   "List costume themes, age/size ranges, materials, accessories and condition. Describe measurements, fitting appointments, alteration limits, hygiene/cleaning, availability and reservation confirmation. Explain rental duration, pickup/delivery, deposits, accessory checklists, stain/tear/loss charges and return inspection. State cleaning fees, late fees, cancellation/refunds and child-safe accessory limitations. Obtain permission for portfolio photos and do not upload customer measurements or private images here."
+  ],
+  "Online Shopping Store": [
+   "onlineShoppingStore",
+   "Online catalogue, checkout and fulfilment",
+   true,
+   "textarea",
+   "State store URL, product categories, brands, seller identity and sourcing evidence. Describe catalogue accuracy, stock, ordering channels, payment options, taxes, delivery areas, shipping fees and timelines. Explain confirmation, tracking, cancellations, returns/refunds, warranty and customer support. State privacy, secure payment-provider use and restricted-product controls; do not upload customer orders, card details or account credentials."
+  ],
+  "Marketplace Seller": [
+   "marketplaceSeller",
+   "Marketplace channels, authorisation and fulfilment",
+   true,
+   "textarea",
+   "List marketplaces, public storefront links, product categories, brands and seller/brand authorisation evidence where claimed. Describe own-stock, platform-fulfilled or supplier-fulfilled models, stock synchronisation, dispatch and delivery responsibility. Explain invoices, fees reflected in pricing, platform versus seller return/warranty duties, complaints and counterfeit prevention. Follow platform rules and protect buyer data; never upload marketplace passwords, API keys or buyer records."
+  ],
+  "D2C Brand": [
+   "d2cBrand",
+   "Brand ownership, products and direct customer support",
+   true,
+   "textarea",
+   "State brand/store links, ownership or licensing evidence, product range and own/contract manufacturing arrangements. Describe quality checks, labelling, batch traceability and evidence for product claims where relevant. Explain catalogue, stock, direct orders, subscriptions if offered, pricing, shipping, returns, recalls and warranty. State support contacts, privacy and cancellation/refund terms; do not upload proprietary formulas, customer records or payment credentials."
+  ],
+  "Local Online Seller": [
+   "localOnlineSeller",
+   "Local ordering, delivery coverage and support",
+   true,
+   "textarea",
+   "List product categories, public shop/social links, sourcing and ordering channels. State serviceable areas/PIN codes, delivery radius, pickup location, hours, cutoff times and stock confirmation. Explain minimum orders, itemised prices, delivery fees, payment options, receipts, substitutions with approval, failed delivery and returns/refunds. Describe support and privacy; avoid publishing home addresses unless intended as public business locations and do not upload customer chats or payment records."
+  ],
+  "Online Service Provider": [
+   "onlineServiceProvider",
+   "Online service scope, delivery and support",
+   true,
+   "textarea",
+   "Describe services, qualifications, public website, languages, client types and delivery channels. State scope, deliverables, turnaround estimates, availability, customer inputs and acceptance criteria. Explain pricing, milestones, revisions, cancellations/refunds, support and complaints. Describe intellectual-property terms, confidentiality, data retention and secure access arrangements. Do not upload client files, passwords or API keys; substantiate professional claims without guaranteeing results."
+  ],
+  "Freelance Platform": [
+   "freelancePlatform",
+   "Platform roles, fees and dispute resolution",
+   true,
+   "textarea",
+   "State platform URL, operator, service categories, regions and eligibility. Distinguish intermediary responsibilities from freelancer delivery; describe onboarding checks, matching, contracts, milestones, reviews and moderation. Explain commissions, payment-provider arrangements, payouts, cancellations, disputes and refunds without claiming escrow unless actually provided. Describe IP ownership, privacy, account deletion and support. Do not upload worker/client records, payment details or credentials."
+  ],
+  "Subscription Service": [
+   "subscriptionService",
+   "Subscription plans, renewals and cancellation",
+   true,
+   "textarea",
+   "Describe physical/digital/service plans, inclusions, limits, billing frequency, taxes, trials and eligibility. Explain explicit renewal consent, trial-to-paid conversion, price-change notices, pause/cancel methods and effective dates. State fulfilment/access, missed deliveries or outages, refunds, support and complaints. Describe payment-provider security, data export/deletion and service termination. Do not upload subscriber records or payment credentials; clearly disclose recurring charges."
+  ],
+  "Digital Product": [
+   "digitalProduct",
+   "Digital formats, licences and access terms",
+   true,
+   "textarea",
+   "List product types, formats, versions, compatibility, accessibility and ownership/distribution rights. Describe previews, download/access delivery, licence scope, device/user limits, updates and support duration. Explain prices, taxes, subscriptions if any, technical failures, refund rules and end-of-support notices. State security, privacy and permitted-use restrictions without requiring customer credentials. Upload only authorised samples, not third-party licensed files or private customer content."
+  ],
+  "Online Course Provider": [
+   "onlineCourseProvider",
+   "Course catalogue, access and learner support",
+   true,
+   "textarea",
+   "List subjects, syllabus, levels, prerequisites, languages and instructor qualifications. Describe live/recorded/self-paced formats, duration, assessments, projects, completion criteria and certificate scope without implying unverified accreditation. State platform requirements, accessibility, access validity, updates, support and content rights. Explain fees, trials, cancellation/refunds, recording consent and privacy; do not upload learner records or promise jobs or exam results."
+  ],
+  "Online Tutor": [
+   "onlineTutor",
+   "Tutor subjects, scheduling and learner safeguards",
+   true,
+   "textarea",
+   "State subjects, grades/boards, ages, languages, qualifications and experience. Describe individual/group lessons, batch limits, time zones, duration, availability, platform requirements and trial sessions. Explain lesson planning, homework, progress feedback, parent updates for minors, safeguarding and recording consent. List fees, packages, rescheduling, missed lessons and refunds. Protect learner data and do not upload student identities, recordings or private records; avoid guaranteed results."
+  ],
+  "Laundry": [
+   "laundry",
+   "Laundry handling, pricing and delivery",
+   true,
+   "textarea",
+   "List wash/iron services, fabrics accepted, exclusions, capacity and service areas. Explain item counting, care-label checks, sorting, detergents, hygiene, stain limitations and customer approval for special treatment. State per-item/weight prices, minimum orders, pickup/delivery, turnaround, delays, cancellations and lost/damaged-item claims. Describe tagging and privacy; do not upload customer addresses or garment records."
+  ],
+  "Dry Cleaning": [
+   "dryCleaning",
+   "Dry-cleaning scope and garment protection",
+   true,
+   "textarea",
+   "Describe garments/materials handled, specialist items, exclusions, staff experience and process controls. Explain inspection, existing-damage records, care labels, stain/colour-risk disclosure, consent and finishing. State itemised prices, estimates, pickup/delivery, turnaround, re-cleaning, damage/loss claims and cancellation terms. Describe safe chemical handling and waste arrangements at a service level; avoid guaranteed stain removal."
+  ],
+  "Domestic Help": [
+   "domesticHelp",
+   "Domestic duties, staffing and fair working terms",
+   true,
+   "textarea",
+   "State direct service versus placement, areas, duties, hours and live-in/live-out options. Describe worker experience, consent-based screening, references, training, replacement and supervision. Define wages/fees, rest days, accommodation if offered, task exclusions, safe conditions, complaints and cancellation. Explain household access, confidentiality and emergency contacts without collecting worker IDs, home access codes or private family records here. Do not retain original identity documents."
+  ],
+  "Matrimonial Service": [
+   "matrimonialService",
+   "Introduction services, consent and profile privacy",
+   true,
+   "textarea",
+   "Describe adult-only introduction services, regions, languages, online/offline format and provider experience. Explain voluntary profile consent, identity-check process and its limits, profile visibility, contact-sharing permission, fraud reporting, moderation and deletion. State membership fees, inclusions, renewal, cancellation/refunds and complaints. Do not guarantee matches or marriage, and do not upload profiles, photos, caste/religion, financial or identity records in this provider form."
+  ],
+  "Senior Citizen Service": [
+   "seniorCitizenService",
+   "Senior support scope, consent and safeguards",
+   true,
+   "textarea",
+   "Describe companionship, errands, appointments, home visits or other support, coverage, hours and staffing. State qualifications, screening and supervision; distinguish non-clinical assistance from licensed nursing or medical care. Explain the senior's consent, accessibility, family updates with permission, emergency escalation, replacement and safeguarding against abuse or financial exploitation. List fees, visit duration, cancellations/refunds and complaints. Do not collect health, identity, bank or home access records here."
+  ],
+  "NGO": [
+   "ngo",
+   "NGO governance, programmes and accountability",
+   true,
+   "textarea",
+   "State mission, legal structure, registration evidence where applicable, authorised contacts and service regions. Describe programmes, eligibility, capacity, referral routes, governance and reporting. Explain funding sources, optional donations, receipts, claimed tax-benefit evidence, use-of-funds reporting and complaints. Describe safeguarding, consent, volunteer checks and data protection. Do not upload beneficiary identities, donor records or confidential case files; do not guarantee aid."
+  ],
+  "Charitable Organization": [
+   "charitableOrganization",
+   "Charitable activities, donations and transparency",
+   true,
+   "textarea",
+   "Describe charitable purpose, organisation structure, registration evidence and responsible contacts. List activities, areas, eligibility and delivery partners. Explain donation channels, optional contributions, receipts, restricted-donation handling, refunds where applicable, accounts and impact reporting. Substantiate any tax exemption or accreditation claims. State safeguarding, consent, complaints and privacy; do not upload beneficiary or donor personal records or promise benefits."
+  ],
+  "Community Service": [
+   "communityService",
+   "Community programmes, access and coordination",
+   true,
+   "textarea",
+   "List community activities, locations, schedules, capacity, organisers and partner roles. Explain participation eligibility, accessibility, registration process, any disclosed fees or optional contributions and cancellation arrangements. Describe venue permissions, supervision, safeguarding, emergency coordination, consent for photos and complaints. State how outcomes and funds are reported; do not upload participant lists, private addresses or sensitive beneficiary records."
+  ],
+  "Volunteer Organization": [
+   "volunteerOrganization",
+   "Volunteer roles, screening and safeguarding",
+   true,
+   "textarea",
+   "Describe mission, programme areas, organisation credentials and volunteer roles. State eligibility, minimum age, consent/guardian requirements where relevant, screening, training, supervision and time commitments. Explain role boundaries, expenses or allowances, safety equipment, insurance arrangements, emergency support and withdrawal procedures. Describe safeguarding, complaints, confidentiality and photo consent. Do not collect volunteer IDs, background-check reports or beneficiary records in this provider form."
+  ],
+  "Funeral Service": [
+   "funeralService",
+   "Funeral arrangements, family consent and transparent fees",
+   true,
+   "textarea",
+   "Describe service areas, contact hours, traditions supported and directly provided versus partner services. Explain family-authorised coordination, transport, venue/cremation/burial arrangements, official document guidance and responsibility for permissions. State itemised packages, optional extras, third-party charges, timing limitations, changes/refunds and complaints. Provide evidence for claimed authorisations and explain respectful handling, privacy and emergency referrals. Do not upload death certificates, identity documents or private family records here."
+  ],
+  "Relocation Assistance": [
+   "relocationAssistance",
+   "Relocation coordination, partners and service limits",
+   true,
+   "textarea",
+   "State origin/destination coverage, household/corporate scope, languages and experience. Describe move planning, housing/search support, utility coordination, local orientation and other agreed tasks; distinguish assistance from licensed legal, property or immigration services. Identify partners, authorisation and customer approval for bookings or spending. Explain fees, third-party costs, milestones, cancellation/refunds, delays and complaints. Protect customer addresses and documents; do not upload private relocation records."
+  ],
+  "Concierge Service": [
+   "conciergeService",
+   "Concierge requests, spending approval and privacy",
+   true,
+   "textarea",
+   "List personal/business assistance, service area, languages, hours and response estimates. Define bookings, errands, coordination, exclusions and partner responsibilities. Explain request confirmation, explicit spending limits/approval, receipts, service versus third-party fees, subscriptions if offered, cancellations and refunds. Describe staff screening, secure handling of keys or access, confidentiality, incident escalation and complaints. Do not upload customer passwords, payment details, itineraries or home access codes."
+  ],
+  "Miscellaneous Service": [
+   "miscellaneousService",
+   "Service description, eligibility and delivery boundaries",
+   true,
+   "textarea",
+   "Clearly name the actual service, tasks, intended customers, coverage, delivery format and exclusions. State experience, qualifications and any applicable authorisation evidence. Explain deliverables, timing, customer inputs, consent, safety/privacy arrangements, prices, extra charges, cancellation/refunds and complaints. Select a more specific category where available; this category must not bypass restricted-service or approval requirements. Do not upload private client records or promise unverifiable outcomes."
   ]
  },
  "policies": [
@@ -4904,7 +7311,10 @@
   "Cybersecurity",
   "CCTV Installation",
   "Access Control",
-  "Network Security"
+  "Network Security",
+  "Alarm System",
+  "Video Door Phone",
+  "GPS Tracking"
  ],
  "accountingServices": [
   "Chartered Accountant",
@@ -5023,7 +7433,9 @@
   "Car Rental",
   "Bike Rental",
   "Bus Rental",
-  "Tourist Vehicle Rental"
+  "Tourist Vehicle Rental",
+  "Tractor Rental",
+  "Commercial Vehicle Rental"
  ],
  "travelServices": [
   "Travel Agency",
@@ -5035,13 +7447,16 @@
   "Tourist Guide",
   "Visa Service",
   "Passport Assistance",
-  "Travel Insurance"
+  "Travel Insurance",
+  "Pilgrimage Service"
  ],
  "rentalServices": [
   "Car Rental",
   "Bike Rental",
   "Bus Rental",
-  "Tourist Vehicle Rental"
+  "Tourist Vehicle Rental",
+  "Tractor Rental",
+  "Commercial Vehicle Rental"
  ],
  "hotelServices": [
   "Budget Hotel",
@@ -5057,5 +7472,46 @@
   "Service Apartment",
   "Hostel",
   "PG Accommodation"
+ ],
+ "eventServices": [
+  "Wedding Planner",
+  "Event Organizer",
+  "Corporate Event Planner",
+  "Birthday Planner",
+  "Marriage Hall",
+  "Party Hall",
+  "Banquet Hall",
+  "Outdoor Venue",
+  "Wedding Decorator",
+  "Stage Decoration",
+  "Flower Decoration",
+  "Lighting Decoration",
+  "Wedding Photography",
+  "Wedding Videography",
+  "Drone Photography",
+  "Photo Booth",
+  "DJ",
+  "Music Band",
+  "Live Singer",
+  "Dance Troupe",
+  "Invitation Printing",
+  "Furniture Rental",
+  "Tent Rental",
+  "Sound System Rental",
+  "Cinema",
+  "Gaming Centre",
+  "Amusement Centre",
+  "Kids Entertainment",
+  "Photo Studio",
+  "Photography",
+  "Videography",
+  "Video Editing",
+  "Drone Service",
+  "Birthday Party Service",
+  "Kids Party Venue",
+  "Kids Entertainer",
+  "Religious Event Service",
+  "Party Equipment Rental",
+  "Lighting Rental"
  ]
 }

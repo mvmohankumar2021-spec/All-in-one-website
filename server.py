@@ -2615,6 +2615,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                     inactive.update(f[0] for section in schema["sections"] if section.get("rentalOnly") for f in section["fields"])
                 if not any(s in schema.get("hotelServices", []) for s in services):
                     inactive.update(f[0] for section in schema["sections"] if section.get("hotelOnly") for f in section["fields"])
+                if not any(s in schema.get("eventServices", []) for s in services):
+                    inactive.update(f[0] for section in schema["sections"] if section.get("eventOnly") for f in section["fields"])
                 if data.get("securityMaintenance") != "Yes":
                     inactive.add("securityMaintenanceDetails")
                 if not any(s in schema.get("itSupportServices", []) for s in services):

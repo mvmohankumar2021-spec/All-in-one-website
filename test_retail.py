@@ -538,6 +538,26 @@ class RetailTests(BaseTests):
             data['installationDetails'] = 'Approved fitting and charges'
             self.assertEqual(self.save(data)[1], 200)
 
+    def test_event_services(self):
+        self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
+        for service in self.schema['eventServices']:
+            data = self.valid(); data['services'] = [service]
+            key = self.schema['specific'][service][0]
+            data[key] = 'Event scope'
+            self.assertEqual(self.save(data)[1], 200)
+            for required in (key, 'eventScope', 'eventDelivery', 'eventTerms', 'eventSafety'):
+                value = data[required]; data[required] = ''
+                self.assertEqual(self.save(data)[1], 400)
+                data[required] = value
+
+    def test_event_draft_scope(self):
+        self.assertEqual(self.save({'services':['Birthday Planner'], 'birthdayPlanner':'Themes', 'weddingPlanner':'Unselected', 'hotelRooms':'Irrelevant'})[1], 200)
+        self.handler.vendor_catering_onboarding(retail_store=True)
+        details = self.result[0]['details']
+        self.assertEqual(details['birthdayPlanner'], 'Themes')
+        self.assertNotIn('weddingPlanner', details)
+        self.assertNotIn('hotelRooms', details)
+
     def test_hotel_services(self):
         self.db.execute('INSERT INTO vendor_certificates VALUES (1)')
         for service in self.schema['hotelServices']:

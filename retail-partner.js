@@ -111,6 +111,7 @@
     if (section.travelOnly) group.dataset.travelOnly = 'true';
     if (section.rentalOnly) group.dataset.rentalOnly = 'true';
     if (section.hotelOnly) group.dataset.hotelOnly = 'true';
+    if (section.eventOnly) group.dataset.eventOnly = 'true';
     if (section.deviceOnly) group.dataset.deviceOnly = 'true';
     if (section.coachingOnly) group.dataset.coachingOnly = 'true';
     if (section.itTrainingOnly) group.dataset.itTrainingOnly = 'true';
@@ -231,6 +232,8 @@
     const travel = services.some(service => schema.travelServices.includes(service));
     const rental = services.some(service => schema.rentalServices.includes(service));
     const hotel = services.some(service => schema.hotelServices.includes(service));
+    const eventPlanning = services.some(service => schema.eventServices.includes(service));
+    panel.querySelectorAll('[data-event-only]').forEach(group => { group.hidden = !eventPlanning; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !eventPlanning); });
     panel.querySelectorAll('[data-hotel-only]').forEach(group => { group.hidden = !hotel; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !hotel); });
     panel.querySelectorAll('[data-rental-only]').forEach(group => { group.hidden = !rental; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !rental); });
     panel.querySelectorAll('[data-travel-only]').forEach(group => { group.hidden = !travel; group.querySelectorAll('input,textarea,select').forEach(input => input.disabled = !active || !travel); });
