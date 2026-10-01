@@ -1,4 +1,116 @@
 /* SHAKALPA visual system — shared finishing layer for every workspace. */
+/* Compact account cluster on all viewport sizes, not just narrow phones. */
+html body header:is(.app-topbar,.workspace-topbar) :is(.header-actions,.admin-actions){gap:2px!important;column-gap:2px!important;justify-content:flex-end!important}
+html body header:is(.app-topbar,.workspace-topbar) :is(.header-actions,.admin-actions) :is(.header-home-symbol,.account-workspace-link,.cart-symbol,#language-control,.theme-icon-button,.account-profile,.account-profile-trigger,.signout-symbol){box-sizing:border-box;width:30px!important;min-width:30px!important;height:34px!important;min-height:34px!important;flex:0 0 30px!important;padding:0!important;margin-left:0!important;margin-right:0!important}
+html body header:is(.app-topbar,.workspace-topbar) :is(.header-actions,.admin-actions) #language-control select{width:30px!important;height:34px!important;min-height:34px!important;padding:0!important}
+html body header:is(.app-topbar,.workspace-topbar) :is(.header-actions,.admin-actions) .account-profile-avatar{width:30px!important;height:30px!important;flex-basis:30px!important}
+.profile-heading-help{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+body .profile-heading-help>.global-help-button{position:static!important;flex:0 0 24px;margin:0;transform:none!important}
+/* Keep the listing summary beside long desktop forms without covering fields. */
+@media(min-width:901px){
+  #business.vendor-grid>.vendor-preview:not(.vendor-product-browser):not(.vendor-media-panel){position:sticky;top:80px;align-self:start;min-height:0;height:auto;max-height:calc(100dvh - 96px);overflow-y:auto;scrollbar-width:none}
+  #business.vendor-grid>.vendor-preview:not(.vendor-product-browser):not(.vendor-media-panel)::-webkit-scrollbar{display:none;width:0;height:0}
+}
+@media(max-width:900px){
+  #business.vendor-grid>.vendor-preview{position:static;max-height:none;overflow:visible;min-height:0}
+}
+/* Narrow phones: compact single-row navigation. */
+@media(max-width:480px){
+  html body header.app-topbar,html body .workspace-topbar{display:flex;flex-wrap:nowrap!important;align-items:center;gap:3px!important}
+  html body header.app-topbar,html body.workspace-top-layout .admin-sidebar{padding:6px!important;min-height:44px!important}
+  html body .workspace-topbar>.brand,html body header.app-topbar>.brand{margin:0!important}
+  html body .workspace-topbar>.workspace-menu-toggle,html body header.app-topbar>.mobile-menu-toggle{margin:0!important}
+  html body header.app-topbar>.header-actions,html body .workspace-topbar>.admin-actions{flex:0 1 auto!important;width:auto!important;margin:0 0 0 auto!important;padding:0;display:flex!important;flex-wrap:nowrap!important;justify-content:flex-end!important;align-items:center;gap:2px!important;box-sizing:border-box}
+  html body header:is(.app-topbar,.workspace-topbar) :is(.header-home-symbol,.account-workspace-link,.cart-symbol,#language-control,.theme-icon-button,.account-profile,.account-profile-trigger,.signout-symbol,.mobile-menu-toggle,.workspace-menu-toggle){width:30px!important;min-width:30px!important;height:32px!important;min-height:32px!important;flex:0 0 30px!important;padding:0!important}
+  html body header:is(.app-topbar,.workspace-topbar) #language-control select{width:30px!important;height:32px!important;min-height:32px!important}
+  html body header:is(.app-topbar,.workspace-topbar) .brand :is(img,.brand-mark){width:32px!important;height:32px!important;min-width:32px!important;max-height:32px!important}
+  html body header:is(.app-topbar,.workspace-topbar) .account-profile-avatar{width:30px!important;height:30px!important;flex-basis:30px!important}
+  html body header:is(.app-topbar,.workspace-topbar) svg{width:18px!important;height:18px!important}
+  html body header.app-topbar>nav.mobile-nav-open{position:absolute!important;top:100%;left:0;background:var(--cream);z-index:50}
+  html body header.app-topbar>.header-actions>*,html body .workspace-topbar>.admin-actions>*{max-width:100%}
+  html body .workspace-topbar .account-profile,html body header.app-topbar .account-profile{flex:0 0 40px}
+  html body header .account-profile-popover{position:fixed;top:116px;right:12px;left:auto;max-width:calc(100vw - 24px);box-sizing:border-box}
+  html body .theme-picker-menu{position:fixed;top:116px!important;right:12px!important;left:auto;max-width:calc(100vw - 24px);box-sizing:border-box}
+  html body #language-control.language-icon-control>small{position:fixed;top:116px;right:12px}
+}
+html body.admin-page main.admin-main .admin-header h1{font-size:22px!important;line-height:1.45!important;letter-spacing:normal!important}
+html body.admin-page main.admin-main h2{font-size:21px!important;line-height:1.45!important;letter-spacing:normal!important}
+html body #language-control.language-icon-control>small:not(:empty){visibility:hidden;opacity:0;pointer-events:none;padding:8px 10px;border:1px solid var(--line);border-radius:8px;box-sizing:border-box;font-size:12px;line-height:1.5;max-width:calc(100vw - 24px)}
+html body #language-control.language-icon-control:hover>small:not(:empty),html body #language-control.language-icon-control:has(select:focus-visible)>small:not(:empty){visibility:visible;opacity:1}
+html body header :is(.header-actions,.admin-actions){column-gap:4px!important}
+html body header :is(.header-actions,.admin-actions)>:is(.header-home-symbol,.account-workspace-link,.cart-symbol,#language-control,.theme-icon-button,.account-profile,.signout-symbol){order:0!important;margin-left:0!important;margin-right:0!important}
+html body header .header-home-symbol{width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;background:transparent!important;border:0!important;box-shadow:none!important}
+html body header .header-home-symbol svg{width:21px;height:21px}
+html body header .header-home-text{display:none!important}
+html body .admin-header>div>.eyebrow{display:none}
+html body main h1{font-size:28px!important;line-height:1.3!important;letter-spacing:normal;overflow-wrap:anywhere}
+html body .admin-header{margin-bottom:24px}
+html body #language-control.language-icon-control{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:40px;min-height:40px;margin:0;padding:0;background:transparent;border:0;color:var(--ink)}
+html body #language-control.language-icon-control>label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+html body #language-control.language-icon-control>span{display:flex;pointer-events:none}
+html body #language-control.language-icon-control svg{width:21px;height:21px}
+html body #language-control.language-icon-control select{position:absolute;inset:0;width:40px;height:40px;min-height:40px;opacity:0;cursor:pointer;padding:0}
+html body #language-control.language-icon-control:focus-within{outline:2px solid currentColor;outline-offset:2px;border-radius:8px}
+html body #language-control.language-icon-control>small{position:absolute;top:100%;right:0;width:220px;background:var(--cream);z-index:50}
+/* Shared help typography, including popovers mounted outside their forms. */
+html body :is([class*="help-popover"],[class*="help-tooltip"],[class*="help-detail"]){font-size:12px!important;line-height:1.5!important;font-weight:400!important;letter-spacing:normal!important;overflow-wrap:anywhere}
+html body :is([class*="help-popover"],[class*="help-tooltip"],[class*="help-detail"]) :is(p,span,li,small){font-size:inherit!important;line-height:inherit!important}
+html:lang(ta) body :is([class*="help-popover"],[class*="help-tooltip"],[class*="help-detail"]),html:lang(hi) body :is([class*="help-popover"],[class*="help-tooltip"],[class*="help-detail"]){line-height:1.65!important}
+/* Compact, theme-aware top strip; keep the 40px action targets usable. */
+html body.workspace-top-layout .admin-sidebar,html body header.app-topbar{padding:6px 16px;min-height:52px;background:linear-gradient(110deg,color-mix(in srgb,var(--cream) 84%,#78aee0),color-mix(in srgb,var(--cream) 88%,#71baaa));border-bottom:1px solid color-mix(in srgb,var(--line) 70%,#78aee0)}
+html body .workspace-topbar{min-height:40px}
+html body .workspace-topbar .brand img,html body header.app-topbar .brand img{width:40px;height:40px;max-width:40px;max-height:40px;object-fit:contain}
+html body .workspace-topbar .brand-mark,html body header.app-topbar .brand-mark{width:40px;height:40px;min-width:40px;max-height:40px;background-size:contain}
+body header.app-topbar{display:flex;align-items:center;justify-content:flex-start;gap:12px;min-height:64px;height:auto;padding:10px 24px;position:relative;flex-wrap:wrap;z-index:30}
+body header.app-topbar>.brand{font-size:0;gap:0;flex:0 0 auto}
+body header.app-topbar>.brand .brand-mark{font-size:17px}
+body header.app-topbar>.header-actions{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0}
+body header.app-topbar>.mobile-menu-toggle{display:inline-flex!important;align-items:center;justify-content:center;width:40px;height:40px;flex:0 0 40px;margin:0;padding:8px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:8px}
+body header.app-topbar>nav{display:none!important}
+body header.app-topbar>nav.mobile-nav-open{display:flex!important;position:static!important;flex:0 0 100%;order:10;flex-wrap:wrap;gap:8px;margin:0;padding:10px;max-height:60vh;overflow:auto;width:100%;box-sizing:border-box}
+@media(max-width:600px){body header.app-topbar{padding:8px 10px;gap:6px}body header.app-topbar>.header-actions{gap:4px}body header.app-topbar>.brand img{max-width:42px;max-height:42px}}
+body.workspace-top-layout .admin-sidebar{position:relative;inset:auto;width:100%;min-height:0;padding:10px 24px;display:block;box-sizing:border-box;box-shadow:none;z-index:20}
+.workspace-topbar{display:flex;align-items:center;gap:12px;min-width:0}
+body .workspace-topbar .brand{font-size:0;gap:0;flex:0 0 auto}
+body .workspace-topbar .brand-mark{font-size:17px}
+body .workspace-topbar .workspace-menu-toggle{margin:0;flex:0 0 40px}
+body .workspace-topbar .admin-actions{margin:0 0 0 auto;display:flex;align-items:center;justify-content:flex-end;gap:10px;width:auto;min-width:0;color:var(--ink)}
+body.workspace-top-layout .admin-sidebar{background:var(--cream);color:var(--ink);border-bottom:1px solid var(--line)}
+body.workspace-top-layout .sidebar-footer{display:none}
+body.workspace-top-layout .admin-main{margin-left:0;padding-top:24px;min-width:0}
+body.workspace-top-layout .admin-nav{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+body.workspace-top-layout .admin-nav a{color:var(--ink)}
+body.workspace-top-layout .admin-nav .nav-label{display:none}
+@media(max-width:600px){body.workspace-top-layout .admin-sidebar{padding:8px 10px}.workspace-topbar{gap:6px}body .workspace-topbar .admin-actions{gap:4px}body .workspace-topbar .brand img{max-width:42px;max-height:42px}body.workspace-top-layout .admin-main{padding:20px 12px}}
+body .admin-sidebar .admin-nav[hidden]{display:none!important}
+.workspace-menu-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;margin:12px 0;border:1px solid currentColor;border-radius:8px;background:transparent;color:inherit;cursor:pointer}
+.workspace-menu-toggle svg{width:22px;height:22px}
+.workspace-menu-toggle:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+body .admin-header{display:flex;flex-wrap:wrap;align-items:flex-start}
+body .admin-header>.admin-actions{order:-1;flex:0 0 100%;display:flex;justify-content:flex-end;flex-wrap:wrap;margin:0 0 12px;gap:10px}
+body header .account-profile-avatar{background:transparent;border:0;color:var(--ink);box-shadow:none}
+body header .account-profile-trigger:hover .account-profile-avatar{box-shadow:none;transform:none}
+/* Compact shared header controls and homepage shop introduction. */
+body #language-control{min-height:0;height:auto;padding:4px 16px;gap:8px;font-size:12px;line-height:1.4}
+body #language-control select{height:30px;min-height:30px;width:auto;padding:3px 26px 3px 9px;font-size:12px;line-height:1.4}
+body #language-control small:empty{display:none}
+body header .header-actions{gap:10px}
+body header .account-profile-trigger,body header a.account-workspace-link,body header .cart-symbol,body header .signout-symbol{box-sizing:border-box;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;flex:0 0 40px;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center}
+body header .account-profile-avatar{box-sizing:border-box;width:40px;height:40px;flex-basis:40px}
+body header .account-profile-avatar svg,body header a.account-workspace-link svg,body header .cart-symbol svg,body header .signout-symbol svg{width:21px;height:21px}
+body #home>#shop{padding-top:26px;padding-bottom:40px}
+body #shop .section-heading{margin-bottom:24px;gap:20px}
+body #shop .section-heading .eyebrow{margin-bottom:12px}
+body #shop .section-heading h2{font-size:clamp(26px,3.5vw,38px);line-height:1.15;letter-spacing:-.03em}
+@media(max-width:600px){body #language-control{padding:3px 10px;flex-wrap:wrap}body header .header-actions{gap:6px}body #home>#shop{padding-top:20px}body #shop .section-heading{gap:12px}}
+/* Compact navigation, independent of the larger form/action button styles. */
+header a.account-workspace-link{display:inline-flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:40px;padding:9px;color:var(--ink);background:rgba(111,140,255,.09);border:1px solid rgba(111,140,255,.2);border-radius:12px;text-decoration:none}
+header a.account-workspace-link svg{width:21px;height:21px}
+header a.account-workspace-link:hover{background:rgba(111,140,255,.18);border-color:currentColor}
+header .account-profile-trigger .account-profile-name{display:none}
+header .account-profile-trigger{min-width:40px;min-height:40px;justify-content:center}
+header .account-profile-trigger:focus-visible{outline:2px solid currentColor;outline-offset:2px;border-radius:50%}
+header a.account-workspace-link:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 :root{
   --ink:#17213c;
   --cream:#f8f9fd;

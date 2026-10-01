@@ -4,7 +4,8 @@
   const header = document.querySelector('header');
   const nav = header?.querySelector('nav');
   const home = nav?.querySelector('a[href="index.html"], a[href="/"]') || document.createElement('a');
-  if (!home.parentElement) home.href = 'index.html';
+  // An explicit Home visit must not trigger signed-in workspace restoration.
+  home.href = 'index.html#home';
   home.className = 'header-home-symbol';
   home.setAttribute('aria-label', 'Go to SHAKALPA homepage');
   home.title = 'Home';
@@ -13,9 +14,8 @@
 
   const compactHome = home.cloneNode(true);
   compactHome.classList.add('header-home-mobile');
-  compactHome.insertAdjacentHTML('beforeend', '<span class="header-home-text">Home</span>');
   if (header) {
-    const controls = header.querySelector('.header-actions');
+    const controls = header.querySelector('.header-actions, .admin-actions');
     (controls || header).append(compactHome);
   } else {
     compactHome.classList.add('home-return-button');

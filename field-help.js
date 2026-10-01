@@ -1,4 +1,20 @@
 (() => {
+  const profileIntro = document.querySelector('#business > .create-card > .form-lede');
+  const profileHeading = profileIntro?.previousElementSibling;
+  if (profileIntro && profileHeading?.matches('h2')) {
+    const headingRow = document.createElement('div');
+    headingRow.className = 'profile-heading-help';
+    profileHeading.before(headingRow);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'global-help-button';
+    button.setAttribute('aria-label', 'Help for profile setup');
+    button.setAttribute('aria-expanded', 'false');
+    profileIntro.classList.remove('form-lede');
+    profileIntro.classList.add('global-help-detail');
+    profileIntro.hidden = true;
+    headingRow.append(profileHeading, button, profileIntro);
+  }
   const markerStyle = document.createElement('style');
   markerStyle.textContent = '.required-marker{display:inline!important;align-self:baseline;color:#c2410c;font-weight:800;line-height:1;margin-left:4px}.has-required-marker{display:flex!important;flex-wrap:wrap;align-items:baseline;column-gap:0;row-gap:7px}.has-required-marker>input,.has-required-marker>select,.has-required-marker>textarea{flex:0 0 100%;width:100%}';
   document.head.append(markerStyle);
@@ -41,6 +57,19 @@
   };
   document.querySelectorAll(helpSelector).forEach((button) => { button.title = helpText(button); });
   const hidePopover = () => { popover.hidden = true; document.querySelectorAll(helpSelector).forEach((button) => button.setAttribute('aria-expanded', 'false')); closeAll(); };
+  // Capture nested-panel scrolling as well as page scrolling. Keep scrolling
+  // inside a long help card usable, but dismiss cards when their anchor moves.
+  const scrollingHelpCards = '[class*="help-popover"],[class*="help-tooltip"],[class*="help-detail"]';
+  const dismissHelpOnScroll = event => {
+    if (event.target?.closest?.(scrollingHelpCards)) return;
+    hidePopover();
+    document.querySelectorAll(scrollingHelpCards).forEach(card => { card.hidden = true; });
+    document.querySelectorAll('button[aria-expanded="true"]').forEach(button => {
+      if (button.matches('[class*="help-button"],[class*="section-help"]')) button.setAttribute('aria-expanded', 'false');
+    });
+  };
+  document.addEventListener('scroll', dismissHelpOnScroll, true);
+  window.addEventListener('scroll', dismissHelpOnScroll);
   document.addEventListener('click', (event) => {
     const button = event.target.closest(helpSelector);
     if (!button) { if (!event.target.closest('.universal-help-popover')) hidePopover(); return; }

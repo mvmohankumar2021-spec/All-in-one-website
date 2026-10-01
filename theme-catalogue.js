@@ -72,6 +72,8 @@
   menu.innerHTML = '<p>Appearance</p><label class="theme-menu-label">Mode<select id="themeMode"><option value="light">Light mode</option><option value="dark">Dark mode</option></select></label><label class="theme-menu-label">Theme<select id="themeSelect"></select></label><small class="theme-picker-status" aria-live="polite"></small>';
   button.after(menu);
   const select = menu.querySelector('#themeSelect'), modeSelect = menu.querySelector('#themeMode'), status = menu.querySelector('.theme-picker-status');
+  select.dataset.help = 'Select a theme.';
+  modeSelect.dataset.help = 'Select a mode.';
   const render = () => { const selected = window.ShakalpaThemes.current; select.innerHTML = ['Light themes', 'Dark themes'].map(group => `<optgroup label="${group}">${themes.filter(theme => theme.group === group).map(theme => `<option value="${theme.id}" ${theme.id === selected ? 'selected' : ''}>${theme.name}</option>`).join('')}</optgroup>`).join(''); modeSelect.value = window.ShakalpaThemes.mode; const name = themes.find(theme => theme.id === selected)?.name || 'Midnight Sapphire'; status.textContent = `${name} · ${window.ShakalpaThemes.mode === 'dark' ? 'Dark' : 'Light'} mode.`; };
   const saveHomepageTheme = async () => { if (!admin) return; try { const response = await fetch('/api/admin/site-theme', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ theme: window.ShakalpaThemes.current, mode: window.ShakalpaThemes.mode }) }); const data = await response.json(); status.textContent = response.ok ? 'Homepage theme updated.' : (data.error || 'Could not update homepage theme.'); } catch (_) { status.textContent = 'Could not update homepage theme.'; } };
   render();

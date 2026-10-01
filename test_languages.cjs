@@ -12,7 +12,7 @@ for (const label of ['Log in','First name','Choose documents','Department Store'
 for (const file of ['catering','meal','grocery','fresh-food','household','retail']) {
   const schema = JSON.parse(fs.readFileSync(`${file}-schema.json`,'utf8'));
   const fields = [...schema.sections.flatMap(section=>section.fields), ...Object.values(schema.specific || {}), ...Object.values(schema.waterFields || {})];
-  const copy = [...schema.services,...schema.sections.map(section=>section.title),...fields.flatMap(field=>[field[1],field[4]]),...schema.policies.map(policy=>policy[1])];
+  const copy = [...schema.services,...schema.sections.map(section=>section.title),...fields.flatMap(field=>[field[1],field[4],...(field[5] || [])]),...schema.policies.map(policy=>policy[1])];
   for (const source of copy) assert(dictionary[source]?.ta && dictionary[source]?.hi, `${file}: ${source}`);
 }
 const runtime = fs.readFileSync('localization.js','utf8');
