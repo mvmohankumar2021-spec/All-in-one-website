@@ -28,6 +28,37 @@
       const trigger = item.querySelector('.account-profile-trigger'), popover = item.querySelector('.account-profile-popover');
       trigger.title = name;
       trigger.setAttribute('aria-label', name);
+      if (account.role === 'Customer') {
+        item.removeAttribute('data-preserve-user-name');
+        item.querySelector('.account-profile-name').dataset.preserveUserName = 'true';
+        popover.querySelector('strong').dataset.preserveUserName = 'true';
+        const customerNav = document.createElement('nav');
+        customerNav.className = 'customer-profile-navigation';
+        customerNav.innerHTML = '<a href="index.html#home">Home</a><a href="media.html">Shagram</a><a href="saved-posts.html">Saved</a>';
+        popover.prepend(customerNav);
+        // Shagram previously moved its page navigation into the profile menu.
+        if (document.body.classList.contains('shagram-page')) {
+          document.querySelector('.media-header > nav')?.remove();
+          document.querySelector('.media-header > .mobile-menu-toggle')?.remove();
+        }
+      }
+      if (document.body.classList.contains('shagram-page') && account.role !== 'Customer') {
+        const navigation = document.querySelector('.media-header > nav');
+        if (navigation) {
+          item.removeAttribute('data-preserve-user-name');
+          item.querySelector('.account-profile-name').dataset.preserveUserName = 'true';
+          popover.querySelector('strong').dataset.preserveUserName = 'true';
+          navigation.classList.remove('mobile-nav-open');
+          popover.prepend(navigation);
+          document.querySelector('.media-header > .mobile-menu-toggle')?.remove();
+        }
+        item.addEventListener('keydown', event => {
+          if (event.key === 'Escape') { popover.hidden = true; trigger.setAttribute('aria-expanded', 'false'); trigger.focus(); }
+        });
+        document.addEventListener('click', event => {
+          if (!item.contains(event.target)) { popover.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
+        });
+      }
       trigger.addEventListener('click', () => { const show = popover.hidden; document.querySelectorAll('.account-profile-popover').forEach(p => p.hidden = true); popover.hidden = !show; trigger.setAttribute('aria-expanded', String(show)); });
       item.querySelector('input').addEventListener('change', async (event) => {
         const file = event.target.files?.[0], status = item.querySelector('.account-profile-status'); if (!file) return;

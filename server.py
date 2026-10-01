@@ -32,6 +32,12 @@ from http.cookies import SimpleCookie
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
+from media_processing import process_video
+
+
+def music_catalogue():
+    tracks = json.loads((Path(__file__).resolve().parent / 'music-catalogue.json').read_text(encoding='utf-8'))
+    return [track for track in tracks if (Path(__file__).resolve().parent / 'assets' / 'music' / track['file']).is_file()]
 
 ROOT = Path(__file__).resolve().parent
 DATABASE = ROOT / "nexahub.db"
@@ -982,6 +988,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             self.vendor_review_product_change()
         elif self.path == "/api/media/posts":
             self.media_create_post()
+        elif self.path == "/api/media/profile":
+            self.media_save_profile()
         elif self.path == "/api/media/posts/delete":
             self.media_delete_post()
         elif self.path == "/api/media/posts/update":
@@ -1168,6 +1176,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return
         if self.path == "/api/media/posts":
             self.media_posts()
+            return
+        if parsed.path == "/api/media/profile":
+            self.media_profile(parsed)
+            return
+        if parsed.path == "/api/media/music":
+            self.send_json({"tracks": music_catalogue()})
             return
         if parsed.path == "/api/media/messages":
             self.media_messages(parsed)
@@ -3675,9 +3689,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         self.send_json({"message": "Product entry payment verified. Your product is now visible to customers."})
 
     def ensure_media_tables(self, db: sqlite3.Connection) -> None:
+        db.execute("CREATE TABLE IF NOT EXISTS media_public_profiles (account_id INTEGER PRIMARY KEY, bio TEXT NOT NULL DEFAULT '', location TEXT NOT NULL DEFAULT '', website TEXT NOT NULL DEFAULT '', FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, account_id INTEGER NOT NULL, caption TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         if "aspect_ratio" not in {column["name"] for column in db.execute("PRAGMA table_info(media_posts)").fetchall()}:
             db.execute("ALTER TABLE media_posts ADD COLUMN aspect_ratio TEXT NOT NULL DEFAULT '16:9'")
+        if "music_id" not in {column["name"] for column in db.execute("PRAGMA table_info(media_posts)").fetchall()}:
+            db.execute("ALTER TABLE media_posts ADD COLUMN music_id TEXT NOT NULL DEFAULT ''")
         db.execute("CREATE TABLE IF NOT EXISTS media_post_files (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, storage_name TEXT NOT NULL, media_type TEXT NOT NULL, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_likes (post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY(post_id, account_id), FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_comments (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, account_id INTEGER NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
@@ -3687,6 +3704,42 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         db.execute("CREATE TABLE IF NOT EXISTS media_save_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, account_id INTEGER NOT NULL, name TEXT NOT NULL COLLATE NOCASE, created_at INTEGER NOT NULL, UNIQUE(account_id, name), FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_save_tag_posts (tag_id INTEGER NOT NULL, post_id INTEGER NOT NULL, PRIMARY KEY(tag_id, post_id), FOREIGN KEY(tag_id) REFERENCES media_save_tags(id) ON DELETE CASCADE, FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE)")
         db.execute("CREATE TABLE IF NOT EXISTS media_reports (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, reporter_id INTEGER NOT NULL, reason TEXT NOT NULL, details TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, UNIQUE(post_id, reporter_id), FOREIGN KEY(post_id) REFERENCES media_posts(id) ON DELETE CASCADE, FOREIGN KEY(reporter_id) REFERENCES accounts(id) ON DELETE CASCADE)")
+
+    def media_profile(self, parsed) -> None:
+        try:
+            account_id = int(parse_qs(parsed.query).get("accountId", [""])[0])
+        except (ValueError, TypeError):
+            self.send_json({"error": "Choose a valid profile."}, HTTPStatus.BAD_REQUEST); return
+        viewer = self.current_account()
+        with connection() as db:
+            self.ensure_media_tables(db)
+            account = db.execute("SELECT id, first_name, last_name FROM accounts WHERE id = ? AND role IN ('Vendor', 'Customer')", (account_id,)).fetchone()
+            if not account:
+                self.send_json({"error": "Profile not found."}, HTTPStatus.NOT_FOUND); return
+            profile = db.execute("SELECT bio, location, website FROM media_public_profiles WHERE account_id = ?", (account_id,)).fetchone()
+            counts = {
+                "followers": db.execute("SELECT COUNT(*) FROM media_follows WHERE following_id = ?", (account_id,)).fetchone()[0],
+                "following": db.execute("SELECT COUNT(*) FROM media_follows WHERE follower_id = ?", (account_id,)).fetchone()[0],
+                "posts": db.execute("SELECT COUNT(*) FROM media_posts WHERE account_id = ?", (account_id,)).fetchone()[0],
+            }
+        # Only explicitly authored public fields; never expose account/contact/identity data.
+        self.send_json({"accountId": account_id, "name": f"{account['first_name']} {account['last_name']}".strip(), "editable": bool(viewer and viewer["id"] == account_id), "counts": counts, "bio": profile["bio"] if profile else "", "location": profile["location"] if profile else "", "website": profile["website"] if profile else ""})
+
+    def media_save_profile(self) -> None:
+        if not self.origin_is_valid(): self.send_json({"error": "Invalid request origin."}, HTTPStatus.FORBIDDEN); return
+        actor = self.media_actor()
+        if not actor: return
+        data = self.read_json() or {}
+        fields = {key: str(data.get(key, "")).strip() for key in ("bio", "location", "website")}
+        if len(fields["bio"]) > 500 or len(fields["location"]) > 100 or len(fields["website"]) > 300:
+            self.send_json({"error": "Public profile details are too long."}, HTTPStatus.BAD_REQUEST); return
+        url = urlparse(fields["website"])
+        if fields["website"] and (url.scheme not in {"http", "https"} or not url.netloc or url.username or url.password):
+            self.send_json({"error": "Use a valid http or https website address."}, HTTPStatus.BAD_REQUEST); return
+        with connection() as db:
+            self.ensure_media_tables(db)
+            db.execute("INSERT INTO media_public_profiles(account_id, bio, location, website) VALUES (?, ?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET bio=excluded.bio, location=excluded.location, website=excluded.website", (actor["id"], fields["bio"], fields["location"], fields["website"]))
+        self.send_json({"message": "Public profile saved."})
 
     def media_content_block_reason(self, text: str) -> str | None:
         normalized = re.sub(r"\s+", " ", text.casefold())
@@ -3702,10 +3755,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             return None
         return account
 
-    def save_media_files(self, post_id: int, raw_media: object) -> str | None:
+    def save_media_files(self, post_id: int, raw_media: object, music=None) -> str | None:
         if not isinstance(raw_media, list) or not 1 <= len(raw_media) <= 4:
             return "Upload one to four promotional images or videos."
         saved: list[tuple[str, str]] = []
+        with connection() as db:
+            aspect = db.execute("SELECT aspect_ratio FROM media_posts WHERE id = ?", (post_id,)).fetchone()[0]
         allowed = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "video/mp4": ".mp4", "video/webm": ".webm"}
         for raw in raw_media:
             if not isinstance(raw, str): return "Upload valid media files."
@@ -3713,7 +3768,20 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 header, encoded = raw.split(",", 1); mime = header.removeprefix("data:").removesuffix(";base64"); blob = base64.b64decode(encoded, validate=True)
             except (ValueError, binascii.Error): return "A media file could not be read."
             if not header.endswith(";base64") or mime not in allowed or not blob or len(blob) > 8 * 1024 * 1024: return "Use JPEG, PNG, WebP, MP4, or WebM files smaller than 8 MB."
-            filename = f"media-{secrets.token_hex(16)}{allowed[mime]}"; (UPLOADS / filename).write_bytes(blob); saved.append((filename, mime))
+            filename = f"media-{secrets.token_hex(16)}{allowed[mime]}"
+            source = UPLOADS / filename
+            source.write_bytes(blob)
+            if mime.startswith('video/') or music:
+                try:
+                    credit = f"{music['title']} by {music['artist']} — {music['source']} — {music['license']} {music['licenseUrl']}; trimmed/looped to fit." if music else ''
+                    processed = process_video(source, aspect, music=ROOT / 'assets' / 'music' / music['file'] if music else None, still_image=mime.startswith('image/'), credit=credit)
+                except ValueError as error:
+                    source.unlink(missing_ok=True)
+                    for name, _ in saved: (UPLOADS / name).unlink(missing_ok=True)
+                    return str(error)
+                source.unlink(missing_ok=True)
+                filename, mime = processed.name, 'video/mp4'
+            saved.append((filename, mime))
         with connection() as db:
             self.ensure_media_tables(db); db.executemany("INSERT INTO media_post_files (post_id, storage_name, media_type) VALUES (?, ?, ?)", [(post_id, name, media_type) for name, media_type in saved])
         return None
@@ -3727,7 +3795,7 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
             if account_id is not None:
                 query += " WHERE p.account_id = ?"
                 parameters = (account_id,)
-            posts = db.execute(query.replace("p.created_at,", "p.created_at, p.aspect_ratio,") + " ORDER BY p.created_at DESC, p.id DESC LIMIT 100", parameters).fetchall()
+            posts = db.execute(query.replace("p.created_at,", "p.created_at, p.aspect_ratio, p.music_id,") + " ORDER BY p.created_at DESC, p.id DESC LIMIT 100", parameters).fetchall()
             follower_count = db.execute("SELECT COUNT(*) AS count FROM media_follows WHERE following_id = ?", (account_id,)).fetchone()["count"] if account_id is not None else None
             output = []
             for post in posts:
@@ -3738,6 +3806,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
                 saved = bool(viewer and db.execute("SELECT 1 FROM media_saves WHERE post_id = ? AND account_id = ?", (post["id"], viewer["id"])).fetchone())
                 following = bool(viewer and viewer["id"] != post["account_id"] and db.execute("SELECT 1 FROM media_follows WHERE follower_id = ? AND following_id = ?", (viewer["id"], post["account_id"])).fetchone())
                 output.append({"id": post["id"], "accountId": post["account_id"], "author": f"{post['first_name']} {post['last_name']}".strip(), "role": post["role"], "caption": post["caption"], "aspectRatio": post["aspect_ratio"], "createdAt": post["created_at"], "media": [{"url": f"/uploads/{file['storage_name']}", "type": file["media_type"]} for file in files], "likes": likes, "liked": liked, "saved": saved, "following": following, "comments": [{"id": item["id"], "author": f"{item['first_name']} {item['last_name']}".strip(), "body": item["body"]} for item in comments]})
+        tracks = {track['id']: track for track in music_catalogue()}
+        for item, post in zip(output, posts): item['music'] = tracks.get(post['music_id'])
         self.send_json({"posts": output, "followerCount": follower_count, "viewer": {"id": viewer["id"], "firstName": viewer["first_name"], "lastName": viewer["last_name"], "role": viewer["role"]} if viewer else None})
 
     def vendor_media_posts(self) -> None:
@@ -3758,9 +3828,14 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         blocked_reason = self.media_content_block_reason(caption)
         if blocked_reason: self.send_json({"error": f"This post was blocked by the safety review: {blocked_reason}."}, HTTPStatus.UNPROCESSABLE_ENTITY); return
         if aspect_ratio not in {"16:9", "9:16"}: self.send_json({"error": "Choose either 16:9 or 9:16."}, HTTPStatus.BAD_REQUEST); return
+        music_id = data.get('musicId', '')
+        music = next((track for track in music_catalogue() if track['id'] == music_id), None)
+        if music_id and not music:
+            self.send_json({"error": "Choose a track from the approved music catalogue."}, HTTPStatus.BAD_REQUEST); return
         with connection() as db:
             self.ensure_media_tables(db); post_id = db.execute("INSERT INTO media_posts (account_id, caption, aspect_ratio, created_at) VALUES (?, ?, ?, ?)", (actor["id"], caption, aspect_ratio, int(time.time()))).lastrowid
-        error = self.save_media_files(post_id, data.get("media"))
+            db.execute('UPDATE media_posts SET music_id = ? WHERE id = ?', (music_id, post_id))
+        error = self.save_media_files(post_id, data.get("media"), music)
         if error:
             with connection() as db: db.execute("DELETE FROM media_posts WHERE id = ?", (post_id,))
             self.send_json({"error": error}, HTTPStatus.BAD_REQUEST); return
@@ -3873,12 +3948,14 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         with connection() as db:
             self.ensure_media_tables(db)
             tags = db.execute("SELECT id, name FROM media_save_tags WHERE account_id = ? ORDER BY name COLLATE NOCASE", (actor["id"],)).fetchall()
-            posts = db.execute("SELECT p.id, p.caption, p.aspect_ratio, p.created_at, a.first_name, a.last_name, a.role FROM media_saves s JOIN media_posts p ON p.id = s.post_id JOIN accounts a ON a.id = p.account_id WHERE s.account_id = ? ORDER BY s.created_at DESC", (actor["id"],)).fetchall()
+            posts = db.execute("SELECT p.id, p.caption, p.aspect_ratio, p.music_id, p.created_at, a.first_name, a.last_name, a.role FROM media_saves s JOIN media_posts p ON p.id = s.post_id JOIN accounts a ON a.id = p.account_id WHERE s.account_id = ? ORDER BY s.created_at DESC", (actor["id"],)).fetchall()
             output = []
             for post in posts:
                 files = db.execute("SELECT storage_name, media_type FROM media_post_files WHERE post_id = ? ORDER BY id", (post["id"],)).fetchall()
                 post_tags = db.execute("SELECT t.id, t.name FROM media_save_tag_posts st JOIN media_save_tags t ON t.id = st.tag_id WHERE st.post_id = ? AND t.account_id = ? ORDER BY t.name COLLATE NOCASE", (post["id"], actor["id"])).fetchall()
                 output.append({"id": post["id"], "caption": post["caption"], "author": f"{post['first_name']} {post['last_name']}".strip(), "role": post["role"], "aspectRatio": post["aspect_ratio"], "media": [{"url": f"/uploads/{item['storage_name']}", "type": item["media_type"]} for item in files], "tagIds": [item["id"] for item in post_tags], "tags": [{"id": item["id"], "name": item["name"]} for item in post_tags]})
+        tracks = {track['id']: track for track in music_catalogue()}
+        for item, post in zip(output, posts): item['music'] = tracks.get(post['music_id'])
         self.send_json({"tags": [{"id": tag["id"], "name": tag["name"]} for tag in tags], "posts": output})
 
     def media_create_save_tag(self) -> None:

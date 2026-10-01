@@ -20,6 +20,19 @@ function renderSaved() {
   document.querySelector('#savedCount').textContent = `${posts.length} saved ${posts.length === 1 ? 'post' : 'posts'}`;
   document.querySelector('#savedPosts').innerHTML = posts.map((post) => `<article class="saved-post-card"><div class="saved-post-media aspect-${(post.aspectRatio || '16:9').replace(':', '-')}">${mediaMarkup(post)}</div><div class="saved-post-copy"><small>${escapeHtml(post.role)} · ${escapeHtml(post.author)}</small><p>${escapeHtml(post.caption || 'Untitled post')}</p><div class="saved-card-footer"><span>${post.tags.map((tag) => `<i>${escapeHtml(tag.name)}</i>`).join('') || 'No tags yet'}</span><button type="button" data-organise-post="${post.id}">Organise</button></div></div></article>`).join('') || '<div class="saved-empty"><h2>Nothing saved here yet.</h2><p>Save a Shagram post, then return here to add your own tags.</p><a class="button button-lime" href="media.html">Explore Shagram <span>→</span></a></div>';
 }
+const renderSavedBase = renderSaved;
+renderSaved = () => {
+  renderSavedBase();
+  const posts = activeTagId === null ? savedData.posts : savedData.posts.filter(post => post.tagIds.includes(activeTagId));
+  document.querySelectorAll('.saved-post-copy').forEach((node, i) => {
+    const music = posts[i]?.music; if (!music) return;
+    const credit = document.createElement('p'); credit.className = 'post-music-credit';
+    const source = document.createElement('a'); source.href = music.source; source.textContent = `${music.title} — ${music.artist}`; source.translate = false;
+    const license = document.createElement('a'); license.href = music.licenseUrl; license.textContent = music.license;
+    const changes = document.createElement('span'); changes.textContent = 'Music trimmed or looped to fit.';
+    credit.append(source, document.createTextNode(' · '), license, changes); node.append(credit);
+  });
+};
 async function loadSaved() { savedData = await savedRequest('/api/media/saved'); renderSaved(); }
 document.querySelector('#tagList').addEventListener('click', (event) => { const button = event.target.closest('[data-tag]'); if (!button) return; activeTagId = button.dataset.tag === '' ? null : Number(button.dataset.tag); renderSaved(); });
 const tagPostDialog = document.querySelector('#tagPostDialog');

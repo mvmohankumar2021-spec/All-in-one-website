@@ -33,6 +33,19 @@
   document.querySelectorAll('.admin-sidebar .admin-nav').forEach((nav, index) => {
     if (nav.dataset.workspaceMenuReady) return;
     nav.dataset.workspaceMenuReady = 'true';
+    if (document.querySelector('#vendorProfileForm')) {
+      const rank = link => {
+        const href = link.getAttribute('href');
+        return ['#business', 'index.html#shop', 'index.html#services', 'index.html#tracking', 'vendor-team.html', 'policy-centre.html'].indexOf(href);
+      };
+      const reorder = () => {
+        const links = [...nav.querySelectorAll(':scope > a')].filter(link => rank(link) >= 0);
+        const sorted = [...links].sort((a, b) => rank(a) - rank(b));
+        if (links.some((link, index) => link !== sorted[index])) sorted.forEach(link => nav.append(link));
+      };
+      reorder();
+      new MutationObserver(reorder).observe(nav, {childList: true});
+    }
     nav.id ||= `workspace-navigation-${index}`;
     const toggle = document.createElement('button');
     toggle.type = 'button';

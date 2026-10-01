@@ -10,7 +10,8 @@
   home.setAttribute('aria-label', 'Go to SHAKALPA homepage');
   home.title = 'Home';
   home.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>';
-  if (nav) nav.append(home);
+  // Keep Home only in the shared account-control row, not duplicated in the menu.
+  if (home.parentElement) home.remove();
 
   const compactHome = home.cloneNode(true);
   compactHome.classList.add('header-home-mobile');

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" role="img" aria-label="Shagram">
+<defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#6366e9"/><stop offset="1" stop-color="#db5779"/></linearGradient></defs>
+<rect width="44" height="44" y="2" rx="14" fill="url(#g)"/>
+<path d="M30 14H18a6 6 0 0 0 0 12h8a4 4 0 0 1 0 8H14" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+<path d="m21 17 8 5-8 5Z" fill="white"/>
+<text x="55" y="33" font-family="sans-serif" font-size="29" font-weight="700" fill="#6265cf">Shagram</text></svg>

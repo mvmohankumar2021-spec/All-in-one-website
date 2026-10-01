@@ -1,4 +1,133 @@
 /* SHAKALPA visual system — shared finishing layer for every workspace. */
+.music-filters{display:flex;flex-wrap:wrap;gap:6px}.music-filters select{flex:1;min-width:90px}.shagram-music-picker input[type=search]{width:100%;box-sizing:border-box;padding:6px;border:1px solid var(--line);border-radius:6px;font:inherit}.music-selection-details small{display:block}.music-selection-details:empty{display:none}
+@supports(grid-template-rows:subgrid){html body.shagram-page .media-post.portrait-post:has(.post-music-credit){grid-row:span 7}.media-post.portrait-post>.post-music-credit{grid-row:7}}
+.shagram-music-picker{grid-column:1/-1;display:grid;gap:5px;font-size:12px}.shagram-music-picker select{max-width:100%;padding:6px;font:inherit}.shagram-music-picker audio{width:100%;max-width:320px;height:32px}.shagram-music-picker audio[hidden]{display:none}
+.post-music-credit{font-size:11px;line-height:1.5;grid-column:1/-1}.post-music-credit>span{display:block}.post-music-credit button{font:inherit;padding:4px 8px;margin-top:4px;cursor:pointer}
+html body.shagram-page .post-profile-link{padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:700;text-align:left;cursor:pointer}
+html body.shagram-page .post-profile-link:hover{text-decoration:underline}
+html body.shagram-page .post-author>small{display:none}
+.shagram-dialog{width:min(560px,92vw);max-height:88vh;overflow:auto;border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--cream,#fffdf2);color:var(--ink,#1b2239)}
+.shagram-dialog::backdrop{background:#1118}
+.shagram-dialog h2{font-size:22px;margin:0 32px 14px 0}
+.shagram-dialog-close{position:absolute;right:12px;top:10px;border:0;background:none;color:inherit;font-size:26px;cursor:pointer}
+.shagram-dialog form,.shagram-dialog label{display:grid;gap:8px}
+.shagram-dialog form{gap:14px}
+.shagram-dialog input:not([type=range]),.shagram-dialog textarea,.shagram-dialog select{width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--line);border-radius:6px;font:inherit}
+.profile-counts{display:flex;justify-content:space-around;gap:16px}.profile-counts p{display:grid;text-align:center;gap:4px}.profile-counts strong{font-size:24px}
+.shagram-edit-canvas{display:block;max-width:100%;max-height:42vh;width:auto;height:auto;margin:0 auto 16px}
+.shagram-edit-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.shagram-edit-controls input{width:100%}
+html body.shagram-page #mediaPreview .media-preview-edit{position:absolute;left:8px;top:8px;width:32px;height:32px;border-radius:50%;padding:0;border:1px solid white;background:#1b2239;color:white;cursor:pointer}
+html body.shagram-page .feed-heading{flex-wrap:wrap;gap:8px}.shagram-own-profile{font:inherit;font-size:12px;padding:6px 8px;background:none;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+html body.shagram-page .media-preview-item{position:relative;min-width:0;align-self:start}
+html body.shagram-page .media-preview-item>img,html body.shagram-page .media-preview-item>video{display:block}
+html body.shagram-page #mediaPreview .media-preview-remove{position:absolute;top:8px;right:8px;display:grid;place-items:center;width:32px;height:32px;min-width:32px;padding:0;border:1px solid #fff;border-radius:50%;background:#1b2239;color:#fff;font:24px/1 sans-serif;cursor:pointer;box-shadow:0 2px 8px #0004;z-index:1}
+html body.shagram-page #mediaPreview .media-preview-remove:focus-visible{outline:3px solid #626de0;outline-offset:3px}
+html body.shagram-page #mediaPostForm>.media-upload>.required-marker{display:none!important}
+html body.shagram-page #mediaPostForm>.media-upload{gap:2px!important;column-gap:2px!important;padding:0!important}
+html body.shagram-page main.media-main #postComposer h2{font-size:20px!important;line-height:1.4!important;letter-spacing:normal!important;margin:0}
+html body.shagram-page #mediaPostForm>.media-upload{gap:3px!important;column-gap:3px!important;justify-content:flex-start;width:auto;justify-self:start;flex-wrap:nowrap!important}
+html body.shagram-page #mediaPostForm>.media-upload::before{display:inline-flex;align-items:center;justify-content:center;width:24px;flex:0 0 24px}
+html body.shagram-page #mediaPostForm>.media-upload>.global-help-button{margin:0!important;width:24px!important;min-width:24px!important}
+html body.shagram-page header .header-home-symbol{color:#277a57!important}
+html body.shagram-page header #language-control{color:#247ca0!important}
+html body.shagram-page header .theme-icon-button{color:#9552b5!important}
+html body.shagram-page header .account-profile-avatar{color:#4967cb!important}
+html body.shagram-page header .signout-symbol{color:#ba4b36!important}
+html body.shagram-page header :is(.header-home-symbol,#language-control,.theme-icon-button,.account-profile-trigger,.account-profile-avatar,.signout-symbol){background:transparent!important;box-shadow:none!important;border:0!important}
+html body.shagram-page main.media-main #postComposer{padding:12px 16px;margin-bottom:12px}
+html body.shagram-page main.media-main #postComposer>h2{font-size:20px!important;line-height:1.4!important;letter-spacing:normal;margin:0}
+html body.shagram-page #postComposer #mediaPostForm{margin-top:8px;gap:6px}
+html body.shagram-page #postComposer #mediaCaption{height:52px;min-height:52px;padding:8px 10px}
+html body.shagram-page .media-main .feed-heading{margin:8px 0 10px}
+html body .account-profile-popover .customer-profile-navigation{display:flex!important;flex-direction:column;gap:4px;margin:0 0 12px;padding:0}
+html body .account-profile-popover .customer-profile-navigation a{display:block;padding:8px;color:var(--ink);font-size:12px;line-height:1.5;text-decoration:none}
+html body.shagram-page #postComposer{border-top:0;padding-top:14px}
+html body.shagram-page header.app-topbar>.brand img.shagram-logo{width:140px!important;min-width:0!important;max-width:140px!important;height:32px!important;max-height:32px!important;object-fit:contain}
+body.shagram-page .media-intro,body.shagram-page #postComposer>.eyebrow{display:none}
+body.shagram-page .media-main{padding-top:12px}
+body.shagram-page .account-profile-popover nav{display:flex!important;flex-direction:column;gap:4px;margin:0 0 12px;padding:0}
+body.shagram-page .account-profile-popover nav a{display:block;padding:8px;color:var(--ink);font-size:12px;text-decoration:none;white-space:normal}
+@media(max-width:480px){html body.shagram-page header.app-topbar>.brand img.shagram-logo{width:108px!important;max-width:108px!important;height:28px!important}}
+html body header.app-topbar>nav.mobile-nav-open{position:absolute!important;top:100%!important;left:12px!important;right:auto!important;display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;width:180px!important;max-width:calc(100vw - 24px);max-height:70dvh;overflow-y:auto;flex:none!important;gap:6px;margin:4px 0 0!important;padding:8px!important;background:var(--cream);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.16);z-index:100}
+html body header.app-topbar>nav.mobile-nav-open>a{display:block;width:100%;box-sizing:border-box;margin:0;padding:10px 12px;border:0;border-radius:8px;font-size:12px;line-height:1.5;white-space:normal;overflow-wrap:anywhere;text-decoration:none;color:var(--ink)}
+html body header.app-topbar>nav.mobile-nav-open>a:is(.active,[aria-current="page"]){background:color-mix(in srgb,var(--lime) 22%,transparent);font-weight:700}
+/* Portrait cards should fit their media instead of adding wide inner gutters. */
+html body #mediaPosts{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:12px}
+html body #mediaPosts>.media-post.portrait-post{padding:10px;row-gap:6px}
+html body #mediaPosts>.media-post.portrait-post>.post-media{width:100%;max-width:none;height:auto;aspect-ratio:9/16}
+html body #mediaPosts>.media-post.portrait-post>.post-media>:is(img,video){max-height:none!important}
+html body #mediaPosts>.media-post.portrait-post>.post-top{min-height:36px;gap:6px}
+html body #mediaPosts>.media-post.portrait-post>.post-caption{min-height:0;margin:0;line-height:1.4}
+html body #mediaPosts>.media-post.portrait-post>.post-comments:not(:has(.post-comment)):not(:has(.comment-form:not([hidden]))){display:none}
+html body #mediaPosts>.media-post.portrait-post>.post-actions{gap:5px;margin:4px 0;min-height:32px}
+html body #mediaPosts>.media-post.portrait-post .post-secondary-actions{gap:5px}
+@media(max-width:500px){html body #mediaPosts{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}html body #mediaPosts>.media-post.portrait-post{padding:8px}}
+/* Fill vacant portrait slots and keep reels within a compact viewing frame. */
+html body #mediaPosts{grid-auto-flow:row dense}
+html body #mediaPosts>.media-post.portrait-post>.post-media{width:min(100%,225px);max-width:100%;height:auto;aspect-ratio:9/16;justify-self:center;align-self:start;margin-inline:auto;flex-shrink:0}
+html body #mediaPosts>.media-post.portrait-post>.post-media>:is(img,video){width:100%!important;height:100%!important;max-height:400px!important}
+html body #postComposer #mediaPostForm>button[type="submit"]{width:30px;height:30px;min-width:30px;min-height:30px;padding:0;box-shadow:none}
+html body #postComposer #mediaPostForm>button[type="submit"] svg{width:18px;height:18px}
+html body #mediaPostForm{grid-template-columns:minmax(0,1fr) 40px;align-items:center}
+html body #mediaPostForm>textarea,html body #mediaPostForm>.media-aspect-controls,html body #mediaPostForm>.media-preview,html body #mediaPostForm>.media-error{grid-column:1/-1}
+html body #mediaPostForm>.media-upload{grid-column:1;grid-row:2}
+html body #mediaPostForm>button[type="submit"]{grid-column:2;grid-row:2;width:40px;height:40px;min-height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%}
+/* Compact Shagram composer; scope these rules away from onboarding forms. */
+html body #postComposer{padding:18px 20px}
+html body #mediaPostForm{gap:10px;margin-top:12px}
+html body #mediaPostForm #mediaCaption{box-sizing:border-box;width:100%;height:64px;min-height:64px;padding:10px 12px;font-size:14px;line-height:1.5;resize:vertical}
+html body #mediaPostForm>.media-upload{display:flex!important;align-items:center!important;flex-wrap:wrap;gap:8px;width:max-content;max-width:100%;min-height:36px;margin:0;padding:0;position:relative}
+html body #mediaPostForm>.media-upload>.global-help-button{position:static!important;transform:none!important;margin:0;flex:0 0 24px;align-self:center}
+html body #mediaPostForm>button[type="submit"]{justify-self:end;width:auto;max-width:100%;min-height:36px;padding:8px 14px;font-size:13px;gap:10px}
+html body #mediaPostForm>#mediaError:empty{display:none}
+@media(max-width:480px){html body #postComposer{padding:14px}html body #mediaPostForm #mediaCaption{font-size:16px}}
+html body #mediaPosts .private-message-form[hidden]{display:none!important}
+html body #mediaPosts .message-owner-toggle{background:var(--blue);color:var(--ink);border:0}
+html body #mediaPosts .private-message-form button[type="submit"]{display:inline-flex;align-items:center;justify-content:center;width:36px;min-width:36px;height:36px;padding:0;border-radius:50%;background:var(--ink);color:var(--cream)}
+/* Explicit format selection takes priority over the source file's dimensions. */
+html body #mediaPosts>.media-post[data-aspect-ratio="9:16"]>.post-media{aspect-ratio:9/16;height:auto;position:relative}
+html body #mediaPosts>.media-post[data-aspect-ratio="9:16"]>.post-media>:is(img,video){height:100%!important;aspect-ratio:9/16!important;object-fit:cover!important}
+html body #mediaPosts>.media-post[data-aspect-ratio="16:9"]>.post-media>:is(img,video){height:auto!important;aspect-ratio:16/9!important;object-fit:cover!important}
+/* Ignore saved display-ratio presets for full-width feed media: use actual dimensions. */
+html body #mediaPosts>.media-post:not(.portrait-post)>.post-media{height:auto;min-height:0;aspect-ratio:auto;align-items:start}
+html body #mediaPosts>.media-post:not(.portrait-post)>.post-media :is(img,video){display:block;height:auto!important;min-height:0;max-height:75dvh!important;aspect-ratio:auto;object-fit:contain!important;align-self:start}
+html body #mediaPosts>.media-post:not(.portrait-post)>.post-media video:not([style*="aspect-ratio"]){aspect-ratio:16/9}
+/* Share row tracks across neighbouring portrait cards, not just card height. */
+@supports(grid-template-rows:subgrid){
+  html body #mediaPosts>.portrait-post{display:grid;grid-row:span 6;grid-template-rows:subgrid;row-gap:10px;align-items:start}
+  html body #mediaPosts>.portrait-post>.post-top{grid-row:1;margin:0}
+  html body #mediaPosts>.portrait-post>.post-caption{grid-row:2;margin:0;min-height:0}
+  html body #mediaPosts>.portrait-post>.post-media{grid-row:3;width:100%;height:auto;align-self:start;flex-shrink:0}
+  html body #mediaPosts>.portrait-post>.post-actions{grid-row:4;margin:0}
+  html body #mediaPosts>.portrait-post>.private-message-form{grid-row:5;margin:0}
+  html body #mediaPosts>.portrait-post>.post-comments{grid-row:6;margin:0;min-width:0}
+}
+body #mediaPosts>.portrait-post{align-self:stretch;display:flex;flex-direction:column}
+body #mediaPosts>.portrait-post .post-top{min-height:48px}
+body #mediaPosts>.portrait-post .post-caption{min-height:42px;max-height:84px;overflow:auto}
+body #mediaPosts>.portrait-post .post-media{aspect-ratio:9/16;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--cream)}
+body #mediaPosts>.portrait-post .post-media :is(img,video){width:100%!important;height:100%!important;max-height:100%!important;aspect-ratio:auto!important;object-fit:contain!important;min-width:0}
+body #mediaPosts .post-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0;min-height:36px}
+body #mediaPosts .post-actions :is(button,.like-summary){box-sizing:border-box;flex:0 0 36px;width:36px;min-width:36px;height:36px;min-height:36px;padding:0;display:inline-flex;align-items:center;justify-content:center;gap:3px;border-radius:50%;font-size:18px}
+body #mediaPosts .post-actions b{font-size:10px}
+body #mediaPosts .post-secondary-actions{display:inline-flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+body #mediaPosts .post-share{flex:0 0 36px}
+body #mediaPosts>.media-post>.private-message-form{display:flex;flex-wrap:wrap;gap:6px;width:100%;box-sizing:border-box;margin:0 0 12px}
+body #mediaPosts>.media-post>.private-message-form input{min-width:0;flex:1 1 100px;width:auto}
+body .media-main{width:calc(100% - 32px);max-width:1400px;padding:18px 0}
+body .media-main .media-intro{margin-bottom:12px}
+body .media-main .media-intro .eyebrow{margin:0}
+.shagram-logo{display:block;width:176px;height:38px}
+body .media-main .feed-heading{margin:12px 0}
+body #mediaPosts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:16px;align-items:start}
+body #mediaPosts>.media-post{grid-column:1/-1;margin:0;min-width:0;padding:16px}
+body #mediaPosts>.portrait-post{grid-column:auto}
+body #mediaPosts .post-media img,body #mediaPosts .post-media video{width:100%;height:auto;max-height:none;object-fit:contain}
+body #mediaPosts .portrait-post .post-media img,body #mediaPosts .portrait-post .post-media video{aspect-ratio:9/16;object-fit:contain}
+@media(max-width:500px){body .media-main{width:calc(100% - 20px);padding-top:12px}body #mediaPosts{gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}body #mediaPosts>.media-post{padding:10px}body #mediaPosts .post-top,body #mediaPosts .comment-form{flex-wrap:wrap}body #mediaPosts .comment-form input{min-width:0;width:100%}}
+/* Expanded workspace navigation is a compact vertical dropdown. */
+html body.workspace-top-layout .admin-sidebar .admin-nav:not([hidden]){position:absolute;top:100%;left:12px;display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;width:180px;max-width:calc(100vw - 24px);max-height:70dvh;overflow-y:auto;margin:4px 0 0;padding:8px;box-sizing:border-box;background:var(--cream);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.16);z-index:100}
+html body.workspace-top-layout .admin-sidebar .admin-nav>a{display:block;width:100%;box-sizing:border-box;padding:10px 12px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
 /* Compact account cluster on all viewport sizes, not just narrow phones. */
 html body header:is(.app-topbar,.workspace-topbar) :is(.header-actions,.admin-actions){gap:2px!important;column-gap:2px!important;justify-content:flex-end!important}
 html body header:is(.app-topbar,.workspace-topbar) :is(.header-actions,.admin-actions) :is(.header-home-symbol,.account-workspace-link,.cart-symbol,#language-control,.theme-icon-button,.account-profile,.account-profile-trigger,.signout-symbol){box-sizing:border-box;width:30px!important;min-width:30px!important;height:34px!important;min-height:34px!important;flex:0 0 30px!important;padding:0!important;margin-left:0!important;margin-right:0!important}
@@ -341,3 +470,4 @@ body.homepage .home-product-search>.compact-location{margin-left:auto!important}
 .train-boarding{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}.train-boarding>div{display:flex;gap:8px;align-items:flex-start}.train-boarding small,.train-boarding strong,.train-boarding span{display:block}.train-boarding small{color:var(--muted);font:700 9px 'DM Sans',sans-serif;letter-spacing:.08em}.train-boarding strong{margin-top:4px;font-size:12px}.train-boarding span:not(.boarding-icon){margin-top:3px;color:var(--muted);font-size:10px;line-height:1.35}.boarding-icon{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#f8eee9;color:#ad4e56;font-size:14px}@media(max-width:380px){.train-boarding{grid-template-columns:1fr}}
 .recharge-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:-10px 0 18px}.recharge-plans button{border:1px solid var(--line);background:#fff;padding:10px;text-align:left;color:var(--ink);font:700 11px/1.35 'DM Sans',sans-serif;cursor:pointer}.recharge-plans button span{display:block;color:#276b73;margin-top:3px}.recharge-plans button.selected{border-color:#276b73;background:#edf7f7;box-shadow:inset 3px 0 #276b73}@media(max-width:520px){.recharge-plans{grid-template-columns:1fr}}
 .recharge-plan-details{margin:-2px 0 16px;padding:11px 12px;border-left:3px solid #276b73;background:#edf7f7}.recharge-plan-details strong{font-size:12px}.recharge-plan-details p{margin:5px 0;color:var(--ink);font-size:11px;line-height:1.45}.recharge-plan-details small{color:var(--muted);font-size:9px;line-height:1.35}
+.music-discovery{display:grid;gap:6px;margin-top:4px}.music-discovery-links{display:flex;flex-wrap:wrap;gap:16px}.music-discovery-links a{text-decoration:underline;text-underline-offset:3px}

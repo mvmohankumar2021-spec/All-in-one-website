@@ -1,6 +1,13 @@
 let selectedMediaAspect = '16:9';
+const mediaToolsScript = document.createElement('script');
+mediaToolsScript.src = 'media-tools.js';
+document.head.append(mediaToolsScript);
 let previewUrls = [];
 const mediaUploadControl = document.querySelector('.media-upload');
+const composerSubmit = document.querySelector('#mediaPostForm > button[type="submit"]');
+composerSubmit.setAttribute('aria-label', 'Post to Shagram');
+composerSubmit.title = 'Post to Shagram';
+composerSubmit.innerHTML = '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 18 9-18 9 4-9-4-9Z"/><path d="M7 12h14"/></svg>';
 const mediaAspectControls = document.createElement('div');
 mediaAspectControls.className = 'media-aspect-controls';
 mediaAspectControls.innerHTML = '<button type="button" class="active" data-media-aspect="16:9" aria-label="Landscape format, 16 by 9">16:9</button><button type="button" data-media-aspect="9:16" aria-label="Portrait format, 9 by 16">9:16</button>';
@@ -16,11 +23,50 @@ function renderMediaPreview() {
   previewUrls.forEach((url) => URL.revokeObjectURL(url));
   previewUrls = [...document.querySelector('#mediaFiles').files].map((file) => URL.createObjectURL(file));
   mediaPreview.className = `media-preview aspect-${selectedMediaAspect.replace(':', '-')}`;
-  mediaPreview.innerHTML = previewUrls.map((url, index) => { const file = document.querySelector('#mediaFiles').files[index]; return file.type.startsWith('video/') ? `<video controls preload="metadata" src="${url}"></video>` : `<img src="${url}" alt="Media preview ${index + 1}"/>`; }).join('');
+  mediaPreview.replaceChildren();
+  const removeLabel = ({ ta: 'அகற்று', hi: 'हटाएँ' })[document.documentElement.lang.split('-')[0]] || 'Remove attachment';
+  previewUrls.forEach((url, index) => {
+    const file = document.querySelector('#mediaFiles').files[index];
+    const item = document.createElement('div');
+    item.className = 'media-preview-item';
+    const media = document.createElement(file.type.startsWith('video/') ? 'video' : 'img');
+    media.src = url;
+    if (media.tagName === 'VIDEO') { media.controls = true; media.preload = 'metadata'; }
+    else media.alt = `Media preview ${index + 1}`;
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'media-preview-remove';
+    remove.textContent = '×';
+    remove.title = removeLabel;
+    remove.setAttribute('aria-label', `${removeLabel}: ${file.name}`);
+    remove.addEventListener('click', () => {
+      const input = document.querySelector('#mediaFiles');
+      const remaining = new DataTransfer();
+      [...input.files].forEach((file, fileIndex) => { if (fileIndex !== index) remaining.items.add(file); });
+      input.files = remaining.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      (mediaPreview.querySelector('.media-preview-remove') || input).focus();
+    });
+    item.append(media, remove);
+    if (file.type.startsWith('image/')) {
+      const edit = document.createElement('button');
+      edit.type = 'button'; edit.className = 'media-preview-edit';
+      edit.textContent = '✎'; edit.title = 'Edit image'; edit.setAttribute('aria-label', 'Edit image');
+      edit.addEventListener('click', () => window.openShagramImageEditor?.(file, index));
+      item.append(edit);
+    }
+    mediaPreview.append(item);
+  });
 }
 
-mediaUploadControl.addEventListener('click', () => { mediaAspectControls.hidden = false; });
-document.querySelector('#mediaFiles').addEventListener('change', () => { if (!document.querySelector('#mediaFiles').files.length) mediaAspectControls.hidden = true; renderMediaPreview(); });
+mediaUploadControl.addEventListener('click', event => {
+  if (event.target.closest('.global-help-button')) return;
+  mediaAspectControls.hidden = true;
+});
+document.querySelector('#mediaFiles').addEventListener('change', () => {
+  mediaAspectControls.hidden = !document.querySelector('#mediaFiles').files.length;
+  renderMediaPreview();
+});
 mediaAspectControls.addEventListener('click', (event) => {
   const button = event.target.closest('[data-media-aspect]');
   if (!button) return;
@@ -32,7 +78,21 @@ mediaAspectControls.addEventListener('click', (event) => {
 const baseMediaRequest = request;
 request = async (path, options = {}) => {
   if (path === '/api/media/posts' && options.method === 'POST') {
-    const result = await baseMediaRequest(path, { ...options, body: JSON.stringify({ ...JSON.parse(options.body || '{}'), aspectRatio: selectedMediaAspect }) });
+    for (const file of document.querySelector('#mediaFiles').files) {
+      if (!file.type.startsWith('video/')) continue;
+      const duration = await new Promise((resolve, reject) => {
+        const video = document.createElement('video'); const url = URL.createObjectURL(file);
+        const finish = (error) => { clearTimeout(timer); video.onloadedmetadata = null; video.onerror = null; URL.revokeObjectURL(url); video.removeAttribute('src'); video.load(); error && reject(error); };
+        const timer = setTimeout(() => finish(new Error('The video duration could not be verified.')), 15000);
+        video.onloadedmetadata = () => { const seconds = video.duration; finish(); resolve(seconds); };
+        video.onerror = () => finish(new Error('The video could not be read.'));
+        video.preload = 'metadata'; video.src = url;
+      });
+      if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video duration could not be verified.');
+      if (selectedMediaAspect === '9:16' && duration > 60) throw new Error('Portrait reels must be 60 seconds or shorter.');
+    }
+    const result = await baseMediaRequest(path, { ...options, body: JSON.stringify({ ...JSON.parse(options.body || '{}'), aspectRatio: selectedMediaAspect, musicId: document.querySelector('#shagramMusic')?.value || '' }) });
+    window.resetShagramMusic?.();
     previewUrls.forEach((url) => URL.revokeObjectURL(url)); previewUrls = []; mediaPreview.replaceChildren(); mediaAspectControls.hidden = true;
     return result;
   }
@@ -52,8 +112,28 @@ loadPosts = async () => {
   [...document.querySelectorAll('.media-post')].forEach((element, index) => {
     const post = data.posts[index];
     if (!post) return;
+    if (post.music) {
+      const credit = document.createElement('div'); credit.className = 'post-music-credit';
+      const source = document.createElement('a'); source.href = post.music.source; source.textContent = `${post.music.title} — ${post.music.artist}`; source.translate = false; source.target = '_blank'; source.rel = 'noopener noreferrer';
+      const license = document.createElement('a'); license.href = post.music.licenseUrl; license.textContent = post.music.license; license.target = '_blank'; license.rel = 'noopener noreferrer';
+      const changes = document.createElement('span'); changes.textContent = 'Music trimmed or looped to fit.';
+      const reuse = document.createElement('button'); reuse.type = 'button'; reuse.textContent = 'Use this music'; reuse.onclick = () => window.reuseShagramMusic?.(post.music.id);
+      credit.append(source, document.createTextNode(' · '), license, changes, reuse);
+      element.append(credit);
+    }
+    element.querySelector('.post-author small')?.remove();
+    const author = element.querySelector('.post-author strong');
+    if (author) {
+      const link = document.createElement('button');
+      link.type = 'button'; link.className = 'post-profile-link';
+      link.textContent = post.author; link.translate = false;
+      link.addEventListener('click', () => window.openShagramProfile?.(post.accountId));
+      author.replaceWith(link);
+    }
     element.id = `post-${post.id}`;
+    element.dataset.aspectRatio = post.aspectRatio || '16:9';
     element.querySelector('.post-media')?.classList.add(`aspect-${(post.aspectRatio || '16:9').replace(':', '-')}`);
+    classifyMediaPost(element);
     const likeButton = element.querySelector('.like-button');
     if (likeButton) { likeButton.innerHTML = `<span aria-hidden="true">${post.liked ? '♥' : '♡'}</span><b>${post.likes}</b>`; likeButton.setAttribute('aria-label', `${post.liked ? 'Unlike' : 'Like'} post, ${post.likes} reactions`); likeButton.title = post.liked ? 'Unlike' : 'Like'; }
     const commentButton = element.querySelector('.comment-form button');
@@ -69,7 +149,30 @@ loadPosts = async () => {
     if (data.viewer && !element.querySelector('[data-save-post]')) secondaryActions?.insertAdjacentHTML('beforeend', `<button class="save-post ${post.saved ? 'saved' : ''}" data-save-post="${post.id}" aria-label="${post.saved ? 'Remove saved post' : 'Save post'}" title="${post.saved ? 'Saved' : 'Save post'}"><span aria-hidden="true">▮</span></button>`);
     if (data.viewer && !element.querySelector('[data-report-post]')) secondaryActions?.insertAdjacentHTML('beforeend', `<button class="report-post" data-report-post="${post.id}" aria-label="Report post" title="Report post"><span aria-hidden="true">•••</span></button>`);
     if (data.viewer?.id === post.accountId && !element.querySelector('[data-edit-post]')) secondaryActions?.insertAdjacentHTML('beforebegin', `<button class="edit-post" data-edit-post="${post.id}" aria-label="Edit post" title="Edit post"><span aria-hidden="true">✎</span></button>`);
-    const directMessageForm = element.querySelector('[data-direct-message-form]'); const shareControl = element.querySelector('.post-share'); if (shareControl && directMessageForm) shareControl.after(directMessageForm);
+    const directMessageForm = element.querySelector('[data-direct-message-form]');
+    // Messaging must not squeeze the reaction icons into different sizes.
+    if (directMessageForm && actions) {
+      actions.after(directMessageForm);
+      directMessageForm.hidden = true;
+      directMessageForm.id = `message-owner-${post.id}`;
+      const messageToggle = document.createElement('button');
+      messageToggle.type = 'button';
+      messageToggle.className = 'message-owner-toggle';
+      messageToggle.title = 'Private message to post owner';
+      messageToggle.setAttribute('aria-label', 'Private message to post owner');
+      messageToggle.setAttribute('aria-controls', directMessageForm.id);
+      messageToggle.setAttribute('aria-expanded', 'false');
+      messageToggle.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>';
+      actions.querySelector('.post-share').after(messageToggle);
+      messageToggle.addEventListener('click', () => {
+        directMessageForm.hidden = !directMessageForm.hidden;
+        messageToggle.setAttribute('aria-expanded', String(!directMessageForm.hidden));
+        if (!directMessageForm.hidden) directMessageForm.querySelector('input').focus();
+      });
+      const send = directMessageForm.querySelector('[type="submit"]');
+      send.title = 'Send private message';
+      send.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 18 9-18 9 4-9-4-9Z"/><path d="M7 12h14"/></svg>';
+    }
   });
   if (data.viewer) renderPrivateInbox(data).catch(() => {});
 };

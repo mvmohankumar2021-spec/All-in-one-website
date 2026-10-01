@@ -1,0 +1,43 @@
+[
+  {
+    "id": "envision-kevin-macleod",
+    "title": "Envision",
+    "artist": "Kevin MacLeod",
+    "file": "envision.mp3",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1900000",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "verifiedOn": "2026-10-01",
+    "languages": ["instrumental"], "category": "Ambient", "mood": "Calm"
+  },
+  {
+    "id": "chal-abhishek-chaudhary", "title": "Chal", "artist": "Abhishek Chaudhary", "file": "chal.mp3",
+    "source": "https://abhishekchaudhary.com/music/chal", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["hi", "ur"], "category": "Acoustic", "mood": "Reflective"
+  },
+  {
+    "id": "beparvah-abhishek-chaudhary", "title": "Beparvah", "artist": "Abhishek Chaudhary", "file": "beparvah.mp3",
+    "source": "https://abhishekchaudhary.com/music/beparvah", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["hi", "ur"], "category": "Rock", "mood": "Reflective"
+  },
+  {
+    "id": "you-wont-see-me-anymore-v2", "title": "You Wont See Me Anymore (Reimagined v2)", "artist": "Abhishek Chaudhary", "file": "you-wont-see-me-anymore-v2.mp3",
+    "source": "https://abhishekchaudhary.com/music/you-wont-see-me-anymore-reimagined-v2", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["en"], "category": "Alternative", "mood": "Reflective", "production": "AI-generated vocals and arrangement; original composition by the credited artist."
+  },
+  {
+    "id": "oh-holy-night-kevin-macleod", "title": "Oh Holy Night", "artist": "Kevin MacLeod", "file": "oh-holy-night.mp3",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100127", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["instrumental"], "category": "Devotional", "mood": "Calm", "description": "Christian hymn, piano instrumental; no vocals."
+  },
+  {
+    "id": "silent-night-kevin-macleod", "title": "Silent Night", "artist": "Kevin MacLeod", "file": "silent-night.mp3",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100075", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["instrumental"], "category": "Devotional", "mood": "Calm", "description": "Christian hymn, piano instrumental; no vocals."
+  },
+  {
+    "id": "dhaka-kevin-macleod", "title": "Dhaka", "artist": "Kevin MacLeod", "file": "dhaka.mp3",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400003", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["instrumental"], "category": "Meditation", "mood": "Mystical", "description": "Sarod, dilruba and drone instrumental; no vocals."
+  }
+]
