@@ -48,11 +48,12 @@ function renderMediaPreview() {
       (mediaPreview.querySelector('.media-preview-remove') || input).focus();
     });
     item.append(media, remove);
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
       const edit = document.createElement('button');
       edit.type = 'button'; edit.className = 'media-preview-edit';
-      edit.textContent = '✎'; edit.title = 'Edit image'; edit.setAttribute('aria-label', 'Edit image');
-      edit.addEventListener('click', () => window.openShagramImageEditor?.(file, index));
+      const editLabel = file.type.startsWith('image/') ? 'Edit image' : 'Music';
+      edit.textContent = '✎'; edit.title = editLabel; edit.setAttribute('aria-label', editLabel);
+      edit.addEventListener('click', () => file.type.startsWith('image/') ? window.openShagramImageEditor?.(file, index) : window.openShagramMusicEditor?.());
       item.append(edit);
     }
     mediaPreview.append(item);
@@ -101,13 +102,17 @@ request = async (path, options = {}) => {
 
 const baseLoadPosts = loadPosts;
 loadPosts = async () => {
+  const openPostId = document.querySelector('.shagram-watch[open] .media-post')?.id || (!window.shagramBrowseInitialized && /^#post-\d+$/.test(location.hash) ? location.hash.slice(1) : undefined);
   await baseLoadPosts();
+  window.refreshShagramProfileSummary?.();
   const renderedPosts = [...document.querySelectorAll('.media-post')];
   renderedPosts.forEach((element, index) => {
     const post = viewer && document.querySelector('#mediaPosts') ? undefined : undefined;
     element.classList.remove('aspect-16-9', 'aspect-9-16');
   });
   const data = await baseMediaRequest('/api/media/posts');
+  window.shagramRenderedPostIds = new Set(data.posts.map(post => post.id));
+  window.syncShagramNewPosts?.();
   if (data.viewer?.role === 'Customer' && !document.querySelector('.media-header [href="saved-posts.html"]')) document.querySelector('.media-header nav')?.insertAdjacentHTML('beforeend', '<a href="saved-posts.html">Saved</a>');
   [...document.querySelectorAll('.media-post')].forEach((element, index) => {
     const post = data.posts[index];
@@ -158,24 +163,52 @@ loadPosts = async () => {
       const messageToggle = document.createElement('button');
       messageToggle.type = 'button';
       messageToggle.className = 'message-owner-toggle';
-      messageToggle.title = 'Private message to post owner';
-      messageToggle.setAttribute('aria-label', 'Private message to post owner');
-      messageToggle.setAttribute('aria-controls', directMessageForm.id);
-      messageToggle.setAttribute('aria-expanded', 'false');
+      messageToggle.title = 'Message in Shachat';
+      messageToggle.setAttribute('aria-label', 'Message in Shachat');
       messageToggle.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>';
       actions.querySelector('.post-share').after(messageToggle);
       messageToggle.addEventListener('click', () => {
-        directMessageForm.hidden = !directMessageForm.hidden;
-        messageToggle.setAttribute('aria-expanded', String(!directMessageForm.hidden));
-        if (!directMessageForm.hidden) directMessageForm.querySelector('input').focus();
+        window.location.href = `chat.html?author=${encodeURIComponent(post.accountId)}`;
       });
       const send = directMessageForm.querySelector('[type="submit"]');
       send.title = 'Send private message';
       send.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 18 9-18 9 4-9-4-9Z"/><path d="M7 12h14"/></svg>';
+      directMessageForm.remove();
     }
   });
-  if (data.viewer) renderPrivateInbox(data).catch(() => {});
+  // Legacy messages remain stored; no separate floating inbox or new legacy sends.
+  document.querySelector('#privateInbox')?.remove();
+  buildShagramBrowse(data, openPostId);
 };
+
+function buildShagramBrowse(data, openPostId) {
+  window.shagramBrowseInitialized=true;
+  const feed=document.querySelector('#mediaPosts');
+  const articles=new Map([...feed.querySelectorAll('.media-post')].map(node=>[node.id,node]));
+  const storage=document.createElement('div');storage.hidden=true;
+  articles.forEach(node=>storage.append(node));feed.replaceChildren(storage);feed.classList.add('shagram-browse');
+  const dictionary={Videos:['வீடியோக்கள்','वीडियो'],Reels:['ரீல்கள்','रील्स'],Photos:['புகைப்படங்கள்','फ़ोटो'],Close:['மூடு','बंद करें'],'Open post':['பதிவைத் திற','पोस्ट खोलें']};
+  const text=key=>dictionary[key]?.[document.documentElement.lang.startsWith('ta')?0:document.documentElement.lang.startsWith('hi')?1:2]||key;
+  const label=(node,key)=>{node.dataset.browseLabel=key;node.translate=false;node.textContent=text(key);};
+  const dialog=document.createElement('dialog');dialog.className='shagram-watch';dialog.setAttribute('aria-label','Shagram');
+  const close=document.createElement('button');close.type='button';close.className='shagram-watch-close';label(close,'Close');close.onclick=()=>dialog.close();dialog.append(close);feed.append(dialog);
+  let returnButton;
+  dialog.addEventListener('close',()=>{dialog.querySelectorAll('video').forEach(v=>v.pause());const article=dialog.querySelector('.media-post');if(article)storage.append(article);returnButton?.focus();});
+  const open=(id,button)=>{const article=articles.get(id);if(!article)return;returnButton=button;dialog.append(article);dialog.showModal();};
+  const groups={};
+  for(const name of ['Videos','Reels','Photos']){const section=document.createElement('section');section.className='shagram-browse-section';const heading=document.createElement('h2');label(heading,name);const grid=document.createElement('div');grid.className='shagram-preview-grid';if(name==='Reels')grid.classList.add('shagram-reel-row');section.append(heading,grid);feed.append(section);groups[name]={section,grid};section.hidden=true;}
+  for(const post of data.posts){const first=post.media[0];if(!first)continue;const video=first.type.startsWith('video/');const group=video?(post.aspectRatio==='9:16'?'Reels':'Videos'):'Photos';const button=document.createElement('button');button.type='button';button.className='shagram-preview';button.dataset.postPreview=post.id;
+    const frame=document.createElement('span');frame.className='shagram-preview-frame';const media=document.createElement(video?'video':'img');media.src=first.url;media.setAttribute('aria-hidden','true');if(video){media.muted=true;media.preload='metadata';media.playsInline=true;}else{media.alt='';media.loading='lazy';}frame.append(media);
+    if(video){const play=document.createElement('span');play.className='shagram-preview-play';play.textContent='▶';play.setAttribute('aria-hidden','true');frame.append(play);}
+    const author=document.createElement('strong');author.textContent=post.author;author.translate=false;const caption=document.createElement('span');caption.className='shagram-preview-caption';caption.textContent=post.caption||text('Open post');caption.translate=false;
+    button.append(frame,author,caption);button.onclick=()=>open(`post-${post.id}`,button);groups[group].grid.append(button);groups[group].section.hidden=false;
+    if(openPostId===`post-${post.id}`)open(openPostId,button);
+  }
+  if(!data.posts.length){const empty=document.createElement('p');empty.textContent='No media posts yet.';feed.append(empty);}
+  const update=()=>feed.querySelectorAll('[data-browse-label]').forEach(n=>label(n,n.dataset.browseLabel));
+  if(window.shagramBrowseLanguageHandler)document.removeEventListener('languagechange',window.shagramBrowseLanguageHandler);
+  window.shagramBrowseLanguageHandler=update;document.addEventListener('languagechange',update);
+}
 
 async function renderPrivateInbox(data) { const owned = data.posts.filter((post) => post.accountId === data.viewer.id); if (!owned.length) return; const all = (await Promise.all(owned.map((post) => baseMediaRequest(`/api/media/messages?postId=${post.id}`).then((result) => result.messages.map((message) => ({ ...message, post })) )))).flat(); const received = all.filter((message) => message.recipientId === data.viewer.id); const threads = [...new Map(received.map((message) => [`${message.post.id}-${message.senderId}`, message])).values()].map((item) => ({ ...item, messages: all.filter((message) => message.post.id === item.post.id && ((message.senderId === item.senderId && message.recipientId === data.viewer.id) || (message.senderId === data.viewer.id && message.recipientId === item.senderId))) })); let inbox = document.querySelector('#privateInbox'); if (!inbox) { inbox = document.createElement('aside'); inbox.id = 'privateInbox'; inbox.className = 'private-inbox'; document.body.append(inbox); } inbox.innerHTML = `<button type="button" class="private-inbox-toggle">✉ <b>${threads.length}</b></button><section hidden><strong>Private messages</strong><div>${threads.map((item) => `<div class="inbox-message"><b>${escapeHtml(item.author)}</b>${item.messages.map((message) => `<small class="${message.senderId === data.viewer.id ? 'inbox-sent-message' : ''}"><b>${message.senderId === data.viewer.id ? 'You' : escapeHtml(item.author)}</b> ${escapeHtml(message.body)}</small>`).join('')}<form data-inbox-reply="${item.post.id}" data-recipient-id="${item.senderId}"><input maxlength="1000" required placeholder="Reply privately…"/><span class="private-tools"><button type="button" data-private-emoji-toggle>☺</button><button type="button" data-private-clip-toggle>▣</button></span><button type="submit">Reply</button></form></div>`).join('') || '<small>No new messages</small>'}</div></section>`; inbox.querySelector('.private-inbox-toggle').addEventListener('click', () => { const panel = inbox.querySelector('section'); panel.hidden = !panel.hidden; }); }
 

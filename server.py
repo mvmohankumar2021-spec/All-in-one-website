@@ -33,6 +33,8 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
 from media_processing import process_video
+import chat_service
+import feedback_service
 
 
 def music_catalogue():
@@ -868,7 +870,8 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
 
     def end_headers(self) -> None:
         self.send_header("Content-Security-Policy", "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self' https://checkout.razorpay.com https://maps.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://*.googleusercontent.com; media-src 'self' blob:; connect-src 'self' https://nominatim.openstreetmap.org https://api.open-meteo.com; frame-src https://www.google.com https://maps.google.com https://*.google.com")
-        self.send_header("Permissions-Policy", "camera=(self), geolocation=(self), microphone=(), payment=(self)")
+        microphone = '(self)' if urlparse(self.path).path == '/chat.html' else '()'
+        self.send_header("Permissions-Policy", f"camera=(self), geolocation=(self), microphone={microphone}, payment=(self)")
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         self.send_header("Cross-Origin-Resource-Policy", "same-origin")
         if HTTPS_ENABLED:
@@ -894,7 +897,11 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if not self.rate_limit_allowed():
             self.send_json({"error": "Too many requests. Please wait and try again."}, HTTPStatus.TOO_MANY_REQUESTS)
             return
-        if self.path == "/api/signup":
+        if self.path == "/api/feedback":
+            self.feedback_api(write=True)
+        elif self.path == "/api/chat":
+            self.chat_api(write=True)
+        elif self.path == "/api/signup":
             self.signup()
         elif self.path == "/api/setup-admin":
             self.setup_admin()
@@ -1039,6 +1046,12 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path == '/api/feedback':
+            self.feedback_api()
+            return
+        if parsed.path == "/api/chat":
+            self.chat_api()
+            return
         if parsed.path == "/api/auth/google":
             self.google_auth_start(parsed)
             return
@@ -1212,11 +1225,14 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         if path == "/":
             path = "/index.html"
         candidate = (ROOT / path.lstrip("/")).resolve()
-        if ROOT not in candidate.parents or not candidate.is_file() or candidate.suffix.lower() not in STATIC_EXTENSIONS:
+        catalogue_audio = candidate.parent == (ROOT / 'assets' / 'music').resolve() and candidate.name in {track['file'] for track in music_catalogue()}
+        if ROOT not in candidate.parents or not candidate.is_file() or (candidate.suffix.lower() not in STATIC_EXTENSIONS and not catalogue_audio):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         content_type = mimetypes.guess_type(str(candidate))[0] or "application/octet-stream"
         self.send_response(HTTPStatus.OK)
+        if catalogue_audio:
+            self.send_header("Content-Length", str(candidate.stat().st_size))
         self.send_header("Content-Type", f"{content_type}; charset=utf-8" if content_type.startswith("text/") else content_type)
         if candidate.suffix.lower() in {".html", ".css", ".js"}:
             self.send_header("Cache-Control", "no-store, max-age=0")
@@ -1340,6 +1356,51 @@ class SHAKALPAHandler(SimpleHTTPRequestHandler):
         token = self.create_session(account["id"])
         destination = {"Agent": "/agent.html", "Vendor": "/index.html", "Customer": "/index.html"}[account["role"]]
         self.send_redirect(destination, cookie=token)
+
+    def chat_api(self, write=False):
+        actor = self.current_account()
+        if not actor:
+            self.send_json({'error': 'Please sign in to use Chat.'}, HTTPStatus.UNAUTHORIZED)
+            return
+        if write and not self.origin_is_valid():
+            self.send_json({'error': 'Invalid origin.'}, HTTPStatus.FORBIDDEN)
+            return
+        try:
+            with connection() as db:
+                chat_service.schema(db)
+                if write:
+                    data = self.read_json()
+                    if data is None: raise ValueError('Invalid request.')
+                    result = chat_service.change(db, actor, data)
+                else:
+                    room = parse_qs(urlparse(self.path).query).get('room', [None])[0]
+                    result = chat_service.state(db, actor, int(room) if room else None)
+                    author = parse_qs(urlparse(self.path).query).get('author', [None])[0]
+                    if author:
+                        target = db.execute('SELECT user_id FROM chat_users WHERE account_id=?', (int(author),)).fetchone()
+                        result['targetUserId'] = target['user_id'] if target and not chat_service.blocked(db,actor['id'],int(author)) else None
+            self.send_json(result)
+        except ValueError as exc:
+            self.send_json({'error': str(exc)}, HTTPStatus.BAD_REQUEST)
+
+    def feedback_api(self, write=False):
+        actor=self.current_account()
+        if not actor:
+            self.send_json({'error':'Please sign in to use feedback.'},HTTPStatus.UNAUTHORIZED);return
+        # Do not allow admin impersonation mode to submit as a customer/vendor.
+        if self.headers.get('X-SHAKALPA-Admin-Vendor-View'):
+            self.send_json({'error':'Open feedback from your own account.'},HTTPStatus.FORBIDDEN);return
+        if write and not self.origin_is_valid():
+            self.send_json({'error':'Invalid origin.'},HTTPStatus.FORBIDDEN);return
+        try:
+            with connection() as db:
+                feedback_service.schema(db)
+                data=self.read_json() if write else None
+                if write and data is None: raise ValueError('Invalid request.')
+                result=feedback_service.change(db,actor,data) if write else feedback_service.listing(db,actor)
+            self.send_json(result)
+        except PermissionError as exc: self.send_json({'error':str(exc)},HTTPStatus.FORBIDDEN)
+        except ValueError as exc: self.send_json({'error':str(exc)},HTTPStatus.BAD_REQUEST)
 
     def read_json(self) -> dict | None:
         try:

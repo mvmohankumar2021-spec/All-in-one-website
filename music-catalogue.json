@@ -1,5 +1,30 @@
 [
   {
+    "id": "wellerman-karaoke-alexander-nakarada", "title": "The Wellerman (Karaoke/Insrumental)", "artist": "Alexander Nakarada", "file": "wellerman-karaoke.mp3",
+    "source": "https://creatorchords.com/music/the-wellerman-karaokeinsrumental/", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["instrumental"], "category": "Karaoke", "mood": "Dramatic"
+  },
+  {
+    "id": "tu-abhishek-chaudhary", "title": "Tu", "artist": "Abhishek Chaudhary", "file": "tu.mp3",
+    "source": "https://abhishekchaudhary.com/music/tu", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["hi", "ur"], "category": "Lofi", "mood": "Romantic"
+  },
+  {
+    "id": "main-kabhi-bhi-abhishek-chaudhary", "title": "Main Kabhi Bhi", "artist": "Abhishek Chaudhary", "file": "main-kabhi-bhi.mp3",
+    "source": "https://abhishekchaudhary.com/music/main-kabhi-bhi", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["hi", "ur"], "category": "Alternative", "mood": "Sad"
+  },
+  {
+    "id": "deewanapan-hai-abhishek-chaudhary", "title": "Deewanapan Hai", "artist": "Abhishek Chaudhary", "file": "deewanapan-hai.mp3",
+    "source": "https://abhishekchaudhary.com/music/deewanapan-hai", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["hi", "ur"], "category": "Acoustic", "mood": "Sad"
+  },
+  {
+    "id": "aaj-se-abhishek-chaudhary", "title": "Aaj Se", "artist": "Abhishek Chaudhary", "file": "aaj-se.mp3",
+    "source": "https://abhishekchaudhary.com/music/aaj-se", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "verifiedOn": "2026-10-01",
+    "languages": ["hi", "ur"], "category": "Acoustic", "mood": "Romantic"
+  },
+  {
     "id": "envision-kevin-macleod",
     "title": "Envision",
     "artist": "Kevin MacLeod",

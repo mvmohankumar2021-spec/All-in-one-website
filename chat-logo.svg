@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs><linearGradient id="chat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6654eb"/><stop offset="1" stop-color="#bd46a5"/></linearGradient></defs>
+  <circle cx="32" cy="32" r="30" fill="url(#chat)"/>
+  <g transform="translate(3.84 3.84) scale(.88)">
+    <path d="M18 16h24a8 8 0 0 1 8 8v13a8 8 0 0 1-8 8H30L18 53v-9a8 8 0 0 1-6-8V24a8 8 0 0 1 6-8Z" fill="white"/>
+    <path d="M38 23H28a5 5 0 0 0 0 10h7a5 5 0 0 1 0 10H24" fill="none" stroke="#7651d9" stroke-width="4" stroke-linecap="round"/>
+    <path d="m48 9 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#ffe19a"/>
+  </g>
+</svg>

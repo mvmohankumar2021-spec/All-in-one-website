@@ -1,5 +1,11 @@
 (() => {
   if (!document.querySelector('script[data-theme-catalogue-loader]')) { const script = document.createElement('script'); script.src = 'theme-catalogue.js'; script.dataset.themeCatalogueLoader = 'true'; document.head.append(script); }
+  const chat = document.createElement('a');
+  chat.className = 'header-chat-symbol';
+  chat.href = 'chat.html'; chat.title = 'Shachat'; chat.setAttribute('aria-label', 'Shachat');
+  chat.innerHTML = '<img src="chat-nav-icon.svg" width="24" height="24" alt="">';
+  const chatHost = document.querySelector('header .header-actions, header .admin-actions') || document.querySelector('header');
+  if (chatHost && !location.pathname.endsWith('/chat.html')) chatHost.append(chat);
   if (location.pathname === '/' || location.pathname.endsWith('/index.html')) return;
   const header = document.querySelector('header');
   const nav = header?.querySelector('nav');
@@ -18,6 +24,7 @@
   if (header) {
     const controls = header.querySelector('.header-actions, .admin-actions');
     (controls || header).append(compactHome);
+    if (!location.pathname.endsWith('/chat.html')) compactHome.after(chat);
   } else {
     compactHome.classList.add('home-return-button');
     document.body.append(compactHome);

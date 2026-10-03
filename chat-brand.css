@@ -1,0 +1,120 @@
+/* A dedicated SHAKALPA palette, scoped so other workspaces keep their theme. */
+/* Compact list layout; keep message conversations independently scrollable. */
+html body.chat-page>header{min-height:64px!important;padding-top:10px!important;padding-bottom:10px!important}
+html body.chat-page .layout{min-height:0}
+html body.chat-page .chat-list{padding-top:14px!important;padding-bottom:18px!important}
+/* Second compactness pass, without shrinking the navigation hit areas. */
+html body.chat-page>header{min-height:56px!important;padding-top:6px!important;padding-bottom:6px!important}
+html body.chat-page .chat-list{padding-top:10px!important;padding-bottom:12px!important}
+html body.chat-page .list-heading{margin-bottom:6px}
+html body.chat-page .list-heading h2{font-size:21px}
+html body.chat-page .chat-search input{padding-top:8px;padding-bottom:8px}
+html body.chat-page .chat-filters{padding:7px 0}
+html body.chat-page #rooms .chat-row{padding-top:8px;padding-bottom:8px}
+html body.chat-page .local-label{margin-top:8px;font-size:10px}
+html body.chat-page .chat-empty{margin:12px 0;padding:28px 14px}
+html body.chat-page .chat-empty:before{width:48px;height:48px;margin-bottom:12px;font-size:25px}
+html body.chat-page .chat-rail{row-gap:6px!important}
+html body.chat-page .list-heading{margin-bottom:10px}
+html body.chat-page .list-heading h2{font-size:23px}
+html body.chat-page .chat-search{min-height:42px}
+html body.chat-page .chat-search input{padding-top:10px;padding-bottom:10px}
+html body.chat-page .chat-filters{padding:10px 0;gap:8px}
+html body.chat-page .chat-filters button{padding:7px 13px}
+html body.chat-page #rooms .chat-row{padding:10px 6px;gap:12px}
+html body.chat-page .chat-avatar{width:44px;height:44px;flex-basis:44px;font-size:22px}
+html body.chat-page .chat-copy small{margin-top:4px}
+html body.chat-page .local-label{margin:12px 0 0}
+html body.chat-page .chat-rail{overflow-x:hidden;row-gap:10px!important}
+html body.chat-page>a.policy-centre-link.floating-policy-link{position:fixed;right:20px;bottom:20px;left:auto;top:auto;z-index:25;display:inline-flex;align-items:center;justify-content:center;max-width:calc(100vw - 100px);padding:10px 14px;border-radius:12px;background:#493361;color:#fff;font:600 12px/1.4 'Segoe UI',Arial,sans-serif;text-decoration:none;box-shadow:0 4px 14px #35204422;overflow-wrap:anywhere}
+html body.chat-page>a.policy-centre-link.floating-policy-link:focus-visible{outline:3px solid #ac86df;outline-offset:3px}
+@media(max-width:600px){html body.chat-page>a.policy-centre-link.floating-policy-link{right:auto;left:16px;bottom:calc(94px + env(safe-area-inset-bottom));max-width:calc(100vw - 112px)}}
+html body.chat-page .chat-group-dialog{max-width:420px;width:90%;border:1px solid #dfd1ef;border-radius:22px;background:#fcf9ff;color:#3d2853;padding:24px}
+html body.chat-page .chat-group-dialog::backdrop{background:#25183b88}
+html body.chat-page .chat-group-dialog button{background:#7951c1;color:white;min-height:40px;margin:5px}
+/* Sidebar views are exclusive; data refreshes never reveal unrelated panels. */
+body.chat-page:not([data-chat-section="info"]) #chatSettings,
+body.chat-page:not([data-chat-section="channels"]) #channelsPanel,
+body.chat-page:not([data-chat-section="communities"]) #communitiesPanel,
+body.chat-page:not([data-chat-section="new"]):not([data-chat-section="groups"]) #newChatPanel{display:none!important}
+body.chat-page[data-chat-section="info"] .layout{display:none!important}
+body.chat-page[data-chat-section="info"] #chatSettings{padding:24px}
+body.chat-page[data-chat-section="channels"] .chat-list>:not(#channelsPanel),
+body.chat-page[data-chat-section="communities"] .chat-list>:not(#communitiesPanel){display:none!important}
+body.chat-page[data-chat-section="channels"] .conversation,
+body.chat-page[data-chat-section="communities"] .conversation,
+body.chat-page[data-chat-section="new"] .conversation{display:none!important}
+body.chat-page[data-chat-section="channels"] .layout,
+body.chat-page[data-chat-section="communities"] .layout,
+body.chat-page[data-chat-section="new"] .layout{grid-template-columns:minmax(0,1fr)}
+body.chat-page[data-chat-section="new"] .chat-search,
+body.chat-page[data-chat-section="new"] .chat-filters,
+body.chat-page[data-chat-section="new"] #rooms,
+body.chat-page[data-chat-section="new"] #newChat,
+body.chat-page[data-chat-section="new"] #group,
+body.chat-page[data-chat-section="new"] #newChatPanel>details,
+body.chat-page[data-chat-section="groups"] #invite,
+body.chat-page[data-chat-section="groups"] .chat-filters{display:none!important}
+body.chat-page[data-chat-section="new"] #newChatPanel>summary,
+body.chat-page[data-chat-section="groups"] #newChatPanel>summary{display:none}
+html body.chat-page .chat-rail button{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:52px!important;height:56px!important;min-height:56px;flex-shrink:0;position:relative;border:1px solid transparent!important}
+html body.chat-page .chat-rail button svg{width:23px;height:23px;flex-shrink:0}
+html body.chat-page .chat-rail button span{font:500 8px/1.2 'Segoe UI',Arial,sans-serif;letter-spacing:0;white-space:nowrap}
+html body.chat-page .chat-rail button[aria-pressed=true]{background:linear-gradient(140deg,#8460c7,#654698)!important;color:white!important;border-color:#ad87e766!important;box-shadow:0 4px 12px #10082133}
+@media(max-width:500px){html body.chat-page .chat-rail button{width:44px!important}html body.chat-page .chat-rail button span{font-size:7px}}
+html body.chat-page{--ink:#29233f;--cream:#faf8ff;--line:#e5def1;--accent:#7651d9;background:#f6f3fc!important;color:#29233f;font-family:'Segoe UI',Arial,sans-serif}
+html body.chat-page>header{background:#fff!important;border-bottom:1px solid #e8e2f3;min-height:84px}
+html body.chat-page h1{color:#6540b6;letter-spacing:-.8px}
+html body.chat-page .chat-rail{background:linear-gradient(180deg,#292040,#40305e)!important;border:0;box-shadow:4px 0 20px #34234512;gap:16px}
+html body.chat-page .chat-rail>img{box-shadow:0 0 0 5px #ffffff12;border-radius:50%;margin-bottom:12px}
+html body.chat-page .chat-rail button{color:#e3d9f7;background:transparent;border-radius:14px;transition:background .15s,transform .15s}
+html body.chat-page .chat-rail button:hover,html body.chat-page .chat-rail button:focus-visible{background:#ffffff20;color:white;transform:translateY(-1px)}
+html body.chat-page .chat-list{background:#fff!important;border-color:#e8e2f3;padding-top:24px}
+html body.chat-page .list-heading h2{color:#33284e;font-weight:700;letter-spacing:-.8px}
+html body.chat-page #newChat{background:linear-gradient(135deg,#7756df,#b557b1);box-shadow:0 6px 16px #8558ce33;border-radius:15px}
+html body.chat-page .chat-search{background:#f3eff9!important;border:1px solid #ece6f5;border-radius:16px;color:#75638f}
+html body.chat-page .chat-search input{background:transparent!important;color:#33284e}
+html body.chat-page .chat-search .global-help-button{background:transparent!important;color:#806b9a}
+html body.chat-page .chat-filters button{border-color:#e5def0;background:#fff;color:#716381}
+html body.chat-page .chat-filters button[aria-pressed=true]{background:#eee5fc;color:#6940b7;border-color:#cdb9ee;font-weight:600}
+html body.chat-page #rooms .chat-row{color:#33284e}
+html body.chat-page #rooms .chat-row:hover,html body.chat-page #rooms .chat-row.selected{background:#f2ecfb}
+html body.chat-page .chat-avatar{background:#eae0fb;color:#7850b8}
+html body.chat-page .chat-row:nth-child(3n+2) .chat-avatar{background:#f9e1ed;color:#a44e82}
+html body.chat-page .chat-row:nth-child(3n) .chat-avatar{background:#e3eafa;color:#506db4}
+html body.chat-page .unread-badge{background:#8656cb}
+html body.chat-page .chat-copy small,html body.chat-page .local-label{color:#81758f}
+html body.chat-page .chat-empty{background:radial-gradient(ellipse at center,#f2eafa 0%,transparent 70%);border-radius:24px;margin:24px 0;padding:52px 18px;color:#6e5d83}
+html body.chat-page .chat-empty:before{content:'✦';display:grid;place-items:center;width:64px;height:64px;margin:0 auto 18px;border-radius:22px;background:linear-gradient(140deg,#eee1fc,#fbe7f0);color:#9964c7;font-size:30px;box-shadow:0 8px 24px #9e7ac316}
+html body.chat-page .chat-empty strong{display:block;color:#48325f;font-size:19px}
+html body.chat-page .conversation{background:radial-gradient(ellipse at 80% 15%,#f4e4f5,transparent 55%),linear-gradient(140deg,#f4f0fc,#edf0fa)!important}
+html body.chat-page #welcome{color:#7a698e}
+html body.chat-page #welcome h2,html body.chat-page #roomTitle{color:#46335f}
+html body.chat-page #welcome img{box-shadow:0 18px 38px #8a64bb28;border-radius:50%}
+html body.chat-page .message{background:white;color:#392e49;box-shadow:0 2px 8px #51377108}
+html body.chat-page .message.mine{background:#e9ddf9;color:#432c61}
+html body.chat-page .message small{color:#7f6c94}
+html body.chat-page #compose input{background:#fff!important;border-color:#e4daef}
+html body.chat-page #compose button,html body.chat-page #invite button,html body.chat-page #group button,html body.chat-page #notifications,html body.chat-page #channelsPanel form button,html body.chat-page #communitiesPanel form button{background:#7951c1;color:white;border-radius:13px}
+html body.chat-page #actions button,html body.chat-page .channel-post button{background:#ebe2f6;color:#694491}
+html body.chat-page .chat-settings{background:#faf8fe;border-bottom-color:#e9e1f2;color:#756284}
+html body.chat-page .chat-settings summary{color:#80728e}
+html body.chat-page #channelsPanel>summary,html body.chat-page #communitiesPanel>summary{color:#65409a;font-size:19px;font-weight:600}
+html body.chat-page #channelsPanel,html body.chat-page #communitiesPanel{border-top:1px solid #ece5f4;padding:18px 0}
+html body.chat-page .channel-card{border-color:#e7dfee}
+html body.chat-page .channel-post{background:#f5effa}
+html body.chat-page .channel-preview,html body.chat-page #channelsPanel>p{color:#7c6d88}
+html body.chat-page .channel-post button[aria-pressed=true]{outline-color:#9a6cca}
+html body.chat-page #channelsPanel textarea,html body.chat-page input:not([type=checkbox]){border-color:#e1d6ed}
+html body.chat-page button:focus-visible,html body.chat-page input:focus-visible{outline:3px solid #ac86df;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){html body.chat-page .chat-rail button{transition:none;transform:none}}
+/* Matte lavender navigation: no glass, gradients or decorative shadows. */
+html body.chat-page .chat-rail{background:#f0eaf8!important;border-right:1px solid #e3d8ee!important;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;gap:18px}
+html body.chat-page .chat-rail>img{box-shadow:none}
+html body.chat-page .chat-rail button{color:#644780;background:transparent;box-shadow:none}
+html body.chat-page .chat-rail button:hover,html body.chat-page .chat-rail button:focus-visible{background:#e5d9f2;color:#50336d;transform:none}
+html body.chat-page .chat-rail button[aria-pressed=true]{background:#7951b8!important;color:white!important;border-color:transparent!important;box-shadow:none}
+html body.chat-page .chat-list .list-heading{min-height:36px;margin:0 0 4px;padding:0;gap:8px}
+html body.chat-page .chat-list .list-heading h2{margin:0;font-size:21px;line-height:1.2}
+@media(min-width:601px){html body.chat-page .chat-list #newChat{width:36px;height:36px;min-height:36px;padding:0;line-height:1;font-size:24px;border-radius:12px}}
+html body.chat-page .chat-list{padding-top:14px!important;padding-bottom:18px!important}

@@ -1,12 +1,12 @@
 (() => {
   const serviceMode = document.querySelector('#typeMode option[value="service"]');
   if (serviceMode) serviceMode.textContent = 'Service';
-  if (location.pathname.endsWith('/policy-centre.html')) return;
   const link = document.createElement('a');
   link.href = 'policy-centre.html'; link.className = 'policy-centre-link'; link.textContent = 'Policies';
-  const vendorNavigation = document.querySelector('.admin-nav');
-  if (vendorNavigation) { vendorNavigation.append(link); return; }
-  const footer = document.querySelector('footer');
-  if (footer) { footer.append(link); return; }
-  link.classList.add('floating-policy-link'); document.body.append(link);
+  let footer = document.querySelector('footer');
+  if (!footer) { footer=document.createElement('footer');footer.className='shared-utility-footer';document.body.append(footer); }
+  footer.classList.add('feedback-site-footer');
+  if (!location.pathname.endsWith('/policy-centre.html') && !footer.querySelector('.policy-centre-link')) footer.append(link);
+  const style=document.createElement('link');style.rel='stylesheet';style.href='feedback.css';document.head.append(style);
+  const script=document.createElement('script');script.src='feedback.js';document.body.append(script);
 })();

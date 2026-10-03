@@ -1,6 +1,6 @@
 (() => {
   // Keep visual and keyboard order identical even when account controls arrive asynchronously.
-  const controlOrder = ['.header-home-symbol', '.account-workspace-link', '.cart-symbol', '#language-control', '.theme-icon-button', '.account-profile', '.signout-symbol'];
+  const controlOrder = ['.header-home-symbol', '.header-chat-symbol', '.account-workspace-link', '.cart-symbol', '#language-control', '.theme-icon-button', '.account-profile', '.signout-symbol'];
   function orderAccountControls() {
     document.querySelectorAll('header .header-actions, header .admin-actions').forEach(host => {
       const controls = [...host.children].filter(node => controlOrder.some(selector => node.matches(selector)));
@@ -90,7 +90,7 @@
       controls.className = 'header-actions';
       header.append(controls);
     }
-    header.querySelectorAll(':scope > .header-home-mobile, :scope > .signout-symbol, :scope > .rides-help').forEach(control => controls.append(control));
+    header.querySelectorAll(':scope > .header-home-mobile, :scope > .header-chat-symbol, :scope > .signout-symbol, :scope > .rides-help').forEach(control => controls.append(control));
   });
 
   document.querySelectorAll('header nav').forEach((nav, index) => {
